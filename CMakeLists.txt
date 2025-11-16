@@ -25,8 +25,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Set base path for 3rd party reference projects 
 include(FetchContent)
 
-# Set directory of third party stuff
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
+# Set directory for external dependencies
+set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external CACHE PATH "Base Directory of Libs" FORCE)
 
 # set directory of assets
 set(RESOURCES_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets CACHE PATH "Base Directory of resources" FORCE)
