@@ -1,9 +1,7 @@
 #pragma once
+#include "TaskQueue.h"
 #include <vector>
-#include <queue>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
 #include <functional>
 #include <atomic>
 
@@ -11,17 +9,14 @@ class ThreadPool {
 public:
     ThreadPool(size_t numThreads);
     ~ThreadPool();
-    
+
     void enqueueTask(std::function<void()> task);
     bool isIdle() const;
     int getQueueSize() const;
 
 private:
     std::vector<std::thread> workers;
-    std::queue<std::function<void()>> tasks;
-    mutable std::mutex queueMutex;  // mutable allows locking in const methods
-    std::condition_variable condition;
-    bool stop;
+    TaskQueue<std::function<void()>> taskQueue;  // Clean abstraction!
     std::atomic<int> activeTasks;
 
     void workerThread();

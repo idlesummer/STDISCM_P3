@@ -4,12 +4,9 @@
 using namespace std;
 
 
-ThreadPool::ThreadPool(size_t numThreads) 
+ThreadPool::ThreadPool(size_t numThreads)
     : workers(),
-      tasks(),
-      queueMutex(),
-      condition(),
-      stop(false),
+      taskQueue(),
       activeTasks(0) {
 
     cout << "[ThreadPool] Creating pool with " << numThreads << " workers" << endl;
@@ -18,64 +15,47 @@ ThreadPool::ThreadPool(size_t numThreads)
 }
 
 ThreadPool::~ThreadPool() {
-    {
-        auto lock = lock_guard<mutex>(this->queueMutex);
-        this->stop = true;
-    }
-    this->condition.notify_all();
-    
+    this->taskQueue.shutdown();  // Signal shutdown - clean!
+
     for (auto& worker : this->workers) {
         if (worker.joinable())
             worker.join();
     }
-    
+
     cout << "[ThreadPool] All workers stopped" << endl;
 }
 
 void ThreadPool::enqueueTask(function<void()> task) {
-    {
-        auto lock = lock_guard<mutex>(this->queueMutex);
-        this->tasks.push(task);
-    }
-    this->condition.notify_one();
+    this->taskQueue.push(task);  // One line - beautiful!
 }
 
 bool ThreadPool::isIdle() const {
-    auto lock = lock_guard<mutex>(this->queueMutex);
-    return this->tasks.empty() && this->activeTasks == 0;
+    return this->taskQueue.empty() && this->activeTasks == 0;
 }
 
 int ThreadPool::getQueueSize() const {
-    auto lock = lock_guard<mutex>(this->queueMutex);
-    return this->tasks.size();
+    return this->taskQueue.size();
 }
 
 void ThreadPool::workerThread() {
     cout << "[ThreadPool] Worker " << this_thread::get_id() << " started" << endl;
 
     while (true) {
-        auto task = function<void()>();
-        {
-            auto lock = unique_lock<mutex>(this->queueMutex);
-            this->condition.wait(lock, [this] { return this->stop || !this->tasks.empty(); });
+        // Blocking pop - waits for task or shutdown
+        auto taskOpt = this->taskQueue.pop();
 
-            if (this->stop && this->tasks.empty())
-                return;
+        // If nullopt, queue is shutdown and empty
+        if (!taskOpt.has_value())
+            return;
 
-            task = move(this->tasks.front());
-            this->tasks.pop();
-            this->activeTasks++;
-        }
+        auto task = taskOpt.value();
+        this->activeTasks++;
 
         cout << "[ThreadPool] Worker " << this_thread::get_id();
         cout << " executing task (Active: " << this->activeTasks << ")" << endl;
         task();
 
         cout << "[ThreadPool] Worker " << this_thread::get_id() << " finished task" << endl;
-
-        {
-            auto lock = lock_guard<mutex>(this->queueMutex);
-            this->activeTasks--;
-        }
+        this->activeTasks--;
     }
 }
