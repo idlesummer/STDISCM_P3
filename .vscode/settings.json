@@ -1,10 +1,13 @@
 {
     // Auto-run CMake when opening project
     "cmake.configureOnOpen": true,
-    
+
     // Auto-reconfigure when CMakeLists.txt changes
     "cmake.automaticReconfigure": true,
-    
+
     // Perfect IntelliSense (autocomplete, no red squiggles)
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+    // Use build/ instead of out/build/
+    "cmake.buildDirectory": "${workspaceFolder}/build"
 }
