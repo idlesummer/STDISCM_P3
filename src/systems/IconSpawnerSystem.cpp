@@ -56,7 +56,6 @@ void IconSpawnerSystem::requestNextBatch() {
     auto* textureManager = TextureManager::getInstance();
     this->timer = 0.0f;
 
-    cout << "[IconSpawnerSystem] Scheduling batch load starting at index " << iconIndex << endl;
     textureManager->loadBatchAsync(iconIndex, this->batchSize);
 }
 
@@ -65,12 +64,7 @@ void IconSpawnerSystem::processReadyTextures() {
 
     while (textureManager->hasReadyTexture()) {
         auto loaded = textureManager->popReadyTexture();
-
-        cout << "[IconSpawnerSystem] Spawning icon for texture " << loaded.index << endl;
         this->spawnNextIcon();
-
-        cout << "[IconSpawnerSystem] Icons spawned: " << this->spawnedIcons.size();
-        cout << "/480 (Ready queue: " << textureManager->getReadyQueueSize() << ")" << endl;
     }
 }
 
@@ -86,8 +80,6 @@ void IconSpawnerSystem::spawnNextIcon() {
     float x = static_cast<float>(this->columnGrid * this->iconWidth);
     float y = static_cast<float>(this->rowGrid * this->iconHeight);
     icon->setPosition(x, y);
-
-    cout << "Spawned " << name << " at position (" << x << ", " << y << ")" << endl;
 
     // Update grid coordinates
     this->columnGrid++;

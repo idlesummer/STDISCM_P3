@@ -56,8 +56,7 @@ TextureManager* TextureManager::getInstance() {
     return sharedInstance;
 }
 
-void TextureManager::loadTexture(String assetName, String filePath) {
-    cout << "[TextureManager] Loading texture: " << assetName << " from " << filePath << endl;
+void TextureManager::loadTexture(const String& assetName, const String& filePath) {
     this->instantiateAsTexture(filePath, assetName, false);
 }
 
@@ -92,21 +91,15 @@ void TextureManager::loadSingleStreamAssetSync(int index) {
     }
 
     // O(1) access to cached file path
-    auto path = this->streamingFilePaths[index];
-    auto pathTokens = StringUtils::split(path, '/');
-
-    if (pathTokens.empty())
-        pathTokens = StringUtils::split(path, '\\');
-
-    auto filename = pathTokens[pathTokens.size() - 1];
-    auto nameTokens = StringUtils::split(filename, '.');
-    auto assetName = nameTokens[0];
+    auto pathStr = this->streamingFilePaths[index];
+    auto path = filesystem::path(pathStr);
+    auto assetName = path.stem().string();  // Get filename without extension
 
     IETThread::sleep(100);
 
     auto texture = new Texture();
-    if (!texture->loadFromFile(path)) {
-        cerr << "[TextureManager] ERROR: Failed to load " << path << endl;
+    if (!texture->loadFromFile(pathStr)) {
+        cerr << "[TextureManager] ERROR: Failed to load " << pathStr << endl;
         delete texture;
         return;
     }
@@ -120,22 +113,18 @@ void TextureManager::loadSingleStreamAssetSync(int index) {
     loaded.index = index;
 
     this->addToReadyQueue(loaded);
-
-    cout << "[TextureManager] Loaded streaming texture: " << assetName << endl;
 }
 
-Texture* TextureManager::getFromTextureMap(const String assetName, int frameIndex) {
+Texture* TextureManager::getFromTextureMap(const String& assetName, int frameIndex) {
     if (this->textureMap[assetName].empty() || frameIndex >= this->textureMap[assetName].size()) {
-        cout << "[TextureManager] No texture found for " << assetName << endl;
         return nullptr;
     }
-    
+
     return this->textureMap[assetName][frameIndex];
 }
 
-int TextureManager::getNumFrames(const String assetName) {
+int TextureManager::getNumFrames(const String& assetName) {
     if (this->textureMap[assetName].empty()) {
-        cout << "[TextureManager] No texture found for " << assetName << endl;
         return 0;
     }
 
@@ -174,17 +163,17 @@ void TextureManager::countStreamingAssets() {
     cout << "[TextureManager] Cached " << this->streamingFilePaths.size() << " file paths" << endl;
 }
 
-void TextureManager::instantiateAsTexture(String path, String assetName, bool isStreaming) {
+void TextureManager::instantiateAsTexture(const String& path, const String& assetName, bool isStreaming) {
     auto texture = new Texture();
-    
+
     if (!texture->loadFromFile(path)) {
         cerr << "[TextureManager] ERROR: Failed to load " << path << endl;
         delete texture;
         return;
     }
-    
+
     this->textureMap[assetName].push_back(texture);
-    
+
     if (isStreaming)
         this->streamTextureList.push_back(texture);
     else
@@ -194,10 +183,7 @@ void TextureManager::instantiateAsTexture(String path, String assetName, bool is
 void TextureManager::addToReadyQueue(LoadedTexture loaded) {
     auto lock = lock_guard<mutex>(this->queueMutex);
     this->readyQueue.push(loaded);
-    
-    cout << "[TextureManager] Added to ready queue on thread " 
-         << this_thread::get_id() << " (Queue size: " 
-         << this->readyQueue.size() << ")" << endl;
+    // cout removed from hot path - called 480+ times
 }
 
 bool TextureManager::hasReadyTexture() {
@@ -209,11 +195,7 @@ TextureManager::LoadedTexture TextureManager::popReadyTexture() {
     auto lock = lock_guard<mutex>(this->queueMutex);
     auto loaded = this->readyQueue.front();
     this->readyQueue.pop();
-    
-    cout << "[TextureManager] Popped from ready queue on thread " 
-         << this_thread::get_id() << " (Remaining: " 
-         << this->readyQueue.size() << ")" << endl;
-    
+    // cout removed from hot path - called 480+ times
     return loaded;
 }
 

@@ -37,20 +37,11 @@ int ThreadPool::getQueueSize() const {
 }
 
 void ThreadPool::workerLoop() {
-    cout << "[ThreadPool] Worker " << this_thread::get_id() << " started" << endl;
-
     // Loop while tasks are available; pop() returns nullopt on shutdown
     while (auto taskOpt = this->taskQueue.pop()) {
         auto task = taskOpt.value();
         this->activeTasks++;
-
-        cout << "[ThreadPool] Worker " << this_thread::get_id();
-        cout << " executing task (Active: " << this->activeTasks << ")" << endl;
         task();
-
-        cout << "[ThreadPool] Worker " << this_thread::get_id() << " finished task" << endl;
         this->activeTasks--;
     }
-
-    cout << "[ThreadPool] Worker " << this_thread::get_id() << " shutting down" << endl;
 }

@@ -23,12 +23,12 @@ public:
 public:
     static TextureManager* getInstance();
     
-    void loadTexture(String assetName, String filePath);
+    void loadTexture(const String& assetName, const String& filePath);
     void loadSingleStreamAsset(int index);
     void loadBatchAsync(int startIndex, int count);
-    
-    sf::Texture* getFromTextureMap(const String assetName, int frameIndex = 0);
-    int getNumFrames(const String assetName);
+
+    sf::Texture* getFromTextureMap(const String& assetName, int frameIndex = 0);
+    int getNumFrames(const String& assetName);
     sf::Texture* getStreamTextureFromList(const int index);
     int getNumLoadedStreamTextures() const;
     
@@ -59,6 +59,6 @@ private:
     void ensureThreadPoolCreated();
     void ensureStreamingAssetsCounted();
     void countStreamingAssets();
-    void instantiateAsTexture(String path, String assetName, bool isStreaming);
+    void instantiateAsTexture(const String& path, const String& assetName, bool isStreaming);
     void loadSingleStreamAssetSync(int index);
 };
