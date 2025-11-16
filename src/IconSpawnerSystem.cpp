@@ -11,7 +11,7 @@ IconSpawnerSystem::IconSpawnerSystem()
     : spawnedIcons(),
       streamingLoadDelay(1000.0f),
       timer(0.0f),
-      batchSize(20),
+      batchSize(5),
       columnGrid(0),
       rowGrid(0),
       maxColumns(28),
