@@ -14,7 +14,7 @@ FPSEntity::FPSEntity()
       font(nullptr),
       framesPassed(0) {
     // Initialize time points
-    startTime = std::chrono::steady_clock::now();
+    startTime = chrono::steady_clock::now();
     lastUpdateTime = startTime;
 }
 
@@ -45,9 +45,6 @@ void FPSEntity::processInput(Event event) {
 }
 
 void FPSEntity::update(Time deltaTime) {
-    // Sleep to simulate heavy work and test FPS drop
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
     this->updateFPS();
 }
 
@@ -62,19 +59,20 @@ void FPSEntity::updateFPS() {
     this->framesPassed++;
 
     // Get current time and calculate actual elapsed time
-    auto currentTime = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastUpdateTime);
+    auto currentTime = chrono::steady_clock::now();
+    auto elapsed = chrono::duration_cast<chrono::milliseconds>(currentTime - lastUpdateTime);
 
     // Update every 125ms (same as before, but using real time)
-    if (elapsed.count() >= 125) {
-        // Calculate actual FPS based on real elapsed time
-        float actualElapsedSeconds = elapsed.count() / 1000.0f;
-        float fps = this->framesPassed / actualElapsedSeconds;
+    if (elapsed.count() < 125) 
+        return;
 
-        this->statsText->setString("FPS: " + to_string((int)fps) + "\n");
+    // Calculate actual FPS based on real elapsed time
+    float actualElapsedSeconds = elapsed.count() / 1000.0f;
+    float fps = this->framesPassed / actualElapsedSeconds;
 
-        // Reset counters
-        this->lastUpdateTime = currentTime;
-        this->framesPassed = 0;
-    }
+    this->statsText->setString("FPS: " + to_string((int)fps) + "\n");
+
+    // Reset counters
+    this->lastUpdateTime = currentTime;
+    this->framesPassed = 0;
 }
