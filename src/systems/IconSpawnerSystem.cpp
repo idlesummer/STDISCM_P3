@@ -1,8 +1,8 @@
 #include "IconSpawnerSystem.h"
-#include "IconEntity.h"
-#include "TextureManager.h"
-#include "EntityManager.h"
-#include "BaseRunner.h"
+#include "../entities/IconEntity.h"
+#include "../managers/TextureManager.h"
+#include "../managers/EntityManager.h"
+#include "../core/BaseRunner.h"
 #include <iostream>
 
 using namespace std;

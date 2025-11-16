@@ -1,7 +1,7 @@
 #include "TextureManager.h"
-#include "StringUtils.h"
-#include "IETThread.h"
-#include "ThreadPool.h"
+#include "../utils/StringUtils.h"
+#include "../threading/IETThread.h"
+#include "../threading/ThreadPool.h"
 #include <iostream>
 #include <filesystem>
 

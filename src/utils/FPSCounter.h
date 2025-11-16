@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEntity.h"
+#include "../types/GameEntity.h"
 
 class FPSCounter : public GameEntity {
 public:

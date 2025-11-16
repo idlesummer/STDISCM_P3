@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <SFML/System/Time.hpp>
-#include "GameSystem.h"
+#include "../types/GameSystem.h"
 
 /**
  * Singleton manager for game systems.

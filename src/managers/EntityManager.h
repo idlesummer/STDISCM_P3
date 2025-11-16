@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-#include "GameEntity.h"
+#include "../types/GameEntity.h"
 #include <SFML/Graphics.hpp>
 
 using EntityHashTable = std::unordered_map<std::string, GameEntity*>;

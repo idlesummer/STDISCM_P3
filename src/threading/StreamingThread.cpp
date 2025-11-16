@@ -1,5 +1,5 @@
 #include "StreamingThread.h"
-#include "TextureManager.h"
+#include "../managers/TextureManager.h"
 
 using namespace std;
 

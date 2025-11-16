@@ -1,7 +1,7 @@
 #include <iostream>
 #include "BGEntity.h"
-#include "TextureManager.h"
-#include "BaseRunner.h"
+#include "../managers/TextureManager.h"
+#include "../core/BaseRunner.h"
 
 using namespace std;
 using namespace sf;

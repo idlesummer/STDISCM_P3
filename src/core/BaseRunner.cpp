@@ -1,11 +1,11 @@
 #include <iostream>
 #include "BaseRunner.h"
-#include "EntityManager.h"
-#include "SystemManager.h"
-#include "BGEntity.h"
-#include "TextureManager.h"
-#include "IconSpawnerSystem.h"
-#include "FPSCounter.h"
+#include "../managers/EntityManager.h"
+#include "../managers/SystemManager.h"
+#include "../entities/BGEntity.h"
+#include "../managers/TextureManager.h"
+#include "../systems/IconSpawnerSystem.h"
+#include "../utils/FPSCounter.h"
 
 using namespace std;
 using namespace sf;

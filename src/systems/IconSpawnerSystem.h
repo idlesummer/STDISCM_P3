@@ -1,5 +1,5 @@
 #pragma once
-#include "GameSystem.h"
+#include "../types/GameSystem.h"
 #include <vector>
 #include <SFML/System/Time.hpp>
 
