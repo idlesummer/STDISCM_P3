@@ -44,9 +44,9 @@ void IconSpawnerSystem::update(sf::Time deltaTime) {
 void IconSpawnerSystem::requestNextBatch() {
     // Early exit if we've already spawned all icons
     const int MAX_ICONS = 480;
-    int index = static_cast<int>(this->spawnedIcons.size());
+    int iconIndex = static_cast<int>(this->spawnedIcons.size());
 
-    if (index >= MAX_ICONS)
+    if (iconIndex >= MAX_ICONS)
         return;
 
     // Timer management
@@ -58,8 +58,8 @@ void IconSpawnerSystem::requestNextBatch() {
     auto* textureManager = TextureManager::getInstance();
     this->timer = 0.0f;
 
-    cout << "[IconSpawnerSystem] Scheduling batch load starting at index " << index << endl;
-    textureManager->loadBatchAsync(index, this->batchSize);
+    cout << "[IconSpawnerSystem] Scheduling batch load starting at iconIndex " << iconIndex << endl;
+    textureManager->loadBatchAsync(iconIndex, this->batchSize);
 }
 
 void IconSpawnerSystem::processReadyTextures() {
@@ -68,7 +68,7 @@ void IconSpawnerSystem::processReadyTextures() {
     while (textureManager->hasReadyTexture()) {
         auto loaded = textureManager->popReadyTexture();
 
-        cout << "[IconSpawnerSystem] Spawning icon for texture " << loaded.index << endl;
+        cout << "[IconSpawnerSystem] Spawning icon for texture " << loaded.iconIndex << endl;
         this->spawnNextIcon();
 
         cout << "[IconSpawnerSystem] Icons spawned: " << this->spawnedIcons.size();
@@ -77,11 +77,11 @@ void IconSpawnerSystem::processReadyTextures() {
 }
 
 void IconSpawnerSystem::spawnNextIcon() {
-    int iconIndex = static_cast<int>(this->spawnedIcons.size());
-    auto name = "Icon_" + to_string(iconIndex);
+    int iconiconIndex = static_cast<int>(this->spawnedIcons.size());
+    auto name = "Icon_" + to_string(iconiconIndex);
 
     // Create the icon entity
-    auto* icon = new IconEntity(name, iconIndex);
+    auto* icon = new IconEntity(name, iconiconIndex);
     this->spawnedIcons.push_back(icon);
 
     // Calculate grid position
