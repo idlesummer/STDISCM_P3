@@ -4,13 +4,13 @@
 using namespace std;
 
 
-ThreadPool::ThreadPool(size_t numThreads)
+ThreadPool::ThreadPool(size_t nthreads)
     : workers(),
       taskQueue(),
       activeTasks(0) {
 
-    cout << "[ThreadPool] Creating pool with " << numThreads << " workers" << endl;
-    for (size_t i = 0; i < numThreads; i++)
+    cout << "[ThreadPool] Creating pool with " << nthreads << " workers" << endl;
+    for (size_t i = 0; i < nthreads; i++)
         this->workers.emplace_back([this] { this->workerThread(); });
 }
 
