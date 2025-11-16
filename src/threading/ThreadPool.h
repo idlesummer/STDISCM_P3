@@ -19,10 +19,10 @@ public:
 private:
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
-    std::mutex queueMutex;
+    mutable std::mutex queueMutex;  // mutable allows locking in const methods
     std::condition_variable condition;
     bool stop;
     std::atomic<int> activeTasks;
-    
+
     void workerThread();
 };
