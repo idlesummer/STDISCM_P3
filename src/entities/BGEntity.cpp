@@ -21,7 +21,7 @@ void BGEntity::initialize() {
     this->sprite->setTexture(*texture);
 
     this->sprite->setTextureRect(IntRect(0, 0, BaseRunner::WINDOW_WIDTH, BaseRunner::WINDOW_HEIGHT * 8));
-    this->setPosition(0, -BaseRunner::WINDOW_HEIGHT * 7);
+    this->setPosition(0.0f, static_cast<float>(-BaseRunner::WINDOW_HEIGHT * 7));
 }
 
 void BGEntity::processInput(Event event) {
@@ -36,5 +36,5 @@ void BGEntity::update(Time deltaTime) {
     auto localPos = this->sprite->getPosition();
 
     if (localPos.y * deltaTime.asSeconds() > 0)
-        this->setPosition(0, -BaseRunner::WINDOW_HEIGHT * 7);
+        this->setPosition(0.0f, static_cast<float>(-BaseRunner::WINDOW_HEIGHT * 7));
 }

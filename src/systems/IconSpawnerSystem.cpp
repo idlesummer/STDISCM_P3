@@ -49,7 +49,7 @@ void IconSpawnerSystem::requestNextBatch() {
         return;
 
     // Timer management
-    this->timer += BaseRunner::TIME_PER_FRAME.asMilliseconds();
+    this->timer += static_cast<float>(BaseRunner::TIME_PER_FRAME.asMilliseconds());
     if (this->timer < this->streamingLoadDelay)
         return;
 
@@ -83,8 +83,8 @@ void IconSpawnerSystem::spawnNextIcon() {
     this->spawnedIcons.push_back(icon);
 
     // Calculate grid position
-    float x = this->columnGrid * this->iconWidth;
-    float y = this->rowGrid * this->iconHeight;
+    float x = static_cast<float>(this->columnGrid * this->iconWidth);
+    float y = static_cast<float>(this->rowGrid * this->iconHeight);
     icon->setPosition(x, y);
 
     cout << "Spawned " << name << " at position (" << x << ", " << y << ")" << endl;
