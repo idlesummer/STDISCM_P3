@@ -9,7 +9,7 @@ using namespace sf;
 
 FPSEntity::FPSEntity()
     : GameEntity("FPSEntity"),
-      statsText(nullptr),
+      text(nullptr),
       font(nullptr),
       framesPassed(0) {
 
@@ -20,7 +20,7 @@ FPSEntity::FPSEntity()
 
 FPSEntity::~FPSEntity() {
     delete this->font;
-    delete this->statsText;
+    delete this->text;
 }
 
 void FPSEntity::initialize() {
@@ -34,13 +34,13 @@ void FPSEntity::initialize() {
     auto WINDOW_WIDTH = static_cast<float>(BaseRunner::WINDOW_WIDTH - 150);
     auto WINDOW_HEIGHT = static_cast<float>(BaseRunner::WINDOW_HEIGHT - 70);
 
-    this->statsText = new Text();
-    this->statsText->setFont(*this->font);
-    this->statsText->setPosition(WINDOW_WIDTH, WINDOW_HEIGHT);
-    this->statsText->setFillColor(Color::White);
-    this->statsText->setOutlineColor(Color(1, 1, 1));
-    this->statsText->setOutlineThickness(2.5f);
-    this->statsText->setCharacterSize(35);
+    this->text = new Text();
+    this->text->setFont(*this->font);
+    this->text->setPosition(WINDOW_WIDTH, WINDOW_HEIGHT);
+    this->text->setFillColor(Color::White);
+    this->text->setOutlineColor(Color(1, 1, 1));
+    this->text->setOutlineThickness(2.5f);
+    this->text->setCharacterSize(35);
 }
 
 void FPSEntity::processInput(Event event) {
@@ -62,7 +62,7 @@ void FPSEntity::update(Time deltaTime) {
     auto elapsedSeconds = static_cast<float>(elapsed.count()) / 1000.0f;
     auto fps = static_cast<float>(this->framesPassed) / elapsedSeconds;
 
-    this->statsText->setString("FPS: " + to_string((int)fps) + "\n");
+    this->text->setString("FPS: " + to_string((int)fps) + "\n");
 
     // Reset counters
     this->lastUpdateTime = currentTime;
@@ -70,8 +70,8 @@ void FPSEntity::update(Time deltaTime) {
 }
 
 void FPSEntity::draw(RenderWindow* targetWindow) {
-    GameEntity::draw(targetWindow);
+    if (this->text == nullptr)
+        return;
 
-    if (this->statsText != nullptr)
-        targetWindow->draw(*this->statsText);
+    targetWindow->draw(*this->text);
 }

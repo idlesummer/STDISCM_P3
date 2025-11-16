@@ -13,7 +13,7 @@ public:
     void draw(sf::RenderWindow* targetWindow) override;
 
 private:
-    sf::Text* statsText;
+    sf::Text* text;
     sf::Font* font;
     int framesPassed;
 
