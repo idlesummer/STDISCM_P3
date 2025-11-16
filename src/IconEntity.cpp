@@ -1,4 +1,4 @@
-#include "IconObject.h"
+#include "IconEntity.h"
 #include "TextureManager.h"
 #include <iostream>
 
@@ -6,21 +6,21 @@ using namespace std;
 using namespace sf;
 
 
-IconObject::IconObject(String name, int textureIndex) 
-    : AGameObject(name),
+IconEntity::IconEntity(String name, int textureIndex)
+    : GameEntity(name),
       textureIndex(textureIndex) {
 }
 
-void IconObject::initialize() {
+void IconEntity::initialize() {
     auto texture = TextureManager::getInstance()->getStreamTextureFromList(this->textureIndex);
     this->sprite = new Sprite();
     this->sprite->setTexture(*texture);
 }
 
-void IconObject::processInput(Event event) {
+void IconEntity::processInput(Event event) {
     // no-op
 }
 
-void IconObject::update(Time deltaTime) {
+void IconEntity::update(Time deltaTime) {
     // no-op
 }

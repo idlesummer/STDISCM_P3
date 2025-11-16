@@ -2,16 +2,16 @@
 #include <vector>
 #include <string>
 #include <SFML/System/Time.hpp>
-#include "IGameSystem.h"
+#include "GameSystem.h"
 
 /**
  * Singleton manager for game systems.
- * Unlike GameObjectManager which manages visual entities,
+ * Unlike GameEntityManager which manages visual entities,
  * SystemManager handles non-rendering logic systems.
  */
 class SystemManager {
 public:
-    using SystemList = std::vector<IGameSystem*>;
+    using SystemList = std::vector<GameSystem*>;
 
     static SystemManager* getInstance();
 
@@ -19,7 +19,7 @@ public:
      * Add a system to be managed.
      * SystemManager takes ownership and will delete the system on cleanup.
      */
-    void addSystem(IGameSystem* system);
+    void addSystem(GameSystem* system);
 
     /**
      * Initialize all systems. Call this once during game startup.

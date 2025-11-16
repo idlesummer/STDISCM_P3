@@ -1,8 +1,8 @@
 #include <iostream>
 #include "BaseRunner.h"
-#include "GameObjectManager.h"
+#include "GameEntityManager.h"
 #include "SystemManager.h"
-#include "BGObject.h"
+#include "BGEntity.h"
 #include "TextureManager.h"
 #include "IconSpawnerSystem.h"
 #include "FPSCounter.h"
@@ -35,18 +35,18 @@ BaseRunner::BaseRunner()
     cout << endl;
 
     auto* textureManager = TextureManager::getInstance();
-    auto* gameObjectManager = GameObjectManager::getInstance();
+    auto* entityManager = GameEntityManager::getInstance();
     auto* systemManager = SystemManager::getInstance();
 
     // Load base textures
     textureManager->loadTexture("Desert", "Media/Textures/Desert.png");
 
-    // Create visual game objects (things that render)
-    auto bgObject = new BGObject("BGObject");
-    gameObjectManager->addObject(bgObject);
+    // Create visual game entities (things that render)
+    auto bgEntity = new BGEntity("BGEntity");
+    entityManager->addEntity(bgEntity);
 
     auto fpsCounter = new FPSCounter();
-    gameObjectManager->addObject(fpsCounter);
+    entityManager->addEntity(fpsCounter);
 
     // Create game systems (logic controllers that don't render)
     auto iconSpawner = new IconSpawnerSystem();
@@ -71,31 +71,31 @@ void BaseRunner::run() {
 
 void BaseRunner::processEvents() {
     auto event = Event();
-    
+
     if (!this->window.pollEvent(event))
         return;
-    
+
     switch (event.type) {
         default:
-            GameObjectManager::getInstance()->processInput(event);
+            GameEntityManager::getInstance()->processInput(event);
             return;
 
         case Event::Closed:
             this->window.close();
-            return; 
-    }    
+            return;
+    }
 }
 
 void BaseRunner::update(Time elapsedTime) {
     // Update game systems (controllers/logic)
     SystemManager::getInstance()->update(elapsedTime);
 
-    // Update game objects (visual entities)
-    GameObjectManager::getInstance()->update(elapsedTime);
+    // Update game entities (visual entities)
+    GameEntityManager::getInstance()->update(elapsedTime);
 }
 
 void BaseRunner::render() {
     this->window.clear();
-    GameObjectManager::getInstance()->draw(&this->window);
+    GameEntityManager::getInstance()->draw(&this->window);
     this->window.display();
 }

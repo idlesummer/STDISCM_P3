@@ -24,7 +24,7 @@ SystemManager* SystemManager::getInstance() {
     return sharedInstance;
 }
 
-void SystemManager::addSystem(IGameSystem* system) {
+void SystemManager::addSystem(GameSystem* system) {
     if (system != nullptr) {
         this->systems.push_back(system);
         cout << "System added to SystemManager (total: "

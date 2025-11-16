@@ -6,8 +6,8 @@ using namespace std;
 using namespace sf;
 
 
-FPSCounter::FPSCounter() 
-    : AGameObject("FPSCounter"),
+FPSCounter::FPSCounter()
+    : GameEntity("FPSCounter"),
       updateTime(),
       statsText(nullptr),
       font(nullptr),
@@ -45,8 +45,8 @@ void FPSCounter::update(Time deltaTime) {
 }
 
 void FPSCounter::draw(RenderWindow* targetWindow) {
-    AGameObject::draw(targetWindow);
-    
+    GameEntity::draw(targetWindow);
+
     if (this->statsText != nullptr)
         targetWindow->draw(*this->statsText);
 }

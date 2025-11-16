@@ -1,21 +1,21 @@
 #pragma once
-#include "IGameSystem.h"
+#include "GameSystem.h"
 #include <vector>
 #include <SFML/System/Time.hpp>
 
-class IconObject;
+class IconEntity;
 
 /**
- * System responsible for spawning and managing icon objects.
- * This is a controller/system, not a visual game object.
+ * System responsible for spawning and managing icon entities.
+ * This is a controller/system, not a visual game entity.
  *
  * Responsibilities:
  * - Coordinate texture loading batches with TextureManager
- * - Spawn IconObject instances when textures are ready
+ * - Spawn IconEntity instances when textures are ready
  * - Manage grid layout positioning for icons
  * - Track spawned icons
  */
-class IconSpawnerSystem : public IGameSystem {
+class IconSpawnerSystem : public GameSystem {
 public:
     IconSpawnerSystem();
     ~IconSpawnerSystem();
@@ -24,7 +24,7 @@ public:
     void update(sf::Time deltaTime) override;
 
 private:
-    using IconList = std::vector<IconObject*>;
+    using IconList = std::vector<IconEntity*>;
 
     IconList spawnedIcons;
 

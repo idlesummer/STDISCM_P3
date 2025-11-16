@@ -3,8 +3,8 @@
 
 /**
  * Interface for game systems that perform logic but don't render.
- * Unlike AGameObject which represents visual entities with sprites,
- * IGameSystem is for controllers, managers, and coordinators.
+ * Unlike GameEntity which represents visual entities with sprites,
+ * GameSystem is for controllers, managers, and coordinators.
  *
  * Examples:
  * - Icon spawning system
@@ -12,9 +12,9 @@
  * - Physics system
  * - Audio manager
  */
-class IGameSystem {
+class GameSystem {
 public:
-    virtual ~IGameSystem() = default;
+    virtual ~GameSystem() = default;
 
     /**
      * Initialize the system. Called once after construction.
@@ -28,5 +28,5 @@ public:
     virtual void update(sf::Time deltaTime) = 0;
 
     // Note: No draw() method - systems don't render!
-    // If something needs to render, it should create GameObjects instead.
+    // If something needs to render, it should create GameEntity instances instead.
 };

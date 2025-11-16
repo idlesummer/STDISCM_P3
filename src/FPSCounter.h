@@ -1,7 +1,7 @@
 #pragma once
-#include "AGameObject.h"
+#include "GameEntity.h"
 
-class FPSCounter : public AGameObject {
+class FPSCounter : public GameEntity {
 public:
     FPSCounter();
     ~FPSCounter();

@@ -1,14 +1,14 @@
 #pragma once
-#include "AGameObject.h"
+#include "GameEntity.h"
 
-class BGObject : public AGameObject {
-public: 
-    BGObject(String name);
-    
+class IconEntity : public GameEntity {
+public:
+    IconEntity(String name, int textureIndex);
+
     void initialize() override;
     void processInput(sf::Event event) override;
     void update(sf::Time deltaTime) override;
 
 private:
-    float SPEED_MULTIPLIER;
+    int textureIndex;
 };

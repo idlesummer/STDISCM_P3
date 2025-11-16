@@ -2,12 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-class AGameObject : sf::NonCopyable {
+class GameEntity : sf::NonCopyable {
 public:
     using String = std::string;
-    
-    AGameObject(String name);
-    virtual ~AGameObject();
+
+    GameEntity(String name);
+    virtual ~GameEntity();
 
     virtual void initialize() = 0;
     virtual void processInput(sf::Event event) = 0;

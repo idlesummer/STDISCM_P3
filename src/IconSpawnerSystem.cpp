@@ -1,7 +1,7 @@
 #include "IconSpawnerSystem.h"
-#include "IconObject.h"
+#include "IconEntity.h"
 #include "TextureManager.h"
-#include "GameObjectManager.h"
+#include "GameEntityManager.h"
 #include "BaseRunner.h"
 #include <iostream>
 
@@ -21,7 +21,7 @@ IconSpawnerSystem::IconSpawnerSystem()
 }
 
 IconSpawnerSystem::~IconSpawnerSystem() {
-    // IconObjects are managed by GameObjectManager, so we don't delete them here
+    // IconEntities are managed by GameEntityManager, so we don't delete them here
     // We just clear our reference list
     this->spawnedIcons.clear();
 }
@@ -78,8 +78,8 @@ void IconSpawnerSystem::spawnNextIcon() {
     int iconIndex = this->spawnedIcons.size();
     auto name = "Icon_" + to_string(iconIndex);
 
-    // Create the icon game object
-    auto* icon = new IconObject(name, iconIndex);
+    // Create the icon entity
+    auto* icon = new IconEntity(name, iconIndex);
     this->spawnedIcons.push_back(icon);
 
     // Calculate grid position
@@ -96,6 +96,6 @@ void IconSpawnerSystem::spawnNextIcon() {
         this->rowGrid++;
     }
 
-    // Add to GameObjectManager for rendering
-    GameObjectManager::getInstance()->addObject(icon);
+    // Add to GameEntityManager for rendering
+    GameEntityManager::getInstance()->addEntity(icon);
 }
