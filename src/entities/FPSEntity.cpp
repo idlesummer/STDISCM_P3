@@ -31,11 +31,14 @@ void FPSEntity::initialize() {
         return;
     }
 
+    auto WINDOW_WIDTH = static_cast<float>(BaseRunner::WINDOW_WIDTH - 150);
+    auto WINDOW_HEIGHT = static_cast<float>(BaseRunner::WINDOW_HEIGHT - 70);
+
     this->statsText = new Text();
     this->statsText->setFont(*this->font);
-    this->statsText->setPosition(static_cast<float>(BaseRunner::WINDOW_WIDTH - 150), static_cast<float>(BaseRunner::WINDOW_HEIGHT - 70));
+    this->statsText->setPosition(WINDOW_WIDTH, WINDOW_HEIGHT);
     this->statsText->setFillColor(Color::White);
-    this->statsText->setOutlineColor(Color(255, 255, 255));
+    this->statsText->setOutlineColor(Color(1, 1, 1));
     this->statsText->setOutlineThickness(2.5f);
     this->statsText->setCharacterSize(35);
 }
