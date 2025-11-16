@@ -42,20 +42,24 @@ void IconSpawnerSystem::update(sf::Time deltaTime) {
 }
 
 void IconSpawnerSystem::requestNextBatch() {
-    auto* textureManager = TextureManager::getInstance();
+    // Early exit if we've already spawned all icons
+    const int MAX_ICONS = 480;
+    int currentIndex = this->spawnedIcons.size();
+
+    if (currentIndex >= MAX_ICONS)
+        return;
+
+    // Timer management
     this->timer += BaseRunner::TIME_PER_FRAME.asMilliseconds();
 
     if (this->timer >= this->streamingLoadDelay) {
         this->timer = 0.0f;
 
-        int currentIndex = this->spawnedIcons.size();
-        const int MAX_ICONS = 480;
+        cout << "[IconSpawnerSystem] Scheduling batch load starting at index "
+             << currentIndex << endl;
 
-        if (currentIndex < MAX_ICONS) {
-            cout << "[IconSpawnerSystem] Scheduling batch load starting at index "
-                 << currentIndex << endl;
-            textureManager->loadBatchAsync(currentIndex, this->batchSize);
-        }
+        auto* textureManager = TextureManager::getInstance();
+        textureManager->loadBatchAsync(currentIndex, this->batchSize);
     }
 }
 
