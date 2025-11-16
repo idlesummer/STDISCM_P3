@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(MSVC) Debug STDISCM_P2",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P2.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/out/build/x64-debug/bin",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake Build"
+        },
+        {
+            "name": "(MSVC) Run STDISCM_P2 (No Debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P2.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/out/build/x64-debug/bin",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake Build"  // ← Also auto-builds
+        }
+    ]
+}
