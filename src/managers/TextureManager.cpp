@@ -138,21 +138,21 @@ int TextureManager::getNumFrames(const String assetName) {
         cout << "[TextureManager] No texture found for " << assetName << endl;
         return 0;
     }
-    
-    return this->textureMap[assetName].size();
+
+    return static_cast<int>(this->textureMap[assetName].size());
 }
 
 Texture* TextureManager::getStreamTextureFromList(const int index) {
-    if (index < 0 || index >= this->streamTextureList.size()) {
+    if (index < 0 || index >= static_cast<int>(this->streamTextureList.size())) {
         cerr << "[TextureManager] Stream texture index out of bounds: " << index << endl;
         return nullptr;
     }
-    
+
     return this->streamTextureList[index];
 }
 
 int TextureManager::getNumLoadedStreamTextures() const {
-    return this->streamTextureList.size();
+    return static_cast<int>(this->streamTextureList.size());
 }
 
 void TextureManager::countStreamingAssets() {
@@ -213,5 +213,5 @@ TextureManager::LoadedTexture TextureManager::popReadyTexture() {
 }
 
 int TextureManager::getReadyQueueSize() const {
-    return this->readyQueue.size();
+    return static_cast<int>(this->readyQueue.size());
 }
