@@ -33,18 +33,20 @@ TextureManager::~TextureManager() {
 }
 
 void TextureManager::ensureThreadPoolCreated() {
-    if (this->threadPool == nullptr) {
-        cout << "[TextureManager] Creating thread pool on first use..." << endl;
-        this->threadPool = new ThreadPool(thread::hardware_concurrency());
-    }
+    if (this->threadPool != nullptr)
+        return;
+
+    cout << "[TextureManager] Creating thread pool on first use..." << endl;
+    this->threadPool = new ThreadPool(thread::hardware_concurrency());
 }
 
 void TextureManager::ensureStreamingAssetsCounted() {
-    if (!this->streamingAssetsCounted) {
-        cout << "[TextureManager] Counting streaming assets on first use..." << endl;
-        this->countStreamingAssets();
-        this->streamingAssetsCounted = true;
-    }
+    if (this->streamingAssetsCounted) 
+        return;
+
+    cout << "[TextureManager] Counting streaming assets on first use..." << endl;
+    this->countStreamingAssets();
+    this->streamingAssetsCounted = true;
 }
 
 TextureManager* TextureManager::getInstance() {
@@ -69,8 +71,8 @@ void TextureManager::loadBatchAsync(int startIndex, int count) {
     cout << "[TextureManager] Scheduling batch load: " << count
          << " textures starting at index " << startIndex << endl;
 
-    for (int i = 0; i < count; i++) {
-        int index = startIndex + i;
+    for (auto i = 0; i < count; i++) {
+        auto index = startIndex + i;
 
         if (index >= this->streamingAssetCount)
             break;
@@ -89,8 +91,6 @@ void TextureManager::loadSingleStreamAssetSync(int index) {
             fileNum++;
             continue;
         }
-        
-        IETThread::sleep(100);
         
         auto path = entry.path().string();
         auto pathTokens = StringUtils::split(path, '/');
