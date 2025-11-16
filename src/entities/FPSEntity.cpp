@@ -13,6 +13,7 @@ FPSEntity::FPSEntity()
       statsText(nullptr),
       font(nullptr),
       framesPassed(0) {
+
     // Initialize time points
     startTime = chrono::steady_clock::now();
     lastUpdateTime = startTime;
