@@ -17,10 +17,9 @@ ThreadPool::ThreadPool(size_t nthreads)
 ThreadPool::~ThreadPool() {
     this->taskQueue.shutdown();  // Signal shutdown
 
-    for (auto& worker : this->workers) {
+    for (auto& worker : this->workers)
         if (worker.joinable())
             worker.join();
-    }
 
     cout << "[ThreadPool] All workers stopped" << endl;
 }
