@@ -6,7 +6,7 @@
 
 /**
  * Singleton manager for game systems.
- * Unlike GameEntityManager which manages visual entities,
+ * Unlike EntityManager which manages visual entities,
  * SystemManager handles non-rendering logic systems.
  */
 class SystemManager {

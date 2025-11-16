@@ -8,9 +8,9 @@
 using EntityHashTable = std::unordered_map<std::string, GameEntity*>;
 using EntityList = std::vector<GameEntity*>;
 
-class GameEntityManager {
+class EntityManager {
 public:
-    static GameEntityManager* getInstance();
+    static EntityManager* getInstance();
 
     GameEntity* findEntityByName(GameEntity::String name);
     EntityList getAllEntities();
@@ -24,11 +24,11 @@ public:
     void deleteEntityByName(GameEntity::String name);
 
 private:
-    GameEntityManager();
-    GameEntityManager(GameEntityManager const&) = delete;
-    GameEntityManager& operator=(GameEntityManager const&) = delete;
+    EntityManager();
+    EntityManager(EntityManager const&) = delete;
+    EntityManager& operator=(EntityManager const&) = delete;
 
-    static GameEntityManager* sharedInstance;
+    static EntityManager* sharedInstance;
 
     EntityHashTable entityMap;
     EntityList entityList;

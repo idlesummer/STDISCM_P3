@@ -1,29 +1,29 @@
 #include <iostream>
-#include "GameEntityManager.h"
+#include "EntityManager.h"
 
 using namespace std;
 using namespace sf;
 
 
 // ===== STATIC MEMBER INITIALIZATION =====
-GameEntityManager* GameEntityManager::sharedInstance = nullptr;
+EntityManager* EntityManager::sharedInstance = nullptr;
 
 
 // ===== CLASS IMPLEMENTATION =====
-GameEntityManager::GameEntityManager()
+EntityManager::EntityManager()
     : entityMap(),
       entityList() {
 
     // no-op
 }
 
-GameEntityManager* GameEntityManager::getInstance() {
+EntityManager* EntityManager::getInstance() {
     if (sharedInstance == nullptr)
-        sharedInstance = new GameEntityManager();
+        sharedInstance = new EntityManager();
     return sharedInstance;
 }
 
-GameEntity* GameEntityManager::findEntityByName(GameEntity::String name) {
+GameEntity* EntityManager::findEntityByName(GameEntity::String name) {
     if (this->entityMap[name] != nullptr)
         return this->entityMap[name];
 
@@ -31,36 +31,36 @@ GameEntity* GameEntityManager::findEntityByName(GameEntity::String name) {
     return nullptr;
 }
 
-EntityList GameEntityManager::getAllEntities() {
+EntityList EntityManager::getAllEntities() {
     return this->entityList;
 }
 
-int GameEntityManager::activeEntities() {
+int EntityManager::activeEntities() {
     return this->entityList.size();
 }
 
-void GameEntityManager::processInput(Event event) {
+void EntityManager::processInput(Event event) {
     for (int i = 0; i < this->entityList.size(); i++)
         this->entityList[i]->processInput(event);
 }
 
-void GameEntityManager::update(Time deltaTime) {
+void EntityManager::update(Time deltaTime) {
     for (int i = 0; i < this->entityList.size(); i++)
         this->entityList[i]->update(deltaTime);
 }
 
-void GameEntityManager::draw(RenderWindow* window) {
+void EntityManager::draw(RenderWindow* window) {
     for (int i = 0; i < this->entityList.size(); i++)
         this->entityList[i]->draw(window);
 }
 
-void GameEntityManager::addEntity(GameEntity* entity) {
+void EntityManager::addEntity(GameEntity* entity) {
     this->entityMap[entity->getName()] = entity;
     this->entityList.push_back(entity);
     this->entityMap[entity->getName()]->initialize();
 }
 
-void GameEntityManager::deleteEntity(GameEntity* entity) {
+void EntityManager::deleteEntity(GameEntity* entity) {
     this->entityMap.erase(entity->getName());
 
     int index = -1;
@@ -77,7 +77,7 @@ void GameEntityManager::deleteEntity(GameEntity* entity) {
     delete entity;
 }
 
-void GameEntityManager::deleteEntityByName(GameEntity::String name) {
+void EntityManager::deleteEntityByName(GameEntity::String name) {
     auto entity = this->findEntityByName(name);
 
     if (entity == nullptr)

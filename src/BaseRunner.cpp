@@ -1,6 +1,6 @@
 #include <iostream>
 #include "BaseRunner.h"
-#include "GameEntityManager.h"
+#include "EntityManager.h"
 #include "SystemManager.h"
 #include "BGEntity.h"
 #include "TextureManager.h"
@@ -35,7 +35,7 @@ BaseRunner::BaseRunner()
     cout << endl;
 
     auto* textureManager = TextureManager::getInstance();
-    auto* entityManager = GameEntityManager::getInstance();
+    auto* entityManager = EntityManager::getInstance();
     auto* systemManager = SystemManager::getInstance();
 
     // Load base textures
@@ -77,7 +77,7 @@ void BaseRunner::processEvents() {
 
     switch (event.type) {
         default:
-            GameEntityManager::getInstance()->processInput(event);
+            EntityManager::getInstance()->processInput(event);
             return;
 
         case Event::Closed:
@@ -91,11 +91,11 @@ void BaseRunner::update(Time elapsedTime) {
     SystemManager::getInstance()->update(elapsedTime);
 
     // Update game entities (visual entities)
-    GameEntityManager::getInstance()->update(elapsedTime);
+    EntityManager::getInstance()->update(elapsedTime);
 }
 
 void BaseRunner::render() {
     this->window.clear();
-    GameEntityManager::getInstance()->draw(&this->window);
+    EntityManager::getInstance()->draw(&this->window);
     this->window.display();
 }
