@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include "src/core/BaseRunner.h"
+#include "core/BaseRunner.h"
 int main() {
   BaseRunner runner;
   runner.run();
