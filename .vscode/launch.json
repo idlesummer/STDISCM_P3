@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(MSVC) Debug STDISCM_P2",
+            "name": "(MSVC) Debug STDISCM_P3",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P2.exe",
+            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P3.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/out/build/x64-debug/bin",
@@ -14,10 +14,10 @@
             "preLaunchTask": "CMake Build"
         },
         {
-            "name": "(MSVC) Run STDISCM_P2 (No Debug)",
+            "name": "(MSVC) Run STDISCM_P3 (No Debug)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P2.exe",
+            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P3.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/out/build/x64-debug/bin",

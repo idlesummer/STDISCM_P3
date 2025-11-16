@@ -97,7 +97,7 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("STDISCM_P2")
+project ("STDISCM_P3")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -117,21 +117,21 @@ FetchContent_Declare(SFML
  SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable (STDISCM_P2 "${PROJ_SRC}" "STDISCM_P2.cpp" "STDISCM_P2.h")
+add_executable (STDISCM_P3 "${PROJ_SRC}" "STDISCM_P3.cpp" "STDISCM_P3.h")
 
-target_compile_features(STDISCM_P2 PRIVATE cxx_std_20)
+target_compile_features(STDISCM_P3 PRIVATE cxx_std_20)
 
-target_link_libraries(STDISCM_P2 PRIVATE sfml-graphics)
+target_link_libraries(STDISCM_P3 PRIVATE sfml-graphics)
 
 add_custom_command(
- TARGET STDISCM_P2 POST_BUILD
+ TARGET STDISCM_P3 POST_BUILD
  COMMAND ${CMAKE_COMMAND} -E copy_directory
    ${CMAKE_SOURCE_DIR}/Media
    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Media
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
- set_property(TARGET STDISCM_P2 PROPERTY CXX_STANDARD 20)
+ set_property(TARGET STDISCM_P3 PROPERTY CXX_STANDARD 20)
 endif()
 ```
 
@@ -196,10 +196,10 @@ YourProject/
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(MSVC) Debug STDISCM_P2",
+            "name": "(MSVC) Debug STDISCM_P3",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P2.exe",
+            "program": "${workspaceFolder}/out/build/x64-debug/bin/STDISCM_P3.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/out/build/x64-debug/bin",
@@ -259,7 +259,7 @@ First build takes longer (compiles SFML):
 ```
 [build] [1/150] Building CXX object...
 ...
-[build] [150/150] Linking CXX executable bin\STDISCM_P2.exe
+[build] [150/150] Linking CXX executable bin\STDISCM_P3.exe
 [build] Build finished with exit code 0
 ```
 
@@ -270,7 +270,7 @@ Or **Press `F5`** (Run with debugging - auto-builds first!)
 
 Your executable runs from:
 ```
-out/build/x64-debug/bin/STDISCM_P2.exe
+out/build/x64-debug/bin/STDISCM_P3.exe
 ```
 
 ---
@@ -372,7 +372,7 @@ out/build/x64-debug/bin/STDISCM_P2.exe
 - Manually: `Ctrl+Shift+P` → "CMake: Build"
 
 **What it creates:**
-- `out/build/x64-debug/bin/STDISCM_P2.exe` ✅
+- `out/build/x64-debug/bin/STDISCM_P3.exe` ✅
 - Object files (`.obj`)
 - Libraries (`.lib`)
 
@@ -381,7 +381,7 @@ out/build/x64-debug/bin/STDISCM_P2.exe
 **Output example:**
 ```
 [build] [1/150] Building CXX object...
-[build] [150/150] Linking CXX executable bin\STDISCM_P2.exe
+[build] [150/150] Linking CXX executable bin\STDISCM_P3.exe
 ```
 
 ### Analogy
@@ -444,7 +444,7 @@ out/
 └── build/
     └── x64-debug/
         ├── bin/
-        │   ├── STDISCM_P2.exe      ← Your game
+        │   ├── STDISCM_P3.exe      ← Your game
         │   └── Media/              ← Auto-copied assets
         └── thirdparty/
             └── sfml-build/         ← Compiled SFML
