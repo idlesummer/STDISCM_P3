@@ -75,7 +75,7 @@ void TextureManager::loadBatchAsync(int startIndex, int count) {
         if (index >= this->streamingAssetCount)
             break;
 
-        this->threadPool->enqueueTask([this, index]() {
+        this->threadPool->enqueue([this, index]() {
             this->loadSingleStreamAssetSync(index);
         });
     }

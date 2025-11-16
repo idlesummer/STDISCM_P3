@@ -10,7 +10,7 @@ public:
     ThreadPool(size_t numThreads);
     ~ThreadPool();
 
-    void enqueueTask(std::function<void()> task);
+    void enqueue(std::function<void()> task);
     bool isIdle() const;
     int getQueueSize() const;
 

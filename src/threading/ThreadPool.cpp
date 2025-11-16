@@ -24,7 +24,7 @@ ThreadPool::~ThreadPool() {
     cout << "[ThreadPool] All workers stopped" << endl;
 }
 
-void ThreadPool::enqueueTask(function<void()> task) {
+void ThreadPool::enqueue(function<void()> task) {
     this->taskQueue.push(task);  // One line - beautiful!
 }
 
