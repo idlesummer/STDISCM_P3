@@ -43,24 +43,23 @@ void IconSpawnerSystem::update(sf::Time deltaTime) {
 
 void IconSpawnerSystem::requestNextBatch() {
     // Early exit if we've already spawned all icons
-    const int MAX_ICONS = 480;
-    int currentIndex = this->spawnedIcons.size();
+    int MAX_ICONS = 480;
+    int index = this->spawnedIcons.size();
 
-    if (currentIndex >= MAX_ICONS)
+    if (index >= MAX_ICONS)
         return;
 
     // Timer management
     this->timer += BaseRunner::TIME_PER_FRAME.asMilliseconds();
 
-    if (this->timer >= this->streamingLoadDelay) {
-        this->timer = 0.0f;
+    if (this->timer < this->streamingLoadDelay)
+        return;
 
-        cout << "[IconSpawnerSystem] Scheduling batch load starting at index "
-             << currentIndex << endl;
-
-        auto* textureManager = TextureManager::getInstance();
-        textureManager->loadBatchAsync(currentIndex, this->batchSize);
-    }
+    auto* textureManager = TextureManager::getInstance();
+    this->timer = 0.0f;
+    
+    cout << "[IconSpawnerSystem] Scheduling batch load starting at index " << index << endl;
+    textureManager->loadBatchAsync(index, this->batchSize);
 }
 
 void IconSpawnerSystem::processReadyTextures() {
@@ -72,9 +71,8 @@ void IconSpawnerSystem::processReadyTextures() {
         cout << "[IconSpawnerSystem] Spawning icon for texture " << loaded.index << endl;
         this->spawnNextIcon();
 
-        cout << "[IconSpawnerSystem] Icons spawned: " << this->spawnedIcons.size()
-             << "/480 (Ready queue: "
-             << textureManager->getReadyQueueSize() << ")" << endl;
+        cout << "[IconSpawnerSystem] Icons spawned: " << this->spawnedIcons.size();
+        cout << "/480 (Ready queue: " << textureManager->getReadyQueueSize() << ")" << endl;
     }
 }
 
