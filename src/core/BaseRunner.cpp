@@ -5,7 +5,7 @@
 #include "../entities/BGEntity.h"
 #include "../managers/TextureManager.h"
 #include "../systems/IconSpawnerSystem.h"
-#include "../utils/FPSCounter.h"
+#include "../entities/FPSEntity.h"
 
 using namespace std;
 using namespace sf;
@@ -45,8 +45,8 @@ BaseRunner::BaseRunner()
     auto bgEntity = new BGEntity("BGEntity");
     entityManager->addEntity(bgEntity);
 
-    auto fpsCounter = new FPSCounter();
-    entityManager->addEntity(fpsCounter);
+    auto fpsEntity = new FPSEntity();
+    entityManager->addEntity(fpsEntity);
 
     // Create game systems (logic controllers that don't render)
     auto iconSpawner = new IconSpawnerSystem();

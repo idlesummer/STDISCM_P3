@@ -1,10 +1,10 @@
 #pragma once
 #include "../types/GameEntity.h"
 
-class FPSCounter : public GameEntity {
+class FPSEntity : public GameEntity {
 public:
-    FPSCounter();
-    ~FPSCounter();
+    FPSEntity();
+    ~FPSEntity();
     
     void initialize() override;
     void processInput(sf::Event event) override;

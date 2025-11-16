@@ -1,29 +1,29 @@
 #include <iostream>
-#include "FPSCounter.h"
+#include "FPSEntity.h"
 #include "../core/BaseRunner.h"
 
 using namespace std;
 using namespace sf;
 
 
-FPSCounter::FPSCounter()
-    : GameEntity("FPSCounter"),
+FPSEntity::FPSEntity()
+    : GameEntity("FPSEntity"),
       updateTime(),
       statsText(nullptr),
       font(nullptr),
       framesPassed(0) {
 }
 
-FPSCounter::~FPSCounter() {
+FPSEntity::~FPSEntity() {
     delete this->font;
     delete this->statsText;
 }
 
-void FPSCounter::initialize() {
+void FPSEntity::initialize() {
     this->font = new Font();
     
     if (!this->font->loadFromFile("assets/Sansation.ttf")) {
-        cerr << "[FPSCounter] ERROR: Failed to load font!" << endl;
+        cerr << "[FPSEntity] ERROR: Failed to load font!" << endl;
         return;
     }
     
@@ -36,22 +36,22 @@ void FPSCounter::initialize() {
     this->statsText->setCharacterSize(35);
 }
 
-void FPSCounter::processInput(Event event) {
+void FPSEntity::processInput(Event event) {
     // no-op
 }
 
-void FPSCounter::update(Time deltaTime) {
+void FPSEntity::update(Time deltaTime) {
     this->updateFPS(deltaTime);
 }
 
-void FPSCounter::draw(RenderWindow* targetWindow) {
+void FPSEntity::draw(RenderWindow* targetWindow) {
     GameEntity::draw(targetWindow);
 
     if (this->statsText != nullptr)
         targetWindow->draw(*this->statsText);
 }
 
-void FPSCounter::updateFPS(Time elapsedTime) {
+void FPSEntity::updateFPS(Time elapsedTime) {
     this->updateTime += elapsedTime;
     this->framesPassed++;
     
