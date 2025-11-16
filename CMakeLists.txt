@@ -23,7 +23,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include(FetchContent)
 
 # Set directory of third party stuff
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
+# Keep it inside the build tree so cached CMake runs don't retain
+# absolute paths from previously cloned directories (e.g., STDISCM_P2)
+# and break when the repo is moved or renamed.
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
 
 # set directory of assets
 set(RESOURCES_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Media CACHE PATH "Base Directory of resources" FORCE)
