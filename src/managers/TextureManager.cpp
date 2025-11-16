@@ -21,6 +21,7 @@ TextureManager::TextureManager()
       STREAMING_PATH("assets/Streaming/"),
       streamingAssetCount(0),
       streamingAssetsCounted(false),
+      streamingFilePaths(),
       readyQueue(),
       queueMutex(),
       threadPool(nullptr) {
@@ -84,44 +85,43 @@ void TextureManager::loadBatchAsync(int startIndex, int count) {
 }
 
 void TextureManager::loadSingleStreamAssetSync(int index) {
-    auto fileNum = 0;
-    
-    for (const auto& entry : filesystem::directory_iterator(this->STREAMING_PATH)) {
-        if (index != fileNum) {
-            fileNum++;
-            continue;
-        }
-        
-        auto path = entry.path().string();
-        auto pathTokens = StringUtils::split(path, '/');
-        
-        if (pathTokens.empty())
-            pathTokens = StringUtils::split(path, '\\');
-        
-        auto filename = pathTokens[pathTokens.size() - 1];
-        auto nameTokens = StringUtils::split(filename, '.');
-        auto assetName = nameTokens[0];
-        
-        auto texture = new Texture();
-        if (!texture->loadFromFile(path)) {
-            cerr << "[TextureManager] ERROR: Failed to load " << path << endl;
-            delete texture;
-            break;
-        }
-        
-        this->textureMap[assetName].push_back(texture);
-        this->streamTextureList.push_back(texture);
-        
-        auto loaded = LoadedTexture();
-        loaded.texture = texture;
-        loaded.assetName = assetName;
-        loaded.index = index;
-        
-        this->addToReadyQueue(loaded);
-        
-        cout << "[TextureManager] Loaded streaming texture: " << assetName << endl;
-        break;
+    // Bounds check
+    if (index < 0 || index >= static_cast<int>(this->streamingFilePaths.size())) {
+        cerr << "[TextureManager] ERROR: Index " << index << " out of bounds" << endl;
+        return;
     }
+
+    // O(1) access to cached file path
+    auto path = this->streamingFilePaths[index];
+    auto pathTokens = StringUtils::split(path, '/');
+
+    if (pathTokens.empty())
+        pathTokens = StringUtils::split(path, '\\');
+
+    auto filename = pathTokens[pathTokens.size() - 1];
+    auto nameTokens = StringUtils::split(filename, '.');
+    auto assetName = nameTokens[0];
+
+    IETThread::sleep(100);
+
+    auto texture = new Texture();
+    if (!texture->loadFromFile(path)) {
+        cerr << "[TextureManager] ERROR: Failed to load " << path << endl;
+        delete texture;
+        return;
+    }
+
+    this->textureMap[assetName].push_back(texture);
+    this->streamTextureList.push_back(texture);
+
+    auto loaded = LoadedTexture();
+    loaded.texture = texture;
+    loaded.assetName = assetName;
+    loaded.index = index;
+
+    this->addToReadyQueue(loaded);
+
+    cout << "[TextureManager] Loaded streaming texture: " << assetName << endl;
 }
 
 Texture* TextureManager::getFromTextureMap(const String assetName, int frameIndex) {
@@ -157,16 +157,21 @@ int TextureManager::getNumLoadedStreamTextures() const {
 
 void TextureManager::countStreamingAssets() {
     this->streamingAssetCount = 0;
-    
+    this->streamingFilePaths.clear();
+
     if (!filesystem::exists(this->STREAMING_PATH)) {
         cout << "[TextureManager] Streaming path does not exist: " << this->STREAMING_PATH << endl;
         return;
     }
-    
-    for (const auto& entry : filesystem::directory_iterator(this->STREAMING_PATH))
+
+    // Cache file paths for O(1) access by index
+    for (const auto& entry : filesystem::directory_iterator(this->STREAMING_PATH)) {
+        this->streamingFilePaths.push_back(entry.path().string());
         this->streamingAssetCount++;
-    
+    }
+
     cout << "[TextureManager] Number of streaming assets: " << this->streamingAssetCount << endl;
+    cout << "[TextureManager] Cached " << this->streamingFilePaths.size() << " file paths" << endl;
 }
 
 void TextureManager::instantiateAsTexture(String path, String assetName, bool isStreaming) {

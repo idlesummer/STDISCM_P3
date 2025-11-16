@@ -51,6 +51,7 @@ private:
     std::string STREAMING_PATH;
     int streamingAssetCount;
     bool streamingAssetsCounted;
+    std::vector<String> streamingFilePaths;  // Cached file paths for O(1) access
     std::queue<LoadedTexture> readyQueue;
     std::mutex queueMutex;
     ThreadPool* threadPool;
