@@ -1,6 +1,6 @@
 #include <iostream>
-#include "FPSCounter.h"
-#include "BaseRunner.h"
+#include "components/ui/FPSCounter.h"
+#include "app/BaseRunner.h"
 
 using namespace std;
 using namespace sf;

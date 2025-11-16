@@ -1,10 +1,10 @@
 #include <iostream>
-#include "BaseRunner.h"
-#include "GameObjectManager.h"
-#include "BGObject.h"
-#include "TextureManager.h"
-#include "TextureDisplay.h"
-#include "FPSCounter.h"
+#include "app/BaseRunner.h"
+#include "lib/managers/GameObjectManager.h"
+#include "components/world/BGObject.h"
+#include "lib/managers/TextureManager.h"
+#include "components/world/TextureDisplay.h"
+#include "components/ui/FPSCounter.h"
 
 using namespace std;
 using namespace sf;

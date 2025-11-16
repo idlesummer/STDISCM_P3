@@ -1,5 +1,5 @@
 #pragma once
-#include "IETThread.h"
+#include "lib/threading/IETThread.h"
 #include <atomic>
 
 class StreamingThread : public IETThread {

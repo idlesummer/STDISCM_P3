@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameObjectManager.h"
+#include "lib/managers/GameObjectManager.h"
 
 using namespace std;
 using namespace sf;

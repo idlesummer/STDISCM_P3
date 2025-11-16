@@ -2,6 +2,27 @@
 
 ## 🎨 ALL Coding Style Rules Applied!
 
+This version follows ALL your requested style rules and reorganizes the codebase into
+Next.js-inspired feature folders for clarity:
+
+```
+src/
+├── app/                ← Window/bootstrap logic (BaseRunner)
+├── components/
+│   ├── core/           ← Abstract game object contracts
+│   ├── ui/             ← HUD & overlay entities
+│   └── world/          ← World/background entities
+└── lib/
+    ├── managers/       ← GameObjectManager, TextureManager
+    ├── threading/      ← ThreadPool, StreamingThread, IETThread
+    └── utils/          ← Shared helpers like StringUtils
+```
+
+*Treat `app/` like a Next.js `app` directory, `components/` like reusable UI pieces, and
+`lib/` like shared hooks/services. Because the target include path is rooted at `src/`,
+all translation units can reference headers with concise paths such as
+`#include "components/world/TextureDisplay.h"`.*
+
 This version follows ALL your requested style rules:
 
 ### ✅ Style Rules Implemented:

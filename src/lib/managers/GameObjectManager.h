@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-#include "AGameObject.h"
+#include "components/core/AGameObject.h"
 #include <SFML/Graphics.hpp>
 
 using HashTable = std::unordered_map<std::string, AGameObject*>;

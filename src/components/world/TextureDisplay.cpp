@@ -1,9 +1,9 @@
 #include <iostream>
-#include "TextureDisplay.h"
-#include "IconObject.h"
-#include "TextureManager.h"
-#include "GameObjectManager.h"
-#include "BaseRunner.h"
+#include "components/world/TextureDisplay.h"
+#include "components/ui/IconObject.h"
+#include "lib/managers/TextureManager.h"
+#include "lib/managers/GameObjectManager.h"
+#include "app/BaseRunner.h"
 
 using namespace std;
 using namespace sf;

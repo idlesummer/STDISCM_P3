@@ -1,5 +1,5 @@
-#include "IconObject.h"
-#include "TextureManager.h"
+#include "components/ui/IconObject.h"
+#include "lib/managers/TextureManager.h"
 #include <iostream>
 
 using namespace std;

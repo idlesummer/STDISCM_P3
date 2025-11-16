@@ -1,5 +1,5 @@
 #pragma once
-#include "AGameObject.h"
+#include "components/core/AGameObject.h"
 
 class FPSCounter : public AGameObject {
 public:

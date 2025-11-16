@@ -1,7 +1,7 @@
 #include <iostream>
-#include "BGObject.h"
-#include "TextureManager.h"
-#include "BaseRunner.h"
+#include "components/world/BGObject.h"
+#include "lib/managers/TextureManager.h"
+#include "app/BaseRunner.h"
 
 using namespace std;
 using namespace sf;

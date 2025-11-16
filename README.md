@@ -169,14 +169,27 @@ Create or verify these files in your project's `.vscode` folder:
 ```
 YourProject/
 ├── .vscode/
-│   ├── settings.json      ← VSCode behavior preferences
-│   ├── tasks.json         ← Build tasks
-│   └── launch.json        ← Debugging configuration
-├── CMakePresets.json      ← Shared VS/VSCode configuration
-├── CMakeLists.txt         ← Fixed CMake file
-├── src/                   ← Your source files
-└── Media/                 ← Assets folder
+│   ├── settings.json          ← VSCode behavior preferences
+│   ├── tasks.json             ← Build tasks
+│   └── launch.json            ← Debugging configuration
+├── CMakePresets.json          ← Shared VS/VSCode configuration
+├── CMakeLists.txt             ← Fixed CMake file
+├── src/
+│   ├── app/                   ← Runtime shell (BaseRunner, scene bootstrap)
+│   ├── components/
+│   │   ├── core/              ← AGameObject base class & mixins
+│   │   ├── ui/                ← HUD & overlay objects (FPSCounter, IconObject)
+│   │   └── world/             ← World objects (BGObject, TextureDisplay)
+│   └── lib/
+│       ├── managers/          ← GameObjectManager, TextureManager
+│       ├── threading/         ← ThreadPool, StreamingThread, IETThread
+│       └── utils/             ← Shared helpers (StringUtils, etc.)
+└── Media/                     ← Assets folder (textures, fonts, etc.)
 ```
+
+Because `${PROJ_SRC_PATH}` is added to `target_include_directories`, every translation unit can
+now include headers relative to `src/` (e.g., `#include "components/ui/FPSCounter.h"`), mimicking
+the ergonomics of a Next.js app/components/lib split.
 
 ### `.vscode/settings.json`
 ```json

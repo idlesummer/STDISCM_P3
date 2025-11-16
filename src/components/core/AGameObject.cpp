@@ -1,4 +1,4 @@
-#include "AGameObject.h"
+#include "components/core/AGameObject.h"
 
 using namespace std;
 using namespace sf;
