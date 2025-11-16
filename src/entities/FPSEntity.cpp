@@ -1,5 +1,4 @@
 #include <iostream>
-#include <thread>
 #include <chrono>
 #include "FPSEntity.h"
 #include "../core/BaseRunner.h"
@@ -46,9 +45,6 @@ void FPSEntity::processInput(Event event) {
 }
 
 void FPSEntity::update(Time deltaTime) {
-    // Sleep to simulate heavy work and test FPS drop
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
     this->framesPassed++;
 
     // Get current time and calculate actual elapsed time
