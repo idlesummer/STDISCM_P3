@@ -14,23 +14,37 @@ TextureManager* TextureManager::sharedInstance = nullptr;
 
 
 // ===== CLASS IMPLEMENTATION ===== 
-TextureManager::TextureManager() 
+TextureManager::TextureManager()
     : textureMap(),
       baseTextureList(),
       streamTextureList(),
       STREAMING_PATH("assets/Streaming/"),
       streamingAssetCount(0),
+      streamingAssetsCounted(false),
       readyQueue(),
       queueMutex(),
       threadPool(nullptr) {
 
-    cout << "[TextureManager] Initializing with thread pool..." << endl;
-    this->threadPool = new ThreadPool(thread::hardware_concurrency());
-    this->countStreamingAssets();
+    cout << "[TextureManager] Initialized (deferred thread pool and asset counting)" << endl;
 }
 
 TextureManager::~TextureManager() {
     delete this->threadPool;
+}
+
+void TextureManager::ensureThreadPoolCreated() {
+    if (this->threadPool == nullptr) {
+        cout << "[TextureManager] Creating thread pool on first use..." << endl;
+        this->threadPool = new ThreadPool(thread::hardware_concurrency());
+    }
+}
+
+void TextureManager::ensureStreamingAssetsCounted() {
+    if (!this->streamingAssetsCounted) {
+        cout << "[TextureManager] Counting streaming assets on first use..." << endl;
+        this->countStreamingAssets();
+        this->streamingAssetsCounted = true;
+    }
 }
 
 TextureManager* TextureManager::getInstance() {
@@ -49,15 +63,18 @@ void TextureManager::loadSingleStreamAsset(int index) {
 }
 
 void TextureManager::loadBatchAsync(int startIndex, int count) {
-    cout << "[TextureManager] Scheduling batch load: " << count 
+    this->ensureThreadPoolCreated();
+    this->ensureStreamingAssetsCounted();
+
+    cout << "[TextureManager] Scheduling batch load: " << count
          << " textures starting at index " << startIndex << endl;
-    
+
     for (int i = 0; i < count; i++) {
         int index = startIndex + i;
-        
+
         if (index >= this->streamingAssetCount)
             break;
-        
+
         this->threadPool->enqueueTask([this, index]() {
             this->loadSingleStreamAssetSync(index);
         });

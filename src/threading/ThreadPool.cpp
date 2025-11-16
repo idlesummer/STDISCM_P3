@@ -41,35 +41,41 @@ void ThreadPool::enqueueTask(function<void()> task) {
 }
 
 bool ThreadPool::isIdle() const {
+    auto lock = lock_guard<mutex>(this->queueMutex);
     return this->tasks.empty() && this->activeTasks == 0;
 }
 
 int ThreadPool::getQueueSize() const {
+    auto lock = lock_guard<mutex>(this->queueMutex);
     return this->tasks.size();
 }
 
 void ThreadPool::workerThread() {
     cout << "[ThreadPool] Worker " << this_thread::get_id() << " started" << endl;
-    
+
     while (true) {
         auto task = function<void()>();
         {
             auto lock = unique_lock<mutex>(this->queueMutex);
             this->condition.wait(lock, [this] { return this->stop || !this->tasks.empty(); });
-            
+
             if (this->stop && this->tasks.empty())
                 return;
-            
+
             task = move(this->tasks.front());
             this->tasks.pop();
             this->activeTasks++;
         }
-        
+
         cout << "[ThreadPool] Worker " << this_thread::get_id();
         cout << " executing task (Active: " << this->activeTasks << ")" << endl;
         task();
-        
+
         cout << "[ThreadPool] Worker " << this_thread::get_id() << " finished task" << endl;
-        this->activeTasks--;
+
+        {
+            auto lock = lock_guard<mutex>(this->queueMutex);
+            this->activeTasks--;
+        }
     }
 }

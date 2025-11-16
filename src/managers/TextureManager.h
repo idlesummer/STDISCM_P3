@@ -42,18 +42,21 @@ private:
     ~TextureManager();
     TextureManager(TextureManager const&) {}
     TextureManager& operator=(TextureManager const&) { return *this; }
-    
+
     static TextureManager* sharedInstance;
-    
+
     HashTable textureMap;
     TextureList baseTextureList;
     TextureList streamTextureList;
     std::string STREAMING_PATH;
     int streamingAssetCount;
+    bool streamingAssetsCounted;
     std::queue<LoadedTexture> readyQueue;
     std::mutex queueMutex;
     ThreadPool* threadPool;
-    
+
+    void ensureThreadPoolCreated();
+    void ensureStreamingAssetsCounted();
     void countStreamingAssets();
     void instantiateAsTexture(String path, String assetName, bool isStreaming);
     void loadSingleStreamAssetSync(int index);
