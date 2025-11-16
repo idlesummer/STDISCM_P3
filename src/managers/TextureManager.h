@@ -3,6 +3,8 @@
 #include <vector>
 #include <queue>
 #include <mutex>
+#include <condition_variable>
+#include <atomic>
 #include <string>
 #include <SFML/Graphics.hpp>
 
@@ -56,8 +58,14 @@ private:
     std::mutex queueMutex;
     ThreadPool* threadPool;
 
+    // Background initialization synchronization
+    std::atomic<bool> initialized;
+    std::mutex initMutex;
+    std::condition_variable initCV;
+
     void ensureThreadPoolCreated();
     void ensureStreamingAssetsCounted();
+    void waitForInitialization();
     void countStreamingAssets();
     void instantiateAsTexture(const String& path, const String& assetName, bool isStreaming);
     void loadSingleStreamAssetSync(int index);

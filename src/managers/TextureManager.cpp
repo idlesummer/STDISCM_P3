@@ -24,30 +24,54 @@ TextureManager::TextureManager()
       streamingFilePaths(),
       readyQueue(),
       queueMutex(),
-      threadPool(nullptr) {
+      threadPool(nullptr),
+      initialized(false),
+      initMutex(),
+      initCV() {
 
-    cout << "[TextureManager] Initialized (deferred thread pool and asset counting)" << endl;
+    cout << "[TextureManager] Starting background initialization..." << endl;
+
+    // Start background initialization thread to avoid blocking main thread
+    thread([this]() {
+        cout << "[TextureManager] Background: Creating thread pool..." << endl;
+        this->threadPool = new ThreadPool(thread::hardware_concurrency());
+
+        cout << "[TextureManager] Background: Counting streaming assets..." << endl;
+        this->countStreamingAssets();
+        this->streamingAssetsCounted = true;
+
+        // Signal that initialization is complete
+        {
+            auto lock = lock_guard<mutex>(this->initMutex);
+            this->initialized = true;
+        }
+        this->initCV.notify_all();
+        cout << "[TextureManager] Background initialization complete!" << endl;
+    }).detach();
 }
 
 TextureManager::~TextureManager() {
     delete this->threadPool;
 }
 
-void TextureManager::ensureThreadPoolCreated() {
-    if (this->threadPool != nullptr)
+void TextureManager::waitForInitialization() {
+    // Fast path: lock-free check if already initialized
+    if (this->initialized.load())
         return;
 
-    cout << "[TextureManager] Creating thread pool on first use..." << endl;
-    this->threadPool = new ThreadPool(thread::hardware_concurrency());
+    // Slow path: wait for initialization to complete
+    auto lock = unique_lock<mutex>(this->initMutex);
+    this->initCV.wait(lock, [this] { return this->initialized.load(); });
+}
+
+void TextureManager::ensureThreadPoolCreated() {
+    // Legacy method - now handled by background initialization
+    this->waitForInitialization();
 }
 
 void TextureManager::ensureStreamingAssetsCounted() {
-    if (this->streamingAssetsCounted) 
-        return;
-
-    cout << "[TextureManager] Counting streaming assets on first use..." << endl;
-    this->countStreamingAssets();
-    this->streamingAssetsCounted = true;
+    // Legacy method - now handled by background initialization
+    this->waitForInitialization();
 }
 
 TextureManager* TextureManager::getInstance() {
