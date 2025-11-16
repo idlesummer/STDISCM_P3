@@ -119,8 +119,6 @@ void TextureManager::loadSingleStreamAssetSync(int index) {
     auto path = filesystem::path(pathStr);
     auto assetName = path.stem().string();  // Get filename without extension
 
-    IETThread::sleep(100);
-
     auto texture = new Texture();
     if (!texture->loadFromFile(pathStr)) {
         cerr << "[TextureManager] ERROR: Failed to load " << pathStr << endl;
