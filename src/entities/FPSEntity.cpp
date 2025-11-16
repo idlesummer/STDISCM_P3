@@ -68,8 +68,8 @@ void FPSEntity::updateFPS() {
         return;
 
     // Calculate actual FPS based on real elapsed time
-    float actualElapsedSeconds = elapsed.count() / 1000.0f;
-    float fps = this->framesPassed / actualElapsedSeconds;
+    auto actualElapsedSeconds = elapsed.count() / 1000.0f;
+    auto fps = this->framesPassed / actualElapsedSeconds;
 
     this->statsText->setString("FPS: " + to_string((int)fps) + "\n");
 
