@@ -18,7 +18,7 @@ TextureManager::TextureManager()
     : textureMap(),
       baseTextureList(),
       streamTextureList(),
-      STREAMING_PATH("Media/Streaming/"),
+      STREAMING_PATH("assets/Streaming/"),
       streamingAssetCount(0),
       readyQueue(),
       queueMutex(),

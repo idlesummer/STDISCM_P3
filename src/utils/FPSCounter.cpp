@@ -22,7 +22,7 @@ FPSCounter::~FPSCounter() {
 void FPSCounter::initialize() {
     this->font = new Font();
     
-    if (!this->font->loadFromFile("Media/Sansation.ttf")) {
+    if (!this->font->loadFromFile("assets/Sansation.ttf")) {
         cerr << "[FPSCounter] ERROR: Failed to load font!" << endl;
         return;
     }

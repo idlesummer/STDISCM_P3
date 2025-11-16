@@ -29,7 +29,7 @@ include(FetchContent)
 set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
 
 # set directory of assets
-set(RESOURCES_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Media CACHE PATH "Base Directory of resources" FORCE)
+set(RESOURCES_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets CACHE PATH "Base Directory of resources" FORCE)
 
 # set the source path for the project
 set(PROJ_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src CACHE PATH "Project SRC" FORCE)
@@ -45,7 +45,7 @@ FetchContent_Declare(SFML
   SYSTEM)
 FetchContent_MakeAvailable(SFML)  # FIXED TYPO HERE
 
-add_executable (STDISCM_P3 "${PROJ_SRC}" "STDISCM_P3.cpp" "STDISCM_P3.h")
+add_executable (STDISCM_P3 "${PROJ_SRC}")
 
 # Change Target C++ compile to ver 20
 target_compile_features(STDISCM_P3 PRIVATE cxx_std_20)
@@ -56,8 +56,8 @@ target_link_libraries(STDISCM_P3 PRIVATE sfml-graphics)
 add_custom_command(
   TARGET STDISCM_P3 POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/Media
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Media
+    ${CMAKE_SOURCE_DIR}/assets
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

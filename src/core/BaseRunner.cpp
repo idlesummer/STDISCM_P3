@@ -39,7 +39,7 @@ BaseRunner::BaseRunner()
     auto* systemManager = SystemManager::getInstance();
 
     // Load base textures
-    textureManager->loadTexture("Desert", "Media/Textures/Desert.png");
+    textureManager->loadTexture("Desert", "assets/Textures/Desert.png");
 
     // Create visual game entities (things that render)
     auto bgEntity = new BGEntity("BGEntity");
