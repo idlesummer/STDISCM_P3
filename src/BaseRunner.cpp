@@ -1,9 +1,10 @@
 #include <iostream>
 #include "BaseRunner.h"
 #include "GameObjectManager.h"
+#include "SystemManager.h"
 #include "BGObject.h"
 #include "TextureManager.h"
-#include "TextureDisplay.h"
+#include "IconSpawnerSystem.h"
 #include "FPSCounter.h"
 
 using namespace std;
@@ -35,19 +36,24 @@ BaseRunner::BaseRunner()
 
     auto* textureManager = TextureManager::getInstance();
     auto* gameObjectManager = GameObjectManager::getInstance();
-    
+    auto* systemManager = SystemManager::getInstance();
+
     // Load base textures
     textureManager->loadTexture("Desert", "Media/Textures/Desert.png");
-    
-    // Create game objects
+
+    // Create visual game objects (things that render)
     auto bgObject = new BGObject("BGObject");
     gameObjectManager->addObject(bgObject);
-    
-    auto display = new TextureDisplay();
-    gameObjectManager->addObject(display);
-    
+
     auto fpsCounter = new FPSCounter();
     gameObjectManager->addObject(fpsCounter);
+
+    // Create game systems (logic controllers that don't render)
+    auto iconSpawner = new IconSpawnerSystem();
+    systemManager->addSystem(iconSpawner);
+
+    // Initialize all systems
+    systemManager->initializeAll();
 }
 
 void BaseRunner::run() {
@@ -81,6 +87,10 @@ void BaseRunner::processEvents() {
 }
 
 void BaseRunner::update(Time elapsedTime) {
+    // Update game systems (controllers/logic)
+    SystemManager::getInstance()->update(elapsedTime);
+
+    // Update game objects (visual entities)
     GameObjectManager::getInstance()->update(elapsedTime);
 }
 
