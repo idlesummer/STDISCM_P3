@@ -84,21 +84,24 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 When `FETCHCONTENT_BASE_DIR` points inside the source tree (e.g., `STDISCM_P2/thirdparty`),
 FetchContent stores a `CMakeCache.txt` whose absolute paths include the original checkout
 location. Copying the entire repo to a new folder (`STDISCM_P3`) reuses that cache and CMake
-emits the error you saw:
+emits the error you saw. **Do not copy the `thirdparty/` folder between clones**—its cache is
+only valid for the build directory that generated it. If you already copied it, delete the
+folder so CMake can regenerate a clean cache:
 
 ```
 CMake Error: The current CMakeCache.txt directory ... is different than the directory ...
 ```
 
 Set the cache directory under the *build* tree instead so every out-of-source build gets its
-own isolated third-party cache:
+own isolated third-party cache. Because the cache now lives under `build/`, you can freely copy
+or rename the repository without dragging along stale third-party artifacts:
 
 ```cmake
 set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
 ```
 
-If you already ran CMake with the old setting, delete the stale `thirdparty/` folder (or the
-entire build directory) before reconfiguring.
+If you already ran CMake with the old setting (or copied a `thirdparty/` folder from another
+checkout), delete that folder—or the entire build directory—before reconfiguring.
 
 ### Complete Fixed CMakeLists.txt
 ```cmake
