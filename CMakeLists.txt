@@ -1,5 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.10)
 
+# Suppress deprecation warnings from third-party libraries
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+
 # For better VSCode IntelliSense (ignored by Visual Studio)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
