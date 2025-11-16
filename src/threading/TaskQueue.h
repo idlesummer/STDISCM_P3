@@ -30,7 +30,7 @@ public:
      */
     void push(T item) {
         {
-            std::lock_guard<std::mutex> lock(mutex_);
+            auto lock = std::lock_guard<std::mutex>(mutex_);
             queue_.push(std::move(item));
         }
         cv_.notify_one();
@@ -41,7 +41,7 @@ public:
      * Returns std::nullopt if queue is shutdown and empty
      */
     std::optional<T> pop() {
-        std::unique_lock<std::mutex> lock(mutex_);
+        auto lock = std::unique_lock<std::mutex>(mutex_);
 
         // Wait until queue has items or shutdown is signaled
         cv_.wait(lock, [this] {
@@ -53,7 +53,7 @@ public:
             return std::nullopt;
         }
 
-        T item = std::move(queue_.front());
+        auto item = std::move(queue_.front());
         queue_.pop();
         return item;
     }
@@ -63,13 +63,13 @@ public:
      * Returns std::nullopt if queue is empty
      */
     std::optional<T> tryPop() {
-        std::lock_guard<std::mutex> lock(mutex_);
+        auto lock = std::lock_guard<std::mutex>(mutex_);
 
         if (queue_.empty()) {
             return std::nullopt;
         }
 
-        T item = std::move(queue_.front());
+        auto item = std::move(queue_.front());
         queue_.pop();
         return item;
     }
@@ -78,7 +78,7 @@ public:
      * Check if queue is empty (thread-safe)
      */
     bool empty() const {
-        std::lock_guard<std::mutex> lock(mutex_);
+        auto lock = std::lock_guard<std::mutex>(mutex_);
         return queue_.empty();
     }
 
@@ -86,7 +86,7 @@ public:
      * Get queue size (thread-safe)
      */
     int size() const {
-        std::lock_guard<std::mutex> lock(mutex_);
+        auto lock = std::lock_guard<std::mutex>(mutex_);
         return static_cast<int>(queue_.size());
     }
 
@@ -96,7 +96,7 @@ public:
      */
     void shutdown() {
         {
-            std::lock_guard<std::mutex> lock(mutex_);
+            auto lock = std::lock_guard<std::mutex>(mutex_);
             shutdown_ = true;
         }
         cv_.notify_all();
@@ -106,7 +106,7 @@ public:
      * Check if shutdown has been signaled
      */
     bool isShutdown() const {
-        std::lock_guard<std::mutex> lock(mutex_);
+        auto lock = std::lock_guard<std::mutex>(mutex_);
         return shutdown_;
     }
 

@@ -19,5 +19,5 @@ private:
     TaskQueue<std::function<void()>> taskQueue;  // Clean abstraction!
     std::atomic<int> activeTasks;
 
-    void workerThread();
+    void workerLoop();
 };
