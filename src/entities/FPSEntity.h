@@ -20,6 +20,4 @@ private:
     // Use real-time clock for actual FPS measurement
     std::chrono::steady_clock::time_point lastUpdateTime;
     std::chrono::steady_clock::time_point startTime;
-
-    void updateFPS();
 };

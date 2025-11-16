@@ -26,12 +26,12 @@ FPSEntity::~FPSEntity() {
 
 void FPSEntity::initialize() {
     this->font = new Font();
-    
+
     if (!this->font->loadFromFile("assets/Sansation.ttf")) {
         cerr << "[FPSEntity] ERROR: Failed to load font!" << endl;
         return;
     }
-    
+
     this->statsText = new Text();
     this->statsText->setFont(*this->font);
     this->statsText->setPosition(BaseRunner::WINDOW_WIDTH - 150, BaseRunner::WINDOW_HEIGHT - 70);
@@ -46,17 +46,9 @@ void FPSEntity::processInput(Event event) {
 }
 
 void FPSEntity::update(Time deltaTime) {
-    this->updateFPS();
-}
+    // Sleep to simulate heavy work and test FPS drop
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-void FPSEntity::draw(RenderWindow* targetWindow) {
-    GameEntity::draw(targetWindow);
-
-    if (this->statsText != nullptr)
-        targetWindow->draw(*this->statsText);
-}
-
-void FPSEntity::updateFPS() {
     this->framesPassed++;
 
     // Get current time and calculate actual elapsed time
@@ -64,7 +56,7 @@ void FPSEntity::updateFPS() {
     auto elapsed = chrono::duration_cast<chrono::milliseconds>(currentTime - lastUpdateTime);
 
     // Update every 125ms (same as before, but using real time)
-    if (elapsed.count() < 125) 
+    if (elapsed.count() < 125)
         return;
 
     // Calculate actual FPS based on real elapsed time
@@ -76,4 +68,11 @@ void FPSEntity::updateFPS() {
     // Reset counters
     this->lastUpdateTime = currentTime;
     this->framesPassed = 0;
+}
+
+void FPSEntity::draw(RenderWindow* targetWindow) {
+    GameEntity::draw(targetWindow);
+
+    if (this->statsText != nullptr)
+        targetWindow->draw(*this->statsText);
 }
