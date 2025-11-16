@@ -44,6 +44,9 @@ FetchContent_MakeAvailable(SFML)  # FIXED TYPO HERE
 
 add_executable (STDISCM_P2 "${PROJ_SRC}" "STDISCM_P2.cpp" "STDISCM_P2.h")
 
+# Allow headers to be included relative to the src/ directory hierarchy
+target_include_directories(STDISCM_P2 PRIVATE ${PROJ_SRC_PATH})
+
 # Change Target C++ compile to ver 20
 target_compile_features(STDISCM_P2 PRIVATE cxx_std_20)
 
