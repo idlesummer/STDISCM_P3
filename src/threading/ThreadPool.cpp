@@ -15,7 +15,7 @@ ThreadPool::ThreadPool(size_t numThreads)
 }
 
 ThreadPool::~ThreadPool() {
-    this->taskQueue.shutdown();  // Signal shutdown - clean!
+    this->taskQueue.shutdown();  // Signal shutdown
 
     for (auto& worker : this->workers) {
         if (worker.joinable())
