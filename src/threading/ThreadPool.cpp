@@ -11,7 +11,7 @@ ThreadPool::ThreadPool(size_t nthreads)
 
     cout << "[ThreadPool] Creating pool with " << nthreads << " workers" << endl;
     for (size_t i = 0; i < nthreads; i++)
-        this->workers.emplace_back([this] { this->workerThread(); });
+        this->workers.emplace_back([this] { this->workerLoop(); });
 }
 
 ThreadPool::~ThreadPool() {
@@ -36,17 +36,11 @@ int ThreadPool::getQueueSize() const {
     return this->taskQueue.size();
 }
 
-void ThreadPool::workerThread() {
+void ThreadPool::workerLoop() {
     cout << "[ThreadPool] Worker " << this_thread::get_id() << " started" << endl;
 
-    while (true) {
-        // Blocking pop - waits for task or shutdown
-        auto taskOpt = this->taskQueue.pop();
-
-        // If nullopt, queue is shutdown and empty
-        if (!taskOpt.has_value())
-            return;
-
+    // Loop while tasks are available; pop() returns nullopt on shutdown
+    while (auto taskOpt = this->taskQueue.pop()) {
         auto task = taskOpt.value();
         this->activeTasks++;
 
@@ -57,4 +51,6 @@ void ThreadPool::workerThread() {
         cout << "[ThreadPool] Worker " << this_thread::get_id() << " finished task" << endl;
         this->activeTasks--;
     }
+
+    cout << "[ThreadPool] Worker " << this_thread::get_id() << " shutting down" << endl;
 }
