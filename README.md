@@ -79,6 +79,27 @@ cmake_minimum_required (VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ```
 
+### Fix 4: Keep FetchContent Caches Inside the Build Tree
+
+When `FETCHCONTENT_BASE_DIR` points inside the source tree (e.g., `STDISCM_P2/thirdparty`),
+FetchContent stores a `CMakeCache.txt` whose absolute paths include the original checkout
+location. Copying the entire repo to a new folder (`STDISCM_P3`) reuses that cache and CMake
+emits the error you saw:
+
+```
+CMake Error: The current CMakeCache.txt directory ... is different than the directory ...
+```
+
+Set the cache directory under the *build* tree instead so every out-of-source build gets its
+own isolated third-party cache:
+
+```cmake
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
+```
+
+If you already ran CMake with the old setting, delete the stale `thirdparty/` folder (or the
+entire build directory) before reconfiguring.
+
 ### Complete Fixed CMakeLists.txt
 ```cmake
 cmake_minimum_required (VERSION 3.10)
@@ -103,7 +124,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include(FetchContent)
 
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/thirdparty CACHE PATH "Base Directory of Libs" FORCE)
 set(RESOURCES_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Media CACHE PATH "Base Directory of resources" FORCE)
 set(PROJ_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src CACHE PATH "Project SRC" FORCE)
 
