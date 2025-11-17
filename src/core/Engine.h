@@ -3,8 +3,6 @@
 #include "component/Component.h"
 #include "renderer/Reconciler.h"
 #include "store/Store.h"
-#include "hooks/StateHook.h"
-#include "hooks/EffectHook.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -48,19 +46,16 @@ public:
             if (this->rootComponent)
                 this->rootComponent->onUpdate(deltaTime);
 
-            // 3. Run effects
-            EffectManager::getInstance().runEffects();
-
-            // 4. Render phase: generate virtual DOM
+            // 3. Render phase: generate virtual DOM
             if (!this->rootComponent)
                 continue;
 
             auto renderTree = this->rootComponent->render();
 
-            // 5. Reconciliation phase: diff and update SFML objects
+            // 4. Reconciliation phase: diff and update SFML objects
             this->reconciler.reconcile(renderTree);
 
-            // 6. Commit phase: render to screen
+            // 5. Commit phase: render to screen
             this->reconciler.render();
         }
     }

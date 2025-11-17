@@ -42,11 +42,21 @@ inline GameState gameReducer(const GameState& state, const Action& action) {
     return newState;
 }
 
-// Simple component - just a green circle
+// Simple component - class-based React style (no hooks!)
 class CircleComponent : public Component {
 public:
     CircleComponent(Store<GameState>* store)
         : Component("Circle"), store(store) {}
+
+    // Lifecycle method - called once when component mounts
+    void componentDidMount() override {
+        std::cout << "Circle component mounted!" << std::endl;
+    }
+
+    // Lifecycle method - called when component unmounts
+    void componentWillUnmount() override {
+        std::cout << "Circle component unmounting..." << std::endl;
+    }
 
     std::shared_ptr<RenderNode> render() override {
         auto state = this->store->getState();
@@ -97,7 +107,7 @@ void handleEvents(sf::Event& event, Store<GameState>& store) {
 
 // Main entry point
 int main() {
-    std::cout << "=== Reactive SFML - Minimal Demo ===" << std::endl;
+    std::cout << "=== Reactive SFML - Class-Based React ===" << std::endl;
     std::cout << "Controls: WASD or Arrow Keys to move" << std::endl;
     std::cout << std::endl;
 
