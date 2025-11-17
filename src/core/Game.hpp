@@ -38,13 +38,13 @@ public:
 
     // Main game loop
     void run() {
-        Clock clock;
+        auto clock = Clock();
 
         while (window.isOpen()) {
             auto dt = clock.restart();
 
             // 1. Process events and dispatch to current scene
-            Event event;
+            auto event = Event();
             while (window.pollEvent(event)) {
                 // Handle window close event
                 if (event.type == Event::Closed)
