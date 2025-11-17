@@ -1,89 +1,15 @@
 #pragma once
 
-#include "../core/Scene.h"
-#include "../core/Game.h"
-#include "../entities/Player.h"
+#include "../core/Scene.hpp"
+#include "../core/Game.hpp"
+#include "../entities/Player.hpp"
+#include "../entities/Enemy.hpp"
+#include "../entities/ScoreText.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 // Forward declaration
 class GameOverScene;
-
-
-// Enemy entity that moves toward player
-class Enemy : public Entity {
-public:
-    Enemy(sf::Vector2f initialPosition)
-        : Entity("Enemy"), position(initialPosition), speed(3.0f) {}
-
-    void onCreate() override {
-        std::cout << "Enemy spawned!" << std::endl;
-
-        sprite.setRadius(25.0f);
-        sprite.setFillColor(sf::Color::Red);
-        sprite.setOrigin(25.0f, 25.0f);
-        sprite.setPosition(position);
-    }
-
-    void onUpdate(sf::Time dt) override {
-        // Simple AI: move in a circular pattern
-        elapsedTime += dt.asSeconds();
-        position.x = 400 + 200 * std::cos(elapsedTime * speed * 0.1f);
-        position.y = 300 + 200 * std::sin(elapsedTime * speed * 0.1f);
-
-        sprite.setPosition(position);
-    }
-
-    void onDraw(sf::RenderWindow& window) override {
-        window.draw(sprite);
-    }
-
-    sf::Vector2f getPosition() const { return position; }
-
-private:
-    sf::Vector2f position;
-    float speed;
-    float elapsedTime = 0.0f;
-    sf::CircleShape sprite;
-};
-
-
-// Score display
-class ScoreText : public Entity {
-public:
-    ScoreText() : Entity("ScoreText"), score(0) {}
-
-    void onCreate() override {
-        if (!font.loadFromFile("assets/sansation.ttf"))
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-
-        text.setFont(font);
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(10, 10);
-        updateText();
-    }
-
-    void onUpdate(sf::Time dt) override {
-        score += dt.asSeconds() * 10;  // Score increases over time
-        updateText();
-    }
-
-    void onDraw(sf::RenderWindow& window) override {
-        window.draw(text);
-    }
-
-    int getScore() const { return static_cast<int>(score); }
-
-private:
-    void updateText() {
-        text.setString("Score: " + std::to_string(static_cast<int>(score)));
-    }
-
-    sf::Font font;
-    sf::Text text;
-    float score;
-};
 
 
 // Gameplay Scene

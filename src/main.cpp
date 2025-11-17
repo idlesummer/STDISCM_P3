@@ -2,10 +2,10 @@
 #include <SFML/Graphics.hpp>
 
 // New scene-based architecture!
-#include "core/Game.h"
-#include "scenes/MainMenuScene.h"
-#include "scenes/GamePlayScene.h"
-#include "scenes/GameOverScene.h"
+#include "core/Game.hpp"
+#include "scenes/MainMenuScene.hpp"
+#include "scenes/GamePlayScene.hpp"
+#include "scenes/GameOverScene.hpp"
 
 using namespace std;
 

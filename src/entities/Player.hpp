@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/Entity.h"
+#include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 

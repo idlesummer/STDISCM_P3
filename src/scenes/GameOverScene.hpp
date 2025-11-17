@@ -1,52 +1,13 @@
 #pragma once
 
-#include "../core/Scene.h"
-#include "../core/Game.h"
+#include "../core/Scene.hpp"
+#include "../core/Game.hpp"
+#include "../entities/GameOverText.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 // Forward declaration
 class MainMenuScene;
-
-
-// Game Over text display
-class GameOverText : public Entity {
-public:
-    GameOverText(const std::string& content, sf::Vector2f position, int size, sf::Color color)
-        : Entity("GameOverText") {
-        this->content = content;
-        this->position = position;
-        this->size = size;
-        this->color = color;
-    }
-
-    void onCreate() override {
-        if (!font.loadFromFile("assets/sansation.ttf"))
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-
-        text.setFont(font);
-        text.setString(content);
-        text.setCharacterSize(size);
-        text.setFillColor(color);
-        text.setPosition(position);
-
-        // Center the text
-        auto bounds = text.getLocalBounds();
-        text.setOrigin(bounds.width / 2, bounds.height / 2);
-    }
-
-    void onDraw(sf::RenderWindow& window) override {
-        window.draw(text);
-    }
-
-private:
-    sf::Font font;
-    sf::Text text;
-    std::string content;
-    sf::Vector2f position;
-    int size;
-    sf::Color color;
-};
 
 
 // Game Over Scene - receives score as parameter (like route params!)
@@ -133,8 +94,8 @@ private:
 
 
 // Now we can implement the forward-declared functions
-#include "MainMenuScene.h"
-#include "GamePlayScene.h"
+#include "MainMenuScene.hpp"
+#include "GamePlayScene.hpp"
 
 // MainMenuScene navigation
 std::shared_ptr<Scene> MainMenuScene::createGamePlayScene() {
