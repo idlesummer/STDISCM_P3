@@ -21,9 +21,7 @@ public:
         : valuePtr(valuePtr), setter(setter) {}
 
     T get() const {
-        if (!this->valuePtr)
-            return T();
-        return *this->valuePtr;
+        return !this->valuePtr ? T() : *this->valuePtr;
     }
 
     void set(T newValue) {
@@ -48,7 +46,7 @@ private:
 class StateManager {
 public:
     static StateManager& getInstance() {
-        static StateManager instance;
+        static auto instance = StateManager();
         return instance;
     }
 
