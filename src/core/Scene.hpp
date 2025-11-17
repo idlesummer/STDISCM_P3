@@ -6,6 +6,9 @@
 #include <memory>
 #include <algorithm>
 
+using namespace sf;
+using namespace std;
+
 
 // Forward declaration to avoid circular dependency
 class Game;
@@ -13,27 +16,27 @@ class Game;
 // Base Scene class - like React Router pages/routes
 class Scene {
 public:
-    Scene(const std::string& name = "Scene")
+    Scene(const string& name = "Scene")
         : sceneName(name), game(nullptr) {}
 
     virtual ~Scene() = default;
 
     // Lifecycle hooks (React-style! - all use on* prefix for consistency)
-    virtual void onCreate() {}                      // Like componentDidMount (scene enters)
-    virtual void onInput() {}                       // Handle input (like event handlers)
-    virtual void onUpdate(sf::Time dt) {}           // Every frame while scene is active
-    virtual void onDraw(sf::RenderWindow& window) {} // Render the scene
-    virtual void onDestroy() {}                     // Like componentWillUnmount (scene exits)
+    virtual void onCreate() {}                  // Like componentDidMount (scene enters)
+    virtual void onInput() {}                   // Handle input (like event handlers)
+    virtual void onUpdate(Time dt) {}           // Every frame while scene is active
+    virtual void onDraw(RenderWindow& window) {} // Render the scene
+    virtual void onDestroy() {}                 // Like componentWillUnmount (scene exits)
 
     // Entity management within this scene
-    void addEntity(std::shared_ptr<Entity> entity) {
+    void addEntity(shared_ptr<Entity> entity) {
         entity->onCreate();
         entities.push_back(entity);
     }
 
-    void removeEntity(std::shared_ptr<Entity> entity) {
+    void removeEntity(shared_ptr<Entity> entity) {
         entity->onDestroy();
-        auto it = std::find(entities.begin(), entities.end(), entity);
+        auto it = find(entities.begin(), entities.end(), entity);
         if (it != entities.end())
             entities.erase(it);
     }
@@ -49,7 +52,7 @@ public:
     void setGame(Game* gameInstance) { game = gameInstance; }
     Game* getGame() const { return game; }
 
-    std::string getName() const { return sceneName; }
+    string getName() const { return sceneName; }
 
 protected:
     // Helper methods for derived scenes
@@ -59,19 +62,19 @@ protected:
                 entity->onInput();
     }
 
-    void updateEntities(sf::Time dt) {
+    void updateEntities(Time dt) {
         for (auto& entity : entities)
             if (entity->isActive())
                 entity->onUpdate(dt);
     }
 
-    void drawEntities(sf::RenderWindow& window) {
+    void drawEntities(RenderWindow& window) {
         for (auto& entity : entities)
             if (entity->isActive())
                 entity->onDraw(window);
     }
 
-    std::string sceneName;
-    std::vector<std::shared_ptr<Entity>> entities;
+    string sceneName;
+    vector<shared_ptr<Entity>> entities;
     Game* game;  // Reference to game for scene transitions
 };

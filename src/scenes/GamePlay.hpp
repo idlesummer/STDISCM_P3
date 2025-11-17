@@ -8,6 +8,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+using namespace sf;
+using namespace std;
+
 // Forward declaration
 class GameOver;
 
@@ -18,22 +21,22 @@ public:
     GamePlay() : Scene("GamePlay") {}
 
     void onCreate() override {
-        std::cout << "=== Game Started ===" << std::endl;
+        cout << "=== Game Started ===" << endl;
 
         // Create player
-        player = std::make_shared<Player>(sf::Vector2f(400, 300));
+        player = make_shared<Player>(Vector2f(400, 300));
         addEntity(player);
 
         // Create enemies
-        auto enemy1 = std::make_shared<Enemy>(sf::Vector2f(200, 200));
-        auto enemy2 = std::make_shared<Enemy>(sf::Vector2f(600, 400));
+        auto enemy1 = make_shared<Enemy>(Vector2f(200, 200));
+        auto enemy2 = make_shared<Enemy>(Vector2f(600, 400));
         enemies.push_back(enemy1);
         enemies.push_back(enemy2);
         addEntity(enemy1);
         addEntity(enemy2);
 
         // Create score display
-        scoreDisplay = std::make_shared<ScoreText>();
+        scoreDisplay = make_shared<ScoreText>();
         addEntity(scoreDisplay);
 
         // Instructions
@@ -42,7 +45,7 @@ public:
             instructionText.setFont(instructionFont);
             instructionText.setString("WASD to move | ESC to return to menu | Survive!");
             instructionText.setCharacterSize(18);
-            instructionText.setFillColor(sf::Color(200, 200, 200));
+            instructionText.setFillColor(Color(200, 200, 200));
             instructionText.setPosition(10, 570);
         }
     }
@@ -52,14 +55,14 @@ public:
         inputEntities();
 
         // Check for ESC to return to menu
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-            std::cout << "Returning to main menu..." << std::endl;
+        if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+            cout << "Returning to main menu..." << endl;
             game->changeScene(createMainMenu());
             return;
         }
     }
 
-    void onUpdate(sf::Time dt) override {
+    void onUpdate(Time dt) override {
         // Update all entities
         updateEntities(dt);
 
@@ -70,7 +73,7 @@ public:
             // Get positions (simplified - would need proper collision in real game)
             // For now, just check time - game over after 30 seconds
             if (elapsedTime > 30.0f) {
-                std::cout << "Game Over!" << std::endl;
+                cout << "Game Over!" << endl;
                 game->changeScene(createGameOver(scoreDisplay->getScore()));
                 return;
             }
@@ -79,7 +82,7 @@ public:
         elapsedTime += dt.asSeconds();
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         // Draw all game entities
         drawEntities(window);
 
@@ -88,18 +91,18 @@ public:
     }
 
     void onDestroy() override {
-        std::cout << "=== Leaving Gameplay ===" << std::endl;
+        cout << "=== Leaving Gameplay ===" << endl;
     }
 
 private:
-    std::shared_ptr<Player> player;
-    std::vector<std::shared_ptr<Enemy>> enemies;
-    std::shared_ptr<ScoreText> scoreDisplay;
+    shared_ptr<Player> player;
+    vector<shared_ptr<Enemy>> enemies;
+    shared_ptr<ScoreText> scoreDisplay;
     float elapsedTime = 0.0f;
 
-    sf::Font instructionFont;
-    sf::Text instructionText;
+    Font instructionFont;
+    Text instructionText;
 
-    std::shared_ptr<Scene> createMainMenu();   // Forward declaration
-    std::shared_ptr<Scene> createGameOver(int finalScore);  // Forward declaration
+    shared_ptr<Scene> createMainMenu();   // Forward declaration
+    shared_ptr<Scene> createGameOver(int finalScore);  // Forward declaration
 };

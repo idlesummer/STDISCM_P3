@@ -6,6 +6,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+using namespace sf;
+using namespace std;
+
 // Forward declaration
 class MainMenu;
 
@@ -17,28 +20,28 @@ public:
         : Scene("GameOver"), finalScore(finalScore) {}
 
     void onCreate() override {
-        std::cout << "=== Game Over! Final Score: " << finalScore << " ===" << std::endl;
+        cout << "=== Game Over! Final Score: " << finalScore << " ===" << endl;
 
         // Game Over title
-        auto title = std::make_shared<GameOverText>(
+        auto title = make_shared<GameOverText>(
             "GAME OVER",
-            sf::Vector2f(400, 150),
+            Vector2f(400, 150),
             72,
-            sf::Color::Red
+            Color::Red
         );
         addEntity(title);
 
         // Score display
-        auto scoreText = std::make_shared<GameOverText>(
-            "Final Score: " + std::to_string(finalScore),
-            sf::Vector2f(400, 280),
+        auto scoreText = make_shared<GameOverText>(
+            "Final Score: " + to_string(finalScore),
+            Vector2f(400, 280),
             36,
-            sf::Color::Yellow
+            Color::Yellow
         );
         addEntity(scoreText);
 
         // Performance message
-        std::string message;
+        string message;
         if (finalScore > 250)
             message = "Amazing!";
         else if (finalScore > 200)
@@ -48,48 +51,48 @@ public:
         else
             message = "Keep Practicing!";
 
-        auto messageText = std::make_shared<GameOverText>(
+        auto messageText = make_shared<GameOverText>(
             message,
-            sf::Vector2f(400, 350),
+            Vector2f(400, 350),
             28,
-            sf::Color::White
+            Color::White
         );
         addEntity(messageText);
 
         // Instructions
-        auto instruction = std::make_shared<GameOverText>(
+        auto instruction = make_shared<GameOverText>(
             "Press ENTER to return to Main Menu",
-            sf::Vector2f(400, 450),
+            Vector2f(400, 450),
             24,
-            sf::Color(200, 200, 200)
+            Color(200, 200, 200)
         );
         addEntity(instruction);
     }
 
     void onInput() override {
         // Check for Enter to return to menu
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-            std::cout << "Returning to main menu..." << std::endl;
+        if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+            cout << "Returning to main menu..." << endl;
             game->changeScene(createMainMenu());
         }
     }
 
-    void onUpdate(sf::Time dt) override {
+    void onUpdate(Time dt) override {
         updateEntities(dt);
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         drawEntities(window);
     }
 
     void onDestroy() override {
-        std::cout << "=== Leaving Game Over Screen ===" << std::endl;
+        cout << "=== Leaving Game Over Screen ===" << endl;
     }
 
 private:
     int finalScore;
 
-    std::shared_ptr<Scene> createMainMenu();  // Forward declaration
+    shared_ptr<Scene> createMainMenu();  // Forward declaration
 };
 
 
@@ -98,20 +101,20 @@ private:
 #include "GamePlay.hpp"
 
 // MainMenu navigation
-std::shared_ptr<Scene> MainMenu::createGamePlay() {
-    return std::make_shared<GamePlay>();
+shared_ptr<Scene> MainMenu::createGamePlay() {
+    return make_shared<GamePlay>();
 }
 
 // GamePlay navigation
-std::shared_ptr<Scene> GamePlay::createMainMenu() {
-    return std::make_shared<MainMenu>();
+shared_ptr<Scene> GamePlay::createMainMenu() {
+    return make_shared<MainMenu>();
 }
 
-std::shared_ptr<Scene> GamePlay::createGameOver(int finalScore) {
-    return std::make_shared<GameOver>(finalScore);
+shared_ptr<Scene> GamePlay::createGameOver(int finalScore) {
+    return make_shared<GameOver>(finalScore);
 }
 
 // GameOver navigation
-std::shared_ptr<Scene> GameOver::createMainMenu() {
-    return std::make_shared<MainMenu>();
+shared_ptr<Scene> GameOver::createMainMenu() {
+    return make_shared<MainMenu>();
 }

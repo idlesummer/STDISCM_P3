@@ -2,13 +2,16 @@
 
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
+
+using namespace sf;
+using namespace std;
 #include <string>
 
 
 // Game Over text display with customizable content, position, size, and color
 class GameOverText : public Entity {
 public:
-    GameOverText(const std::string& content, sf::Vector2f position, int size, sf::Color color)
+    GameOverText(const string& content, Vector2f position, int size, Color color)
         : Entity("GameOverText") {
         this->content = content;
         this->position = position;
@@ -31,15 +34,15 @@ public:
         text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         window.draw(text);
     }
 
 private:
-    sf::Font font;
-    sf::Text text;
-    std::string content;
-    sf::Vector2f position;
+    Font font;
+    Text text;
+    string content;
+    Vector2f position;
     int size;
-    sf::Color color;
+    Color color;
 };

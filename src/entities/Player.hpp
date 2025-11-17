@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace sf;
+using namespace std;
 
 
 // Player entity - clean and simple!
@@ -15,7 +16,7 @@ public:
 
     // Lifecycle hook - called once when entity is created
     void onCreate() override {
-        std::cout << "Player entity created!" << std::endl;
+        cout << "Player entity created!" << endl;
 
         // Initialize sprite
         sprite.setRadius(30.0f);
@@ -52,8 +53,8 @@ public:
             position = position + delta;
 
             // Clamp to screen bounds
-            position.x = std::max(50.0f, std::min(750.0f, position.x));
-            position.y = std::max(50.0f, std::min(550.0f, position.y));
+            position.x = max(50.0f, min(750.0f, position.x));
+            position.y = max(50.0f, min(550.0f, position.y));
 
             // Update sprite position
             sprite.setPosition(position);
@@ -73,7 +74,7 @@ public:
 
     // Cleanup hook - called when entity is destroyed
     void onDestroy() override {
-        std::cout << "Player entity destroyed!" << std::endl;
+        cout << "Player entity destroyed!" << endl;
     }
 
 private:

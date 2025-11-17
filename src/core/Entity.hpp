@@ -4,24 +4,27 @@
 #include <SFML/System/Time.hpp>
 #include <string>
 
+using namespace sf;
+using namespace std;
+
 
 // Base Entity class - like React.Component but simplified for games
 class Entity {
 public:
-    Entity(const std::string& name = "Entity")
+    Entity(const string& name = "Entity")
         : entityName(name), active(true) {}
 
     virtual ~Entity() = default;
 
     // Lifecycle hooks (React-style! - all use on* prefix for consistency)
-    virtual void onCreate() {}                      // Like componentDidMount
-    virtual void onInput() {}                       // Handle input (like event handlers)
-    virtual void onUpdate(sf::Time dt) {}           // Game logic every frame
-    virtual void onDraw(sf::RenderWindow& window) {} // Direct rendering
-    virtual void onDestroy() {}                     // Like componentWillUnmount
+    virtual void onCreate() {}                  // Like componentDidMount
+    virtual void onInput() {}                   // Handle input (like event handlers)
+    virtual void onUpdate(Time dt) {}           // Game logic every frame
+    virtual void onDraw(RenderWindow& window) {} // Direct rendering
+    virtual void onDestroy() {}                 // Like componentWillUnmount
 
     // Entity management
-    std::string getName() const { return entityName; }
+    string getName() const { return entityName; }
     bool isActive() const { return active; }
     void setActive(bool isActive) { active = isActive; }
 
@@ -40,6 +43,6 @@ public:
     };
 
 protected:
-    std::string entityName;
+    string entityName;
     bool active;
 };

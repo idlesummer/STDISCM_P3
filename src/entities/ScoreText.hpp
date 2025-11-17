@@ -2,6 +2,9 @@
 
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
+
+using namespace sf;
+using namespace std;
 #include <string>
 
 
@@ -16,17 +19,17 @@ public:
 
         text.setFont(font);
         text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
+        text.setFillColor(Color::White);
         text.setPosition(10, 10);
         updateText();
     }
 
-    void onUpdate(sf::Time dt) override {
+    void onUpdate(Time dt) override {
         score += dt.asSeconds() * 10;  // Score increases over time
         updateText();
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         window.draw(text);
     }
 
@@ -34,10 +37,10 @@ public:
 
 private:
     void updateText() {
-        text.setString("Score: " + std::to_string(static_cast<int>(score)));
+        text.setString("Score: " + to_string(static_cast<int>(score)));
     }
 
-    sf::Font font;
-    sf::Text text;
+    Font font;
+    Text text;
     float score;
 };

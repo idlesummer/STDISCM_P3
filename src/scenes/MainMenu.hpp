@@ -7,6 +7,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+using namespace sf;
+using namespace std;
+
 // Forward declaration
 class GamePlay;
 
@@ -17,25 +20,25 @@ public:
     MainMenu() : Scene("MainMenu") {}
 
     void onCreate() override {
-        std::cout << "=== Main Menu Scene Loaded ===" << std::endl;
+        cout << "=== Main Menu Scene Loaded ===" << endl;
 
         // Create title
-        auto title = std::make_shared<MenuText>(
+        auto title = make_shared<MenuText>(
             "Simple 2D Game Engine",
-            sf::Vector2f(400, 150),
+            Vector2f(400, 150),
             64
         );
 
         // Create subtitle
-        auto subtitle = std::make_shared<MenuText>(
+        auto subtitle = make_shared<MenuText>(
             "React-Style Lifecycle Hooks",
-            sf::Vector2f(400, 230),
+            Vector2f(400, 230),
             24
         );
 
         // Create pulsing instruction
-        auto instruction = std::make_shared<PressEnterText>(
-            sf::Vector2f(400, 400)
+        auto instruction = make_shared<PressEnterText>(
+            Vector2f(400, 400)
         );
 
         // Add entities to scene
@@ -46,27 +49,27 @@ public:
 
     void onInput() override {
         // Check for Enter key to start game
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-            std::cout << "Starting game..." << std::endl;
+        if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+            cout << "Starting game..." << endl;
             // Navigate to gameplay scene
             game->changeScene(createGamePlay());
         }
     }
 
-    void onUpdate(sf::Time dt) override {
+    void onUpdate(Time dt) override {
         // Update all menu entities (for animations)
         updateEntities(dt);
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         // Draw all menu entities
         drawEntities(window);
     }
 
     void onDestroy() override {
-        std::cout << "=== Leaving Main Menu ===" << std::endl;
+        cout << "=== Leaving Main Menu ===" << endl;
     }
 
 private:
-    std::shared_ptr<Scene> createGamePlay();  // Implemented after GamePlay definition
+    shared_ptr<Scene> createGamePlay();  // Implemented after GamePlay definition
 };

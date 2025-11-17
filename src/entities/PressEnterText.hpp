@@ -3,11 +3,14 @@
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
 
+using namespace sf;
+using namespace std;
+
 
 // Pulsing "Press Enter" instruction text with animation
 class PressEnterText : public Entity {
 public:
-    PressEnterText(sf::Vector2f position)
+    PressEnterText(Vector2f position)
         : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
     void onCreate() override {
@@ -24,7 +27,7 @@ public:
         text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
-    void onUpdate(sf::Time dt) override {
+    void onUpdate(Time dt) override {
         // Pulse effect
         alpha += fadeDirection * 200 * dt.asSeconds();
 
@@ -36,17 +39,17 @@ public:
             fadeDirection = -1;
         }
 
-        text.setFillColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(alpha)));
+        text.setFillColor(Color(255, 255, 255, static_cast<Uint8>(alpha)));
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         window.draw(text);
     }
 
 private:
-    sf::Font font;
-    sf::Text text;
-    sf::Vector2f position;
+    Font font;
+    Text text;
+    Vector2f position;
     float alpha;
     int fadeDirection;
 };

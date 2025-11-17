@@ -7,17 +7,20 @@
 #include <memory>
 #include <algorithm>
 
+using namespace sf;
+using namespace std;
+
 
 // Main game engine with scene management (like React Router!)
 class Game {
 public:
-    Game(int width, int height, const std::string& title)
-        : window(sf::VideoMode(width, height), title), currentScene(nullptr) {
+    Game(int width, int height, const string& title)
+        : window(VideoMode(width, height), title), currentScene(nullptr) {
         window.setFramerateLimit(165);
     }
 
     // Scene management (like React Router navigation)
-    void changeScene(std::shared_ptr<Scene> newScene) {
+    void changeScene(shared_ptr<Scene> newScene) {
         if (currentScene) {
             currentScene->onDestroy();      // Unmount old scene
             currentScene->clearEntities();  // Cleanup entities
@@ -31,30 +34,30 @@ public:
         }
     }
 
-    std::shared_ptr<Scene> getCurrentScene() const {
+    shared_ptr<Scene> getCurrentScene() const {
         return currentScene;
     }
 
     // Legacy API: Add entity directly to game (no scene)
     // Kept for backward compatibility
-    void addEntity(std::shared_ptr<Entity> entity) {
+    void addEntity(shared_ptr<Entity> entity) {
         entity->onCreate();
         entities.push_back(entity);
     }
 
-    void removeEntity(std::shared_ptr<Entity> entity) {
+    void removeEntity(shared_ptr<Entity> entity) {
         entity->onDestroy();
-        auto it = std::find(entities.begin(), entities.end(), entity);
+        auto it = find(entities.begin(), entities.end(), entity);
         if (it != entities.end())
             entities.erase(it);
     }
 
     // Main game loop
     void run() {
-        sf::Clock clock;
+        Clock clock;
 
         while (window.isOpen()) {
-            sf::Time dt = clock.restart();
+            Time dt = clock.restart();
 
             // 1. Process events
             processEvents();
@@ -82,7 +85,7 @@ public:
             }
 
             // 4. Render phase - clear, draw, display
-            window.clear(sf::Color::Black);
+            window.clear(Color::Black);
 
             // Draw scene (if using scenes)
             if (currentScene) {
@@ -108,13 +111,13 @@ public:
     }
 
     // Access to window
-    sf::RenderWindow& getWindow() { return window; }
+    RenderWindow& getWindow() { return window; }
 
 private:
     void processEvents() {
-        sf::Event event;
+        Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == Event::Closed)
                 window.close();
 
             // You can add custom event handling here
@@ -122,7 +125,7 @@ private:
         }
     }
 
-    sf::RenderWindow window;
-    std::shared_ptr<Scene> currentScene;
-    std::vector<std::shared_ptr<Entity>> entities;  // Legacy: direct entities
+    RenderWindow window;
+    shared_ptr<Scene> currentScene;
+    vector<shared_ptr<Entity>> entities;  // Legacy: direct entities
 };

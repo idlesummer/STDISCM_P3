@@ -3,15 +3,18 @@
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
 
+using namespace sf;
+using namespace std;
+
 
 // Simple text entity for menu displays
 class MenuText : public Entity {
 public:
-    MenuText(const std::string& content, sf::Vector2f position, int size = 48)
+    MenuText(const string& content, Vector2f position, int size = 48)
         : Entity("MenuText") {
         text.setString(content);
         text.setCharacterSize(size);
-        text.setFillColor(sf::Color::White);
+        text.setFillColor(Color::White);
         text.setPosition(position);
     }
 
@@ -22,11 +25,11 @@ public:
         text.setFont(font);
     }
 
-    void onDraw(sf::RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         window.draw(text);
     }
 
 private:
-    sf::Font font;
-    sf::Text text;
+    Font font;
+    Text text;
 };
