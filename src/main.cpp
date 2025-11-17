@@ -1,24 +1,74 @@
 #include <iostream>
-#include <cstdlib>
 #include <SFML/Graphics.hpp>
 
 // Core engine
 #include "core/ReactSFMLEngine.h"
-
-// Components
-#include "components/GameState.h"
-#include "components/GameComponent.h"
+#include "core/Component.h"
+#include "core/RenderNode.h"
+#include "core/Store.h"
 
 using namespace ReactSFML;
 
-// Event handler - converts SFML events to actions
-void handleEvents(sf::Event& event, Store<GameState>& store) {
-    const auto& state = store.getState();
+// Simple state - just position
+struct SimpleState : public State {
+    sf::Vector2f position;
 
-    // Keyboard input for player movement
+    SimpleState() : position(400, 300) {}
+
+    State* clone() const override {
+        return new SimpleState(*this);
+    }
+};
+
+// Simple actions
+inline Action createMoveAction(sf::Vector2f delta) {
+    return Action{"MOVE", delta};
+}
+
+// Simple reducer
+inline SimpleState simpleReducer(const SimpleState& state, const Action& action) {
+    SimpleState newState = state;
+
+    if (action.type == "MOVE") {
+        auto delta = action.getPayload<sf::Vector2f>();
+        newState.position = state.position + delta;
+
+        // Clamp to screen
+        newState.position.x = std::max(50.0f, std::min(750.0f, newState.position.x));
+        newState.position.y = std::max(50.0f, std::min(550.0f, newState.position.y));
+
+        std::cout << "New position: (" << newState.position.x << ", " << newState.position.y << ")" << std::endl;
+    }
+
+    return newState;
+}
+
+// Simple component - just a circle
+class SimpleCircle : public Component {
+public:
+    SimpleCircle(Store<SimpleState>* store)
+        : Component("SimpleCircle"), store(store) {}
+
+    std::shared_ptr<RenderNode> render() override {
+        const auto& state = store->getState();
+
+        Props circleProps;
+        circleProps["radius"] = 30.0f;
+        circleProps["color"] = sf::Color::Green;
+        circleProps["position"] = state.position;
+
+        return Circle(circleProps);
+    }
+
+private:
+    Store<SimpleState>* store;
+};
+
+// Event handler
+void handleEvents(sf::Event& event, Store<SimpleState>& store) {
     if (event.type == sf::Event::KeyPressed) {
         sf::Vector2f delta(0, 0);
-        float speed = 5.0f;
+        float speed = 10.0f;
 
         switch (event.key.code) {
             case sf::Keyboard::Left:
@@ -37,64 +87,44 @@ void handleEvents(sf::Event& event, Store<GameState>& store) {
             case sf::Keyboard::S:
                 delta.y = speed;
                 break;
-            case sf::Keyboard::Space:
-                // Spawn enemy on spacebar
-                if (!state.gameOver) {
-                    static int enemyIdCounter = 0;
-                    EnemyData enemy;
-                    enemy.id = enemyIdCounter++;
-                    enemy.position = sf::Vector2f(static_cast<float>(rand() % 700 + 50), 50.0f);
-                    enemy.health = 50;
-                    enemy.speed = 2.0f;
-
-                    store.dispatch(createSpawnEnemyAction(enemy));
-                }
-                break;
-            case sf::Keyboard::H:
-                // Test damage
-                store.dispatch(createDamagePlayerAction(10));
-                break;
             default:
-                break;
+                return;
         }
 
         if (delta.x != 0 || delta.y != 0) {
-            store.dispatch(createMovePlayerAction(delta));
+            store.dispatch(createMoveAction(delta));
         }
     }
 }
 
-// Main entry point
 int main() {
-    std::cout << "=== React-Inspired SFML Game Engine ===" << std::endl;
-    std::cout << "Controls:" << std::endl;
-    std::cout << "  WASD / Arrow Keys - Move player" << std::endl;
-    std::cout << "  Space - Spawn enemy" << std::endl;
-    std::cout << "  H - Take damage (test)" << std::endl;
+    std::cout << "=== Simple React-SFML Demo ===" << std::endl;
+    std::cout << "Use WASD or Arrow Keys to move the circle" << std::endl;
     std::cout << std::endl;
 
-    // Create engine with initial state and reducer
-    ReactSFMLEngine<GameState> engine(
+    // Create engine
+    ReactSFMLEngine<SimpleState> engine(
         800, 600,
-        "React SFML - Demo Game",
-        GameState(),
-        gameReducer
+        "Simple React-SFML Demo",
+        SimpleState(),
+        simpleReducer
     );
 
-    // Optional: Add logger middleware
+    // Optional: Add logger to see actions
     engine.getStore().addMiddleware(createLoggerMiddleware());
 
     // Set event handler
     engine.setEventHandler(handleEvents);
 
-    // Create root game component
-    auto gameComponent = std::make_shared<GameComponent>(&engine.getStore());
-    engine.setRoot(gameComponent);
+    // Create simple circle component
+    auto circle = std::make_shared<SimpleCircle>(&engine.getStore());
+    circle->mount();
+    engine.setRoot(circle);
 
-    // Run the game loop
+    // Run
+    std::cout << "Starting engine..." << std::endl;
     engine.run();
 
-    std::cout << "Game ended!" << std::endl;
-
+    std::cout << "Done!" << std::endl;
     return 0;
 }
