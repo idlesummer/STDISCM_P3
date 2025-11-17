@@ -53,12 +53,15 @@ target_compile_features(STDISCM_P3 PRIVATE cxx_std_20)
 # Link the SFML graphics lib
 target_link_libraries(STDISCM_P3 PRIVATE sfml-graphics)
 
-add_custom_command(
-  TARGET STDISCM_P3 POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
-)
+# Copy assets directory if it exists
+if(EXISTS ${CMAKE_SOURCE_DIR}/assets)
+  add_custom_command(
+    TARGET STDISCM_P3 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${CMAKE_SOURCE_DIR}/assets
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+  )
+endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET STDISCM_P3 PROPERTY CXX_STANDARD 20)
