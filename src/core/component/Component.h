@@ -56,14 +56,14 @@ protected:
         return StateManager::getInstance().registerState<T>(this, initialValue);
     }
 
-    // Hook: useEffect - Run side effects when dependencies change
-    void useEffect(std::function<void()> effect, std::vector<std::any> dependencies = {}) {
-        EffectManager::getInstance().registerEffect(this, effect, dependencies);
+    // Hook: useEffect - Run side effects when deps change
+    void useEffect(std::function<void()> effect, std::vector<std::any> deps = {}) {
+        EffectManager::getInstance().registerEffect(this, effect, deps);
     }
 
     // Hook: useEffect with cleanup
-    void useEffect(std::function<std::function<void()>()> effect, std::vector<std::any> dependencies = {}) {
-        EffectManager::getInstance().registerEffectWithCleanup(this, effect, dependencies);
+    void useEffect(std::function<std::function<void()>()> effect, std::vector<std::any> deps = {}) {
+        EffectManager::getInstance().registerEffectWithCleanup(this, effect, deps);
     }
 
     // Trigger re-render
