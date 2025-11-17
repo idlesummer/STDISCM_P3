@@ -9,13 +9,13 @@
 #include <iostream>
 
 // Forward declaration
-class GameOverScene;
+class GameOver;
 
 
-// Gameplay Scene
-class GamePlayScene : public Scene {
+// Gameplay
+class GamePlay : public Scene {
 public:
-    GamePlayScene() : Scene("GamePlay") {}
+    GamePlay() : Scene("GamePlay") {}
 
     void onCreate() override {
         std::cout << "=== Game Started ===" << std::endl;
@@ -54,7 +54,7 @@ public:
         // Check for ESC to return to menu
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             std::cout << "Returning to main menu..." << std::endl;
-            game->changeScene(createMainMenuScene());
+            game->changeScene(createMainMenu());
             return;
         }
     }
@@ -71,7 +71,7 @@ public:
             // For now, just check time - game over after 30 seconds
             if (elapsedTime > 30.0f) {
                 std::cout << "Game Over!" << std::endl;
-                game->changeScene(createGameOverScene(scoreDisplay->getScore()));
+                game->changeScene(createGameOver(scoreDisplay->getScore()));
                 return;
             }
         }
@@ -100,6 +100,6 @@ private:
     sf::Font instructionFont;
     sf::Text instructionText;
 
-    std::shared_ptr<Scene> createMainMenuScene();   // Forward declaration
-    std::shared_ptr<Scene> createGameOverScene(int finalScore);  // Forward declaration
+    std::shared_ptr<Scene> createMainMenu();   // Forward declaration
+    std::shared_ptr<Scene> createGameOver(int finalScore);  // Forward declaration
 };
