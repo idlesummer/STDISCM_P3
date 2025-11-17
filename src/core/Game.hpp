@@ -14,26 +14,26 @@ class Game {
 public:
     Game(int width, int height, const string& title)
         : window(VideoMode(width, height), title), currentScene(nullptr) {
-        window.setFramerateLimit(165);
+        this->window.setFramerateLimit(165);
     }
 
     // Scene management (like React Router navigation)
     void changeScene(shared_ptr<Scene> newScene) {
-        if (currentScene) {
-            currentScene->onDestroy();      // Unmount old scene
-            currentScene->clearEntities();  // Cleanup entities
+        if (this->currentScene) {
+            this->currentScene->onDestroy();      // Unmount old scene
+            this->currentScene->clearEntities();  // Cleanup entities
         }
 
-        currentScene = newScene;
+        this->currentScene = newScene;
 
-        if (currentScene) {
-            currentScene->setGame(this);    // Give scene access to game
-            currentScene->onCreate();       // Mount new scene
+        if (this->currentScene) {
+            this->currentScene->setGame(this);    // Give scene access to game
+            this->currentScene->onCreate();       // Mount new scene
         }
     }
 
     shared_ptr<Scene> getCurrentScene() const {
-        return currentScene;
+        return this->currentScene;
     }
 
     // Main game loop with fixed timestep
@@ -42,39 +42,35 @@ public:
         auto clock = Clock();
         auto lag = Time::Zero;
 
-        while (window.isOpen()) {
+        while (this->window.isOpen()) {
             for (lag += clock.restart(); lag >= TICK; lag -= TICK) {  // Fixed timestep update loop
-                
+
                 // 1. Process events and dispatch to current scene
                 auto event = Event();
-                while (window.pollEvent(event)) {                       
-                    if (event.type == Event::Closed) window.close();  // Handle window close event
-                    if (currentScene) currentScene->onInput(event);   // Dispatch input events to current scene
+                while (this->window.pollEvent(event)) {
+                    if (event.type == Event::Closed) this->window.close();  // Handle window close event
+                    if (this->currentScene) this->currentScene->onInput(event);   // Dispatch input events to current scene
                 }
 
                 // 2. Update current scene at fixed timestep
-                if (currentScene)
-                    currentScene->onUpdate(TICK);
+                if (this->currentScene) this->currentScene->onUpdate(TICK);
             }
 
             // 3. Render phase - runs as fast as possible (uncapped)
-            window.clear(Color::Black);
-
-            if (currentScene)
-                currentScene->onDraw(window);
-
-            window.display();
+            this->window.clear(Color::Black);
+            if (this->currentScene) this->currentScene->onDraw(this->window);
+            this->window.display();
         }
 
         // Cleanup on exit
-        if (currentScene) {
-            currentScene->onDestroy();
-            currentScene->clearEntities();
+        if (this->currentScene) {
+            this->currentScene->onDestroy();
+            this->currentScene->clearEntities();
         }
     }
 
     // Access to window
-    RenderWindow& getWindow() { return window; }
+    RenderWindow& getWindow() { return this->window; }
 
 private:
     RenderWindow window;

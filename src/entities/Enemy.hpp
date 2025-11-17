@@ -18,26 +18,26 @@ public:
     void onCreate() override {
         cout << "Enemy spawned!" << endl;
 
-        sprite.setRadius(25.0f);
-        sprite.setFillColor(Color::Red);
-        sprite.setOrigin(25.0f, 25.0f);
-        sprite.setPosition(position);
+        this->sprite.setRadius(25.0f);
+        this->sprite.setFillColor(Color::Red);
+        this->sprite.setOrigin(25.0f, 25.0f);
+        this->sprite.setPosition(this->position);
     }
 
     void onUpdate(Time dt) override {
         // Simple AI: move in a circular pattern
-        elapsedTime += dt.asSeconds();
-        position.x = 400 + 200 * cos(elapsedTime * speed * 0.1f);
-        position.y = 300 + 200 * sin(elapsedTime * speed * 0.1f);
+        this->elapsedTime += dt.asSeconds();
+        this->position.x = 400 + 200 * cos(this->elapsedTime * this->speed * 0.1f);
+        this->position.y = 300 + 200 * sin(this->elapsedTime * this->speed * 0.1f);
 
-        sprite.setPosition(position);
+        this->sprite.setPosition(this->position);
     }
 
     void onDraw(RenderWindow& window) override {
-        window.draw(sprite);
+        window.draw(this->sprite);
     }
 
-    Vector2f getPosition() const { return position; }
+    Vector2f getPosition() const { return this->position; }
 
 private:
     Vector2f position;

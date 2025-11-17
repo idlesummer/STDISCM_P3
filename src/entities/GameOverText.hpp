@@ -20,22 +20,22 @@ public:
     }
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/sansation.ttf"))
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+        if (!this->font.loadFromFile("assets/sansation.ttf"))
+            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
-        text.setFont(font);
-        text.setString(content);
-        text.setCharacterSize(size);
-        text.setFillColor(color);
-        text.setPosition(position);
+        this->text.setFont(this->font);
+        this->text.setString(this->content);
+        this->text.setCharacterSize(this->size);
+        this->text.setFillColor(this->color);
+        this->text.setPosition(this->position);
 
         // Center the text
-        auto bounds = text.getLocalBounds();
-        text.setOrigin(bounds.width / 2, bounds.height / 2);
+        auto bounds = this->text.getLocalBounds();
+        this->text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
     void onDraw(RenderWindow& window) override {
-        window.draw(text);
+        window.draw(this->text);
     }
 
 private:

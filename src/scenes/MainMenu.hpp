@@ -42,9 +42,9 @@ public:
         );
 
         // Add entities to scene
-        addEntity(title);
-        addEntity(subtitle);
-        addEntity(instruction);
+        this->addEntity(title);
+        this->addEntity(subtitle);
+        this->addEntity(instruction);
     }
 
     void onInput(Event& event) override {
@@ -52,18 +52,18 @@ public:
         if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
             cout << "Starting game..." << endl;
             // Navigate to gameplay scene
-            game->changeScene(createGamePlay());
+            this->game->changeScene(this->createGamePlay());
         }
     }
 
     void onUpdate(Time dt) override {
         // Update all menu entities (for animations)
-        updateEntities(dt);
+        this->updateEntities(dt);
     }
 
     void onDraw(RenderWindow& window) override {
         // Draw all menu entities
-        drawEntities(window);
+        this->drawEntities(window);
     }
 
     void onDestroy() override {

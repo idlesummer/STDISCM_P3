@@ -20,7 +20,7 @@ public:
         : Scene("GameOver"), finalScore(finalScore) {}
 
     void onCreate() override {
-        cout << "=== Game Over! Final Score: " << finalScore << " ===" << endl;
+        cout << "=== Game Over! Final Score: " << this->finalScore << " ===" << endl;
 
         // Game Over title
         auto title = make_shared<GameOverText>(
@@ -29,24 +29,24 @@ public:
             72,
             Color::Red
         );
-        addEntity(title);
+        this->addEntity(title);
 
         // Score display
         auto scoreText = make_shared<GameOverText>(
-            "Final Score: " + to_string(finalScore),
+            "Final Score: " + to_string(this->finalScore),
             Vector2f(400, 280),
             36,
             Color::Yellow
         );
-        addEntity(scoreText);
+        this->addEntity(scoreText);
 
         // Performance message
         string message;
-        if (finalScore > 250)
+        if (this->finalScore > 250)
             message = "Amazing!";
-        else if (finalScore > 200)
+        else if (this->finalScore > 200)
             message = "Great Job!";
-        else if (finalScore > 150)
+        else if (this->finalScore > 150)
             message = "Good!";
         else
             message = "Keep Practicing!";
@@ -57,7 +57,7 @@ public:
             28,
             Color::White
         );
-        addEntity(messageText);
+        this->addEntity(messageText);
 
         // Instructions
         auto instruction = make_shared<GameOverText>(
@@ -66,23 +66,23 @@ public:
             24,
             Color(200, 200, 200)
         );
-        addEntity(instruction);
+        this->addEntity(instruction);
     }
 
     void onInput(Event& event) override {
         // Check for Enter key press event to return to menu
         if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
             cout << "Returning to main menu..." << endl;
-            game->changeScene(createMainMenu());
+            this->game->changeScene(this->createMainMenu());
         }
     }
 
     void onUpdate(Time dt) override {
-        updateEntities(dt);
+        this->updateEntities(dt);
     }
 
     void onDraw(RenderWindow& window) override {
-        drawEntities(window);
+        this->drawEntities(window);
     }
 
     void onDestroy() override {

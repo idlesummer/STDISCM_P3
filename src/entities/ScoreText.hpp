@@ -14,30 +14,30 @@ public:
     ScoreText() : Entity("ScoreText"), score(0) {}
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/sansation.ttf"))
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+        if (!this->font.loadFromFile("assets/sansation.ttf"))
+            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
-        text.setFont(font);
-        text.setCharacterSize(24);
-        text.setFillColor(Color::White);
-        text.setPosition(10, 10);
-        updateText();
+        this->text.setFont(this->font);
+        this->text.setCharacterSize(24);
+        this->text.setFillColor(Color::White);
+        this->text.setPosition(10, 10);
+        this->updateText();
     }
 
     void onUpdate(Time dt) override {
-        score += dt.asSeconds() * 10;  // Score increases over time
-        updateText();
+        this->score += dt.asSeconds() * 10;  // Score increases over time
+        this->updateText();
     }
 
     void onDraw(RenderWindow& window) override {
-        window.draw(text);
+        window.draw(this->text);
     }
 
-    int getScore() const { return static_cast<int>(score); }
+    int getScore() const { return static_cast<int>(this->score); }
 
 private:
     void updateText() {
-        text.setString("Score: " + to_string(static_cast<int>(score)));
+        this->text.setString("Score: " + to_string(static_cast<int>(this->score)));
     }
 
     Font font;

@@ -31,45 +31,45 @@ public:
     // Entity management within this scene
     void addEntity(shared_ptr<Entity> entity) {
         entity->onCreate();
-        entities.push_back(entity);
+        this->entities.push_back(entity);
     }
 
     void removeEntity(shared_ptr<Entity> entity) {
         entity->onDestroy();
-        auto it = find(entities.begin(), entities.end(), entity);
-        if (it != entities.end())
-            entities.erase(it);
+        auto it = find(this->entities.begin(), this->entities.end(), entity);
+        if (it != this->entities.end())
+            this->entities.erase(it);
     }
 
     // Clear all entities
     void clearEntities() {
-        for (auto& entity : entities)
+        for (auto& entity : this->entities)
             entity->onDestroy();
-        entities.clear();
+        this->entities.clear();
     }
 
     // Access to game instance (for scene transitions)
-    void setGame(Game* gameInstance) { game = gameInstance; }
-    Game* getGame() const { return game; }
+    void setGame(Game* gameInstance) { this->game = gameInstance; }
+    Game* getGame() const { return this->game; }
 
-    string getName() const { return sceneName; }
+    string getName() const { return this->sceneName; }
 
 protected:
     // Helper methods for derived scenes
     void inputEntities(Event& event) {
-        for (auto& entity : entities)
+        for (auto& entity : this->entities)
             if (entity->isActive())
                 entity->onInput(event);
     }
 
     void updateEntities(Time dt) {
-        for (auto& entity : entities)
+        for (auto& entity : this->entities)
             if (entity->isActive())
                 entity->onUpdate(dt);
     }
 
     void drawEntities(RenderWindow& window) {
-        for (auto& entity : entities)
+        for (auto& entity : this->entities)
             if (entity->isActive())
                 entity->onDraw(window);
     }

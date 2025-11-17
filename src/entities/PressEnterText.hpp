@@ -14,36 +14,36 @@ public:
         : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/sansation.ttf"))
-            font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+        if (!this->font.loadFromFile("assets/sansation.ttf"))
+            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
-        text.setFont(font);
-        text.setString("Press ENTER to Start");
-        text.setCharacterSize(24);
-        text.setPosition(position);
+        this->text.setFont(this->font);
+        this->text.setString("Press ENTER to Start");
+        this->text.setCharacterSize(24);
+        this->text.setPosition(this->position);
 
         // Center the text
-        auto bounds = text.getLocalBounds();
-        text.setOrigin(bounds.width / 2, bounds.height / 2);
+        auto bounds = this->text.getLocalBounds();
+        this->text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
     void onUpdate(Time dt) override {
         // Pulse effect
-        alpha += fadeDirection * 200 * dt.asSeconds();
+        this->alpha += this->fadeDirection * 200 * dt.asSeconds();
 
-        if (alpha <= 100) {
-            alpha = 100;
-            fadeDirection = 1;
-        } else if (alpha >= 255) {
-            alpha = 255;
-            fadeDirection = -1;
+        if (this->alpha <= 100) {
+            this->alpha = 100;
+            this->fadeDirection = 1;
+        } else if (this->alpha >= 255) {
+            this->alpha = 255;
+            this->fadeDirection = -1;
         }
 
-        text.setFillColor(Color(255, 255, 255, static_cast<Uint8>(alpha)));
+        this->text.setFillColor(Color(255, 255, 255, static_cast<Uint8>(this->alpha)));
     }
 
     void onDraw(RenderWindow& window) override {
-        window.draw(text);
+        window.draw(this->text);
     }
 
 private:

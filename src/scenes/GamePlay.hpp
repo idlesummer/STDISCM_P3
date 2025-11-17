@@ -24,70 +24,70 @@ public:
         cout << "=== Game Started ===" << endl;
 
         // Create player
-        player = make_shared<Player>(Vector2f(400, 300));
-        addEntity(player);
+        this->player = make_shared<Player>(Vector2f(400, 300));
+        this->addEntity(this->player);
 
         // Create enemies
         auto enemy1 = make_shared<Enemy>(Vector2f(200, 200));
         auto enemy2 = make_shared<Enemy>(Vector2f(600, 400));
-        enemies.push_back(enemy1);
-        enemies.push_back(enemy2);
-        addEntity(enemy1);
-        addEntity(enemy2);
+        this->enemies.push_back(enemy1);
+        this->enemies.push_back(enemy2);
+        this->addEntity(enemy1);
+        this->addEntity(enemy2);
 
         // Create score display
-        scoreDisplay = make_shared<ScoreText>();
-        addEntity(scoreDisplay);
+        this->scoreDisplay = make_shared<ScoreText>();
+        this->addEntity(this->scoreDisplay);
 
         // Instructions
-        if (instructionFont.loadFromFile("assets/sansation.ttf") ||
-            instructionFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
-            instructionText.setFont(instructionFont);
-            instructionText.setString("WASD to move | ESC to return to menu | Survive!");
-            instructionText.setCharacterSize(18);
-            instructionText.setFillColor(Color(200, 200, 200));
-            instructionText.setPosition(10, 570);
+        if (this->instructionFont.loadFromFile("assets/sansation.ttf") ||
+            this->instructionFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
+            this->instructionText.setFont(this->instructionFont);
+            this->instructionText.setString("WASD to move | ESC to return to menu | Survive!");
+            this->instructionText.setCharacterSize(18);
+            this->instructionText.setFillColor(Color(200, 200, 200));
+            this->instructionText.setPosition(10, 570);
         }
     }
 
     void onInput(Event& event) override {
         // Dispatch input events to all entities
-        inputEntities(event);
+        this->inputEntities(event);
 
         // Check for ESC key press to return to menu
         if (event.type == Event::KeyPressed && event.key.code == Keyboard::Escape) {
             cout << "Returning to main menu..." << endl;
-            game->changeScene(createMainMenu());
+            this->game->changeScene(this->createMainMenu());
             return;
         }
     }
 
     void onUpdate(Time dt) override {
         // Update all entities
-        updateEntities(dt);
+        this->updateEntities(dt);
 
         // Simple collision detection (game over if touching enemy)
         // Note: In a real game, you'd want proper collision detection
         // This is just for demonstration
-        for (auto& enemy : enemies) {
+        for (auto& enemy : this->enemies) {
             // Get positions (simplified - would need proper collision in real game)
             // For now, just check time - game over after 30 seconds
-            if (elapsedTime > 30.0f) {
+            if (this->elapsedTime > 30.0f) {
                 cout << "Game Over!" << endl;
-                game->changeScene(createGameOver(scoreDisplay->getScore()));
+                this->game->changeScene(this->createGameOver(this->scoreDisplay->getScore()));
                 return;
             }
         }
 
-        elapsedTime += dt.asSeconds();
+        this->elapsedTime += dt.asSeconds();
     }
 
     void onDraw(RenderWindow& window) override {
         // Draw all game entities
-        drawEntities(window);
+        this->drawEntities(window);
 
         // Draw instructions
-        window.draw(instructionText);
+        window.draw(this->instructionText);
     }
 
     void onDestroy() override {
