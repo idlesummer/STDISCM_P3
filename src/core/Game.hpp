@@ -38,24 +38,18 @@ public:
 
     // Main game loop with fixed timestep
     void run() {
-        const auto TICK = seconds(1.f / 60.f);  // 60 updates per second
-
+        auto TICK = seconds(1.f / 60.f);  // 60 updates per second
         auto clock = Clock();
         auto lag = Time::Zero;
 
         while (window.isOpen()) {
-            // Fixed timestep update loop
-            for (lag += clock.restart(); lag >= TICK; lag -= TICK) {
+            for (lag += clock.restart(); lag >= TICK; lag -= TICK) {  // Fixed timestep update loop
+                
                 // 1. Process events and dispatch to current scene
                 auto event = Event();
-                while (window.pollEvent(event)) {
-                    // Handle window close event
-                    if (event.type == Event::Closed)
-                        window.close();
-
-                    // Dispatch input events to current scene
-                    if (currentScene)
-                        currentScene->onInput(event);
+                while (window.pollEvent(event)) {                       
+                    if (event.type == Event::Closed) window.close();  // Handle window close event
+                    if (currentScene) currentScene->onInput(event);   // Dispatch input events to current scene
                 }
 
                 // 2. Update current scene at fixed timestep
