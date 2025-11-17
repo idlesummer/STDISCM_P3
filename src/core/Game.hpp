@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Scene.hpp"
-#include "Entity.h"
+#include "Entity.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
