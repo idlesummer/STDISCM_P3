@@ -10,9 +10,13 @@
 #include "core/store/Store.h"
 #include "core/store/Middleware.h"
 
+using namespace sf;
+using namespace std;
+
+
 // Simple state - just position
 struct GameState : public State {
-    sf::Vector2f position;
+    Vector2f position;
 
     GameState() : position(400, 300) {}
 
@@ -22,21 +26,21 @@ struct GameState : public State {
 };
 
 // Action creators
-inline Action createMoveAction(sf::Vector2f delta) {
+Action createMoveAction(Vector2f delta) {
     return Action{"MOVE", delta};
 }
 
 // Reducer - pure function that updates state
-inline GameState gameReducer(const GameState& state, const Action& action) {
+GameState gameReducer(const GameState& state, const Action& action) {
     auto newState = GameState(state);
 
     if (action.type == "MOVE") {
-        auto delta = action.getPayload<sf::Vector2f>();
+        auto delta = action.getPayload<Vector2f>();
         newState.position = state.position + delta;
 
         // Clamp to screen bounds
-        newState.position.x = std::max(50.0f, std::min(750.0f, newState.position.x));
-        newState.position.y = std::max(50.0f, std::min(550.0f, newState.position.y));
+        newState.position.x = max(50.0f, min(750.0f, newState.position.x));
+        newState.position.y = max(50.0f, min(550.0f, newState.position.y));
     }
 
     return newState;
@@ -50,20 +54,20 @@ public:
 
     // Lifecycle method - called once when component mounts
     void componentDidMount() override {
-        std::cout << "Circle component mounted!" << std::endl;
+        cout << "Circle component mounted!" << endl;
     }
 
     // Lifecycle method - called when component unmounts
     void componentWillUnmount() override {
-        std::cout << "Circle component unmounting..." << std::endl;
+        cout << "Circle component unmounting..." << endl;
     }
 
-    std::shared_ptr<RenderNode> render() override {
+    shared_ptr<RenderNode> render() override {
         auto state = this->store->getState();
 
         auto props = Props();
         props["radius"] = 30.0f;
-        props["color"] = sf::Color::Green;
+        props["color"] = Color::Green;
         props["position"] = state.position;
 
         return Circle(props);
@@ -74,26 +78,26 @@ private:
 };
 
 // Event handler - converts SFML events to actions
-void handleEvents(sf::Event& event, Store<GameState>& store) {
-    if (event.type == sf::Event::KeyPressed) {
-        auto delta = sf::Vector2f(0, 0);
+void handleEvents(Event& event, Store<GameState>& store) {
+    if (event.type == Event::KeyPressed) {
+        auto delta = Vector2f(0, 0);
         auto speed = 10.0f;
 
         switch (event.key.code) {
-            case sf::Keyboard::Left:
-            case sf::Keyboard::A:
+            case Keyboard::Left:
+            case Keyboard::A:
                 delta.x = -speed;
                 break;
-            case sf::Keyboard::Right:
-            case sf::Keyboard::D:
+            case Keyboard::Right:
+            case Keyboard::D:
                 delta.x = speed;
                 break;
-            case sf::Keyboard::Up:
-            case sf::Keyboard::W:
+            case Keyboard::Up:
+            case Keyboard::W:
                 delta.y = -speed;
                 break;
-            case sf::Keyboard::Down:
-            case sf::Keyboard::S:
+            case Keyboard::Down:
+            case Keyboard::S:
                 delta.y = speed;
                 break;
             default:
@@ -107,29 +111,25 @@ void handleEvents(sf::Event& event, Store<GameState>& store) {
 
 // Main entry point
 int main() {
-    std::cout << "=== Reactive SFML - Class-Based React ===" << std::endl;
-    std::cout << "Controls: WASD or Arrow Keys to move" << std::endl;
-    std::cout << std::endl;
+    cout << "=== Reactive SFML - Class-Based React ===" << endl;
+    cout << "Controls: WASD or Arrow Keys to move" << endl;
+    cout << endl;
 
     // Create store with initial state and reducer (like React's createStore)
     auto store = Store<GameState>(GameState(), gameReducer);
-
-    // Optional: Add logger to see actions
-    store.addMiddleware(createLoggerMiddleware());
+    store.addMiddleware(createLoggerMiddleware());  // Optional: Add logger to see actions
 
     // Create engine with store (like React's ReactDOM.render with Provider)
     auto engine = Engine<GameState>(800, 600, "Reactive SFML - Moving Circle", store);
-
-    // Set event handler
-    engine.setEventHandler(handleEvents);
+    engine.setEventHandler(handleEvents);   // Set event handler
 
     // Create and mount the circle component (passing store reference)
-    auto circle = std::make_shared<CircleComponent>(&store);
+    auto circle = make_shared<CircleComponent>(&store);
     engine.setRoot(circle);
 
     // Run the game loop
     engine.run();
 
-    std::cout << "Done!" << std::endl;
+    cout << "Done!" << endl;
     return 0;
 }
