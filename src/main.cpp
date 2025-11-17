@@ -16,9 +16,9 @@ using namespace std;
 
 // Simple state - just position
 struct GameState : public State {
-    Vector2f position;
+    Vector2f pos;
 
-    GameState() : position(400, 300) {}
+    GameState() : pos(400, 300) {}
 
     State* clone() const override {
         return new GameState(*this);
@@ -36,11 +36,11 @@ GameState gameReducer(const GameState& state, const Action& action) {
 
     if (action.type == "MOVE") {
         auto delta = action.getPayload<Vector2f>();
-        newState.position = state.position + delta;
+        newState.pos = state.pos + delta;
 
         // Clamp to screen bounds
-        newState.position.x = max(50.0f, min(750.0f, newState.position.x));
-        newState.position.y = max(50.0f, min(550.0f, newState.position.y));
+        newState.pos.x = max(50.0f, min(750.0f, newState.pos.x));
+        newState.pos.y = max(50.0f, min(550.0f, newState.pos.y));
     }
 
     return newState;
@@ -68,7 +68,7 @@ public:
         auto props = Props();
         props["radius"] = 30.0f;
         props["color"] = Color::Green;
-        props["position"] = state.position;
+        props["position"] = state.pos;
 
         return Circle(props);
     }
