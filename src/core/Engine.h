@@ -17,7 +17,7 @@ public:
           reconciler(&this->window),
           rootComponent(nullptr) {
 
-        this->window.setFramerateLimit(60);
+        this->window.setFramerateLimit(165);
     }
 
     // Set the root component (like ReactDOM.render)
@@ -38,25 +38,17 @@ public:
 
         while (this->window.isOpen()) {
             auto deltaTime = clock.restart();
-
-            // 1. Process events
-            this->processEvents();
-
-            // 2. Update components
-            if (this->rootComponent)
+            this->processEvents();                  // 1. Process events
+            
+            if (this->rootComponent)                // 2. Update components
                 this->rootComponent->onUpdate(deltaTime);
 
-            // 3. Render phase: generate virtual DOM
-            if (!this->rootComponent)
+            if (!this->rootComponent)               // 3. Render phase: generate virtual DOM
                 continue;
 
             auto renderTree = this->rootComponent->render();
-
-            // 4. Reconciliation phase: diff and update SFML objects
-            this->reconciler.reconcile(renderTree);
-
-            // 5. Commit phase: render to screen
-            this->reconciler.render();
+            this->reconciler.reconcile(renderTree); // 4. Diff and update SFML objects
+            this->reconciler.render();              // 5. Commit phase: render to screen
         }
     }
 
