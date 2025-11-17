@@ -6,45 +6,40 @@
 #include <atomic>
 #include <iostream>
 
+using namespace std;
+
+
 class ThreadPool {
 public:
-    ThreadPool(size_t numThreads)
-        : workers(),
+    ThreadPool(size_t nthreads)
+        : nthreads(nthreads),
+          workers(),
           taskQueue(),
           activeTasks(0) {
 
-        std::cout << "[ThreadPool] Creating pool with " << numThreads << " workers" << std::endl;
-        for (size_t i = 0; i < numThreads; i++)
+        for (auto i = size_t(0); i < nthreads; i++)
             this->workers.emplace_back([this] { this->workerLoop(); });
     }
 
     ~ThreadPool() {
-        this->taskQueue.shutdown();  // Signal shutdown
+        // Signal shutdown
+        this->taskQueue.shutdown();
 
-        for (auto& worker : this->workers)
+        for (auto& worker : this->workers) {
             if (worker.joinable())
                 worker.join();
-
-        std::cout << "[ThreadPool] All workers stopped" << std::endl;
+        }
     }
 
-    void enqueue(std::function<void()> task) {
-        this->taskQueue.push(task);  // One line - beautiful!
+    void enqueue(function<void()> task) {
+        this->taskQueue.push(task);
     }
 
-    bool isIdle() const {
-        return this->taskQueue.empty() && this->activeTasks == 0;
-    }
-
-    int getQueueSize() const {
-        return this->taskQueue.size();
-    }
+    auto isIdle() const { return this->taskQueue.empty() && this->activeTasks == 0; }
+    auto getQueueSize() const { return this->taskQueue.size(); }
+    auto getThreadCount() const { return this->nthreads; }
 
 private:
-    std::vector<std::thread> workers;
-    TaskQueue<std::function<void()>> taskQueue;  // Clean abstraction!
-    std::atomic<int> activeTasks;
-
     void workerLoop() {
         // Loop while tasks are available; pop() returns nullopt on shutdown
         while (auto taskOpt = this->taskQueue.pop()) {
@@ -54,4 +49,9 @@ private:
             this->activeTasks--;
         }
     }
+
+    size_t nthreads;
+    vector<thread> workers;
+    TaskQueue<function<void()>> taskQueue;  // Clean abstraction!
+    atomic<int> activeTasks;
 };

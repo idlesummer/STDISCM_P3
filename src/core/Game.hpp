@@ -16,7 +16,7 @@ public:
     Game(int width, int height, const string& title)
         : window(VideoMode(width, height), title),
           currentScene(nullptr),
-          assetManager(4) {  // 4 worker threads for asset loading
+          assetManager() {      // 4 worker threads for asset loading
         this->window.setFramerateLimit(165);
         this->preloadAssets();
     }
@@ -61,14 +61,10 @@ private:
         cout << "[Game] Starting asset preload..." << endl;
 
         // Load all fonts asynchronously
-        this->assetManager.loadFontAsync(
-            "main-font",
-            "assets/fonts/sansation.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-        );
+        this->assetManager.loadFontAsync("main-font", "assets/fonts/sansation.ttf");
 
         // Wait for all assets to finish loading before starting the game
-        this->assetManager.waitForAll();
+        this->assetManager.awaitLoadingAssets();
         cout << "[Game] Asset preload complete!" << endl;
     }
 
