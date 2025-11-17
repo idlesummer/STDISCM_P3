@@ -37,36 +37,40 @@ class Reconciler {
 public:
     Reconciler(sf::RenderWindow* window)
         : window(window), rootInstance(nullptr) {
-
-        if (!SFMLInstance::defaultFont.loadFromFile("Media/arial.ttf")) // Load default font
+        // Load default font
+        if (!SFMLInstance::defaultFont.loadFromFile("Media/arial.ttf"))
+            // Fallback - try system font
             SFMLInstance::defaultFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
     }
 
     // Main reconciliation method - diffs and updates
     void reconcile(std::shared_ptr<RenderNode> newTree) {
-        if (!previousTree)    // First render - create everything
-            rootInstance = createInstance(newTree);
-        else {                // Subsequent render - diff and patch
-            auto changes = diff(previousTree, newTree, rootInstance);
-            applyChanges(changes);
+        if (!this->previousTree) {
+            // First render - create everything
+            this->rootInstance = this->createInstance(newTree);
+            this->previousTree = newTree;
+            return;
         }
 
-        previousTree = newTree;
+        // Subsequent render - diff and patch
+        auto changes = this->diff(this->previousTree, newTree, this->rootInstance);
+        this->applyChanges(changes);
+        this->previousTree = newTree;
     }
 
     // Render all SFML objects to window
     void render() {
-        if (!rootInstance)
+        if (!this->rootInstance)
             return;
-        window->clear(sf::Color::Black);
-        renderInstance(rootInstance);
-        window->display();
+        this->window->clear(sf::Color::Black);
+        this->renderInstance(this->rootInstance);
+        this->window->display();
     }
 
     void reset() {
-        previousTree = nullptr;
-        rootInstance = nullptr;
-        instanceCache.clear();
+        this->previousTree = nullptr;
+        this->rootInstance = nullptr;
+        this->instanceCache.clear();
     }
 
 private:
@@ -78,7 +82,7 @@ private:
         switch (node->type) {
             case NodeType::Sprite: {
                 auto sprite = std::make_shared<sf::Sprite>();
-                if (auto* texture = std::get_if<sf::Texture*>(&node->props["texture"])) // Set texture if provided
+                if (auto* texture = std::get_if<sf::Texture*>(&node->props["texture"]))
                     sprite->setTexture(**texture);
 
                 instance->drawable = sprite;
@@ -133,11 +137,11 @@ private:
 
         // Create children recursively
         for (auto& child : node->children)
-            instance->children.push_back(createInstance(child));
+            instance->children.push_back(this->createInstance(child));
 
         // Cache by key if provided
         if (!node->key.empty())
-            instanceCache[node->key] = instance;
+            this->instanceCache[node->key] = instance;
 
         return instance;
     }
@@ -146,7 +150,6 @@ private:
     std::vector<Change> diff(std::shared_ptr<RenderNode> oldNode,
                             std::shared_ptr<RenderNode> newNode,
                             std::shared_ptr<SFMLInstance> instance) {
-        
         auto changes = std::vector<Change>();
 
         // Node types differ - recreate
@@ -157,23 +160,23 @@ private:
         }
 
         // Same type - check for prop changes
-        if (propsChanged(oldNode->props, newNode->props))
+        if (this->propsChanged(oldNode->props, newNode->props))
             changes.push_back({ChangeType::Update, newNode, instance});
 
         // Diff children (simplified - no key-based reordering for now)
         auto minChildren = std::min(oldNode->children.size(), newNode->children.size());
 
-        for (auto i = size_t(0); i < minChildren; i++) {
-            auto childChanges = diff(oldNode->children[i], newNode->children[i], instance->children[i]);
+        for (size_t i = 0; i < minChildren; i++) {
+            auto childChanges = this->diff(oldNode->children[i], newNode->children[i], instance->children[i]);
             changes.insert(changes.end(), childChanges.begin(), childChanges.end());
         }
 
         // New children added
-        for (auto i = minChildren; i < newNode->children.size(); i++)
+        for (size_t i = minChildren; i < newNode->children.size(); i++)
             changes.push_back({ChangeType::Create, newNode->children[i], nullptr});
 
         // Old children removed
-        for (auto i = minChildren; i < oldNode->children.size(); i++)
+        for (size_t i = minChildren; i < oldNode->children.size(); i++)
             changes.push_back({ChangeType::Delete, oldNode->children[i], instance->children[i]});
 
         return changes;
@@ -190,7 +193,7 @@ private:
 
         else if (auto* aFloat = std::get_if<float>(&a))
             return *aFloat == std::get<float>(b);
-        
+
         else if (auto* aStr = std::get_if<std::string>(&a))
             return *aStr == std::get<std::string>(b);
 
@@ -221,7 +224,8 @@ private:
             auto it = oldProps.find(key);
             if (it == oldProps.end())
                 return true;
-            if (!propValueEquals(it->second, value))
+
+            if (!this->propValueEquals(it->second, value))
                 return true;
         }
 
@@ -232,12 +236,14 @@ private:
     void applyChanges(const std::vector<Change>& changes) {
         for (const auto& change : changes) {
             switch (change.type) {
-                case ChangeType::Create:  // Create new instance and add to parent
-                    createInstance(change.node);
+                case ChangeType::Create:
+                    // Create new instance and add to parent
+                    this->createInstance(change.node);
                     break;
 
-                case ChangeType::Update:  // Update existing instance properties
-                    updateInstance(change.instance, change.node);
+                case ChangeType::Update:
+                    // Update existing instance properties
+                    this->updateInstance(change.instance, change.node);
                     break;
 
                 case ChangeType::Delete:  // Remove from parent (handled by parent update)
@@ -287,10 +293,10 @@ private:
     // Recursively render instance and children
     void renderInstance(std::shared_ptr<SFMLInstance> instance) {
         if (instance->drawable)
-            window->draw(*instance->drawable);
+            this->window->draw(*instance->drawable);
 
         for (auto& child : instance->children)
-            renderInstance(child);
+            this->renderInstance(child);
     }
 
     sf::RenderWindow* window;
