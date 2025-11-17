@@ -2,6 +2,7 @@
 
 #include "../types/Props.h"
 #include <SFML/System/Time.hpp>
+#include <functional>
 #include <memory>
 #include <string>
 
