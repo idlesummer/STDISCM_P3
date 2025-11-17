@@ -3,8 +3,8 @@
 #include <functional>
 #include <vector>
 #include <any>
-#include <memory>
 #include <unordered_map>
+#include <string>
 
 
 class Component; // Forward declaration
@@ -29,7 +29,7 @@ public:
 
         effect.callback = callback;
         effect.dependencies = dependencies;
-        
+
         this->effects[key] = effect;
         this->effectsToRun.push_back(key);
     }

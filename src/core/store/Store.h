@@ -1,37 +1,14 @@
 #pragma once
 
+#include "../types/Action.h"
+#include "Middleware.h"
 #include <functional>
 #include <vector>
-#include <string>
-#include <any>
-#include <unordered_map>
-#include <iostream>
 
-
-// Action (like Redux actions)
-struct Action {
-    std::string type;
-    std::any payload;
-
-    template<typename T>
-    T getPayload() const {
-        return std::any_cast<T>(payload);
-    }
-};
-
-// Base state class - derive your game state from this
-class State {
-public:
-    virtual ~State() = default;
-    virtual State* clone() const = 0;  // For time-travel debugging
-};
 
 // Reducer function type
 template<typename TState>
 using Reducer = std::function<TState(const TState&, const Action&)>;
-
-// Middleware function type (for logging, async, etc.)
-using Middleware = std::function<void(const Action&)>;
 
 // Store (like Redux store)
 template<typename TState>
@@ -87,17 +64,3 @@ private:
     std::vector<std::function<void(const TState&)>> subscribers;
     std::vector<Middleware> middlewares;
 };
-
-// Common middleware implementations
-
-// Logger middleware
-inline Middleware createLoggerMiddleware() {
-    return [](const Action& action) {
-        std::cout << "[ACTION] " << action.type << std::endl;
-    };
-}
-
-// Thunk middleware (for async actions)
-template<typename TState>
-using ThunkAction = std::function<void(Store<TState>&)>;
-

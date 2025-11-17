@@ -85,4 +85,3 @@ inline std::shared_ptr<RenderNode> Rectangle(Props props) {
 inline std::shared_ptr<RenderNode> Circle(Props props) {
     return std::make_shared<RenderNode>(NodeType::Circle, props);
 }
-

@@ -1,11 +1,14 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-// Core engine
+// Core engine with new structure
 #include "core/Engine.h"
-#include "core/Component.h"
-#include "core/RenderNode.h"
-#include "core/Store.h"
+#include "core/component/Component.h"
+#include "core/types/Props.h"
+#include "core/types/State.h"
+#include "core/types/Action.h"
+#include "core/store/Store.h"
+#include "core/store/Middleware.h"
 
 // Simple state - just position
 struct GameState : public State {

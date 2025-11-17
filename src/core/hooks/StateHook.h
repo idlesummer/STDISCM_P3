@@ -1,11 +1,10 @@
 #pragma once
 
 #include <functional>
-#include <vector>
 #include <memory>
-#include <any>
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
 
 
 class Component; // Forward declaration
@@ -98,4 +97,3 @@ private:
     std::unordered_set<Component*> componentsToRerender;
     size_t stateCounter;
 };
-

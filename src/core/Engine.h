@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Component.h"
-#include "Reconciler.h"
-#include "Store.h"
-#include "StateManager.h"
-#include "EffectManager.h"
+#include "component/Component.h"
+#include "renderer/Reconciler.h"
+#include "store/Store.h"
+#include "hooks/StateHook.h"
+#include "hooks/EffectHook.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -90,4 +90,3 @@ private:
     std::shared_ptr<Component> rootComponent;
     std::function<void(sf::Event&, Store<TState>&)> eventHandler;
 };
-
