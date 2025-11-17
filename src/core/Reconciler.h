@@ -23,7 +23,7 @@ enum class ChangeType {
     Create,
     Update,
     Delete,
-    Reorder
+    Reorder,
 };
 
 struct Change {
@@ -37,20 +37,16 @@ class Reconciler {
 public:
     Reconciler(sf::RenderWindow* window)
         : window(window), rootInstance(nullptr) {
-        // Load default font
-        if (!SFMLInstance::defaultFont.loadFromFile("Media/arial.ttf")) {
-            // Fallback - try system font
+
+        if (!SFMLInstance::defaultFont.loadFromFile("Media/arial.ttf")) // Load default font
             SFMLInstance::defaultFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-        }
     }
 
     // Main reconciliation method - diffs and updates
     void reconcile(std::shared_ptr<RenderNode> newTree) {
-        if (!previousTree) {
-            // First render - create everything
+        if (!previousTree)    // First render - create everything
             rootInstance = createInstance(newTree);
-        } else {
-            // Subsequent render - diff and patch
+        else {                // Subsequent render - diff and patch
             auto changes = diff(previousTree, newTree, rootInstance);
             applyChanges(changes);
         }
@@ -60,11 +56,11 @@ public:
 
     // Render all SFML objects to window
     void render() {
-        if (rootInstance) {
-            window->clear(sf::Color::Black);
-            renderInstance(rootInstance);
-            window->display();
-        }
+        if (!rootInstance)
+            return;
+        window->clear(sf::Color::Black);
+        renderInstance(rootInstance);
+        window->display();
     }
 
     void reset() {
@@ -82,11 +78,8 @@ private:
         switch (node->type) {
             case NodeType::Sprite: {
                 auto sprite = std::make_shared<sf::Sprite>();
-
-                // Set texture if provided
-                if (auto* texture = std::get_if<sf::Texture*>(&node->props["texture"])) {
+                if (auto* texture = std::get_if<sf::Texture*>(&node->props["texture"])) // Set texture if provided
                     sprite->setTexture(**texture);
-                }
 
                 instance->drawable = sprite;
                 instance->transformable = sprite;
@@ -139,14 +132,12 @@ private:
         }
 
         // Create children recursively
-        for (auto& child : node->children) {
+        for (auto& child : node->children)
             instance->children.push_back(createInstance(child));
-        }
 
         // Cache by key if provided
-        if (!node->key.empty()) {
+        if (!node->key.empty())
             instanceCache[node->key] = instance;
-        }
 
         return instance;
     }
@@ -155,7 +146,8 @@ private:
     std::vector<Change> diff(std::shared_ptr<RenderNode> oldNode,
                             std::shared_ptr<RenderNode> newNode,
                             std::shared_ptr<SFMLInstance> instance) {
-        std::vector<Change> changes;
+        
+        auto changes = std::vector<Change>();
 
         // Node types differ - recreate
         if (oldNode->type != newNode->type) {
@@ -165,27 +157,24 @@ private:
         }
 
         // Same type - check for prop changes
-        if (propsChanged(oldNode->props, newNode->props)) {
+        if (propsChanged(oldNode->props, newNode->props))
             changes.push_back({ChangeType::Update, newNode, instance});
-        }
 
         // Diff children (simplified - no key-based reordering for now)
-        size_t minChildren = std::min(oldNode->children.size(), newNode->children.size());
+        auto minChildren = std::min(oldNode->children.size(), newNode->children.size());
 
-        for (size_t i = 0; i < minChildren; i++) {
+        for (auto i = size_t(0); i < minChildren; i++) {
             auto childChanges = diff(oldNode->children[i], newNode->children[i], instance->children[i]);
             changes.insert(changes.end(), childChanges.begin(), childChanges.end());
         }
 
         // New children added
-        for (size_t i = minChildren; i < newNode->children.size(); i++) {
+        for (auto i = minChildren; i < newNode->children.size(); i++)
             changes.push_back({ChangeType::Create, newNode->children[i], nullptr});
-        }
 
         // Old children removed
-        for (size_t i = minChildren; i < oldNode->children.size(); i++) {
+        for (auto i = minChildren; i < oldNode->children.size(); i++)
             changes.push_back({ChangeType::Delete, oldNode->children[i], instance->children[i]});
-        }
 
         return changes;
     }
@@ -196,18 +185,18 @@ private:
             return false;
 
         // Compare based on actual type
-        if (auto* aInt = std::get_if<int>(&a)) {
+        if (auto* aInt = std::get_if<int>(&a))
             return *aInt == std::get<int>(b);
-        }
-        else if (auto* aFloat = std::get_if<float>(&a)) {
+
+        else if (auto* aFloat = std::get_if<float>(&a))
             return *aFloat == std::get<float>(b);
-        }
-        else if (auto* aStr = std::get_if<std::string>(&a)) {
+        
+        else if (auto* aStr = std::get_if<std::string>(&a))
             return *aStr == std::get<std::string>(b);
-        }
-        else if (auto* aBool = std::get_if<bool>(&a)) {
+
+        else if (auto* aBool = std::get_if<bool>(&a))
             return *aBool == std::get<bool>(b);
-        }
+
         else if (auto* aVec = std::get_if<sf::Vector2f>(&a)) {
             auto bVec = std::get<sf::Vector2f>(b);
             return aVec->x == bVec.x && aVec->y == bVec.y;
@@ -217,9 +206,8 @@ private:
             return aColor->r == bColor.r && aColor->g == bColor.g &&
                    aColor->b == bColor.b && aColor->a == bColor.a;
         }
-        else if (auto* aTexture = std::get_if<sf::Texture*>(&a)) {
+        else if (auto* aTexture = std::get_if<sf::Texture*>(&a))
             return *aTexture == std::get<sf::Texture*>(b);
-        }
 
         return false;
     }
@@ -233,7 +221,6 @@ private:
             auto it = oldProps.find(key);
             if (it == oldProps.end())
                 return true;
-
             if (!propValueEquals(it->second, value))
                 return true;
         }
@@ -245,22 +232,16 @@ private:
     void applyChanges(const std::vector<Change>& changes) {
         for (const auto& change : changes) {
             switch (change.type) {
-                case ChangeType::Create:
-                    // Create new instance and add to parent
+                case ChangeType::Create:  // Create new instance and add to parent
                     createInstance(change.node);
                     break;
 
-                case ChangeType::Update:
-                    // Update existing instance properties
+                case ChangeType::Update:  // Update existing instance properties
                     updateInstance(change.instance, change.node);
                     break;
 
-                case ChangeType::Delete:
-                    // Remove from parent (handled by parent update)
-                    break;
-
-                case ChangeType::Reorder:
-                    // Reorder children (for key-based reconciliation)
+                case ChangeType::Delete:  // Remove from parent (handled by parent update)
+                case ChangeType::Reorder: // Reorder children (for key-based reconciliation)
                     break;
             }
         }
@@ -299,20 +280,17 @@ private:
                 break;
             }
 
-            default:
-                break;
+            default: break;
         }
     }
 
     // Recursively render instance and children
     void renderInstance(std::shared_ptr<SFMLInstance> instance) {
-        if (instance->drawable) {
+        if (instance->drawable)
             window->draw(*instance->drawable);
-        }
 
-        for (auto& child : instance->children) {
+        for (auto& child : instance->children)
             renderInstance(child);
-        }
     }
 
     sf::RenderWindow* window;
@@ -320,4 +298,3 @@ private:
     std::shared_ptr<SFMLInstance> rootInstance;
     std::unordered_map<std::string, std::shared_ptr<SFMLInstance>> instanceCache;
 };
-
