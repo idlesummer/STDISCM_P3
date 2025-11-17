@@ -7,13 +7,13 @@
 #include <iostream>
 
 // Forward declaration
-class MainMenuScene;
+class MainMenu;
 
 
-// Game Over Scene - receives score as parameter (like route params!)
-class GameOverScene : public Scene {
+// Game Over - receives score as parameter (like route params!)
+class GameOver : public Scene {
 public:
-    GameOverScene(int finalScore)
+    GameOver(int finalScore)
         : Scene("GameOver"), finalScore(finalScore) {}
 
     void onCreate() override {
@@ -70,7 +70,7 @@ public:
         // Check for Enter to return to menu
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
             std::cout << "Returning to main menu..." << std::endl;
-            game->changeScene(createMainMenuScene());
+            game->changeScene(createMainMenu());
         }
     }
 
@@ -89,29 +89,29 @@ public:
 private:
     int finalScore;
 
-    std::shared_ptr<Scene> createMainMenuScene();  // Forward declaration
+    std::shared_ptr<Scene> createMainMenu();  // Forward declaration
 };
 
 
 // Now we can implement the forward-declared functions
-#include "MainMenuScene.hpp"
-#include "GamePlayScene.hpp"
+#include "MainMenu.hpp"
+#include "GamePlay.hpp"
 
-// MainMenuScene navigation
-std::shared_ptr<Scene> MainMenuScene::createGamePlayScene() {
-    return std::make_shared<GamePlayScene>();
+// MainMenu navigation
+std::shared_ptr<Scene> MainMenu::createGamePlay() {
+    return std::make_shared<GamePlay>();
 }
 
-// GamePlayScene navigation
-std::shared_ptr<Scene> GamePlayScene::createMainMenuScene() {
-    return std::make_shared<MainMenuScene>();
+// GamePlay navigation
+std::shared_ptr<Scene> GamePlay::createMainMenu() {
+    return std::make_shared<MainMenu>();
 }
 
-std::shared_ptr<Scene> GamePlayScene::createGameOverScene(int finalScore) {
-    return std::make_shared<GameOverScene>(finalScore);
+std::shared_ptr<Scene> GamePlay::createGameOver(int finalScore) {
+    return std::make_shared<GameOver>(finalScore);
 }
 
-// GameOverScene navigation
-std::shared_ptr<Scene> GameOverScene::createMainMenuScene() {
-    return std::make_shared<MainMenuScene>();
+// GameOver navigation
+std::shared_ptr<Scene> GameOver::createMainMenu() {
+    return std::make_shared<MainMenu>();
 }

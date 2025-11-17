@@ -8,13 +8,13 @@
 #include <iostream>
 
 // Forward declaration
-class GamePlayScene;
+class GamePlay;
 
 
-// Main Menu Scene
-class MainMenuScene : public Scene {
+// Main Menu
+class MainMenu : public Scene {
 public:
-    MainMenuScene() : Scene("MainMenu") {}
+    MainMenu() : Scene("MainMenu") {}
 
     void onCreate() override {
         std::cout << "=== Main Menu Scene Loaded ===" << std::endl;
@@ -48,8 +48,8 @@ public:
         // Check for Enter key to start game
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
             std::cout << "Starting game..." << std::endl;
-            // Navigate to gameplay scene (defined below to avoid circular dependency)
-            game->changeScene(createGamePlayScene());
+            // Navigate to gameplay scene
+            game->changeScene(createGamePlay());
         }
     }
 
@@ -68,5 +68,5 @@ public:
     }
 
 private:
-    std::shared_ptr<Scene> createGamePlayScene();  // Implemented after GamePlayScene definition
+    std::shared_ptr<Scene> createGamePlay();  // Implemented after GamePlay definition
 };
