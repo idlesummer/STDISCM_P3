@@ -28,26 +28,18 @@ public:
 
     // Input hook - track key press/release events (event-based, like React event handlers)
     void onInput(Event& event) override {
-        if (event.type == Event::KeyPressed) {
-            if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A)
-                this->moveLeft = true;
-            if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D)
-                this->moveRight = true;
-            if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W)
-                this->moveUp = true;
-            if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S)
-                this->moveDown = true;
-        }
+        auto isPressed = (event.type == Event::KeyPressed);
+        auto isReleased = (event.type == Event::KeyReleased);
 
-        if (event.type == Event::KeyReleased) {
+        if (isPressed || isReleased) {
             if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A)
-                this->moveLeft = false;
+                this->moveLeft = isPressed;
             if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D)
-                this->moveRight = false;
+                this->moveRight = isPressed;
             if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W)
-                this->moveUp = false;
+                this->moveUp = isPressed;
             if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S)
-                this->moveDown = false;
+                this->moveDown = isPressed;
         }
     }
 
