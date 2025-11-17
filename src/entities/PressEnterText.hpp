@@ -13,7 +13,7 @@ public:
         : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
     void onCreate() override {
-        if (!this->font.loadFromFile("assets/sansation.ttf"))
+        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
             this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
         this->text.setFont(this->font);

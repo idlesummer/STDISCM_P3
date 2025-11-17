@@ -40,7 +40,7 @@ public:
         this->addEntity(this->scoreDisplay);
 
         // Instructions
-        if (this->instructionFont.loadFromFile("assets/sansation.ttf") ||
+        if (this->instructionFont.loadFromFile("assets/fonts/sansation.ttf") ||
             this->instructionFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
             this->instructionText.setFont(this->instructionFont);
             this->instructionText.setString("WASD to move | ESC to return to menu | Survive!");
