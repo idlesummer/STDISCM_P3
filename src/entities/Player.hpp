@@ -39,7 +39,7 @@ public:
     // Update hook - continuous game logic (like useEffect(() => {}, []))
     void onUpdate(Time dt) override {
         // Handle continuous input (state-based)
-        Vector2f velocity(0, 0);
+        auto velocity = Vector2f(0, 0);
 
         if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
             velocity.x = -speed;

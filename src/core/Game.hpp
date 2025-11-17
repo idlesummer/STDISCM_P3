@@ -41,7 +41,7 @@ public:
         Clock clock;
 
         while (window.isOpen()) {
-            Time dt = clock.restart();
+            auto dt = clock.restart();
 
             // 1. Process events and dispatch to current scene
             Event event;
