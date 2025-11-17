@@ -72,9 +72,6 @@ public:
     }
 
 private:
-    // State
     float speed;  // pixels per second
-
-    // Visual representation
     CircleShape sprite;
 };
