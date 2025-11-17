@@ -22,10 +22,14 @@ public:
     void onCreate() override {
         cout << "=== Game Over! Final Score: " << this->finalScore << " ===" << endl;
 
+        // Get font from AssetManager (already preloaded)
+        auto font = this->game->getAssetManager().getFont("main-font");
+
         // Game Over title
         auto title = make_shared<GameOverText>(
             "GAME OVER",
             Vector2f(400, 150),
+            font,
             72,
             Color::Red
         );
@@ -35,6 +39,7 @@ public:
         auto scoreText = make_shared<GameOverText>(
             "Final Score: " + to_string(this->finalScore),
             Vector2f(400, 280),
+            font,
             36,
             Color::Yellow
         );
@@ -54,6 +59,7 @@ public:
         auto messageText = make_shared<GameOverText>(
             message,
             Vector2f(400, 350),
+            font,
             28,
             Color::White
         );
@@ -63,6 +69,7 @@ public:
         auto instruction = make_shared<GameOverText>(
             "Press ENTER to return to Main Menu",
             Vector2f(400, 450),
+            font,
             24,
             Color(200, 200, 200)
         );

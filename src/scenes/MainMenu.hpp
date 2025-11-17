@@ -22,10 +22,14 @@ public:
     void onCreate() override {
         cout << "=== Main Menu Scene Loaded ===" << endl;
 
+        // Get font from AssetManager (already preloaded)
+        auto font = this->game->getAssetManager().getFont("main-font");
+
         // Create title
         auto title = make_shared<MenuText>(
             "Simple 2D Game Engine",
             Vector2f(400, 150),
+            font,
             64
         );
 
@@ -33,12 +37,14 @@ public:
         auto subtitle = make_shared<MenuText>(
             "React-Style Lifecycle Hooks",
             Vector2f(400, 230),
+            font,
             24
         );
 
         // Create pulsing instruction
         auto instruction = make_shared<PressEnterText>(
-            Vector2f(400, 400)
+            Vector2f(400, 400),
+            font
         );
 
         // Add entities to scene

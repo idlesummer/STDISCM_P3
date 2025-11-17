@@ -1,8 +1,10 @@
 #pragma once
 #include "Scene.hpp"
 #include "Entity.hpp"
+#include "AssetManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <iostream>
 
 using namespace sf;
 using namespace std;
@@ -12,8 +14,11 @@ using namespace std;
 class Game {
 public:
     Game(int width, int height, const string& title)
-        : window(VideoMode(width, height), title), currentScene(nullptr) {
+        : window(VideoMode(width, height), title),
+          currentScene(nullptr),
+          assetManager(4) {  // 4 worker threads for asset loading
         this->window.setFramerateLimit(165);
+        this->preloadAssets();
     }
 
     // Scene management (like React Router navigation)
@@ -49,8 +54,24 @@ public:
     
     auto getCurrentScene() const { return this->currentScene; }
     auto& getWindow() { return this->window; }
+    auto& getAssetManager() { return this->assetManager; }
 
 private:
+    void preloadAssets() {
+        cout << "[Game] Starting asset preload..." << endl;
+
+        // Load all fonts asynchronously
+        this->assetManager.loadFontAsync(
+            "main-font",
+            "assets/fonts/sansation.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+        );
+
+        // Wait for all assets to finish loading before starting the game
+        this->assetManager.waitForAll();
+        cout << "[Game] Asset preload complete!" << endl;
+    }
+
     void handleInputs(Time TICK) {
         if (this->currentScene)
             this->currentScene->onUpdate(TICK);
@@ -82,4 +103,5 @@ private:
 
     RenderWindow window;
     shared_ptr<Scene> currentScene;
+    AssetManager assetManager;
 };

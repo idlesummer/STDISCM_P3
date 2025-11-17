@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 using namespace sf;
 using namespace std;
@@ -9,8 +10,8 @@ using namespace std;
 // Simple text entity for menu displays
 class MenuText : public Entity {
 public:
-    MenuText(const string& content, Vector2f position, int size = 48)
-        : Entity("MenuText") {
+    MenuText(const string& content, Vector2f position, shared_ptr<Font> font, int size = 48)
+        : Entity("MenuText"), font(font) {
         this->text.setString(content);
         this->text.setCharacterSize(size);
         this->text.setFillColor(Color::White);
@@ -18,10 +19,10 @@ public:
     }
 
     void onCreate() override {
-        // Try to load font (will use default if fails)
-        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
-            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-        this->text.setFont(this->font);
+        // Font is now loaded asynchronously by AssetManager
+        if (this->font) {
+            this->text.setFont(*this->font);
+        }
     }
 
     void onDraw(RenderWindow& window) override {
@@ -29,6 +30,6 @@ public:
     }
 
 private:
-    Font font;
+    shared_ptr<Font> font;
     Text text;
 };
