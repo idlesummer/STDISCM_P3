@@ -21,7 +21,7 @@ public:
     }
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/arial.ttf"))
+        if (!font.loadFromFile("assets/sansation.ttf"))
             font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
         text.setFont(font);

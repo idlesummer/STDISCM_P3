@@ -22,7 +22,7 @@ public:
 
     void onCreate() override {
         // Try to load font (will use default if fails)
-        if (!font.loadFromFile("assets/arial.ttf"))
+        if (!font.loadFromFile("assets/sansation.ttf"))
             font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
         text.setFont(font);
     }
@@ -44,7 +44,7 @@ public:
         : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/arial.ttf"))
+        if (!font.loadFromFile("assets/sansation.ttf"))
             font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
         text.setFont(font);

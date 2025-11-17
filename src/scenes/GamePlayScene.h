@@ -54,7 +54,7 @@ public:
     ScoreText() : Entity("ScoreText"), score(0) {}
 
     void onCreate() override {
-        if (!font.loadFromFile("assets/arial.ttf"))
+        if (!font.loadFromFile("assets/sansation.ttf"))
             font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
         text.setFont(font);
@@ -111,7 +111,7 @@ public:
         addEntity(scoreDisplay);
 
         // Instructions
-        if (instructionFont.loadFromFile("assets/arial.ttf") ||
+        if (instructionFont.loadFromFile("assets/sansation.ttf") ||
             instructionFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
             instructionText.setFont(instructionFont);
             instructionText.setString("WASD to move | ESC to return to menu | Survive!");
