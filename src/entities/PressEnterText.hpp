@@ -1,7 +1,6 @@
 #pragma once
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
-#include <memory>
 
 using namespace sf;
 using namespace std;
@@ -10,21 +9,21 @@ using namespace std;
 // Pulsing "Press Enter" instruction text with animation
 class PressEnterText : public Entity {
 public:
-    PressEnterText(Vector2f position, shared_ptr<Font> font)
-        : Entity("PressEnterText"), position(position), font(font), alpha(255), fadeDirection(-1) {}
+    PressEnterText(Vector2f position)
+        : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
     void onCreate() override {
-        // Font is now loaded asynchronously by AssetManager
-        if (this->font) {
-            this->text.setFont(*this->font);
-            this->text.setString("Press ENTER to Start");
-            this->text.setCharacterSize(24);
-            this->text.setPosition(this->position);
+        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
+            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
-            // Center the text
-            auto bounds = this->text.getLocalBounds();
-            this->text.setOrigin(bounds.width / 2, bounds.height / 2);
-        }
+        this->text.setFont(this->font);
+        this->text.setString("Press ENTER to Start");
+        this->text.setCharacterSize(24);
+        this->text.setPosition(this->position);
+
+        // Center the text
+        auto bounds = this->text.getLocalBounds();
+        this->text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
     void onUpdate(Time dt) override {
@@ -47,7 +46,7 @@ public:
     }
 
 private:
-    shared_ptr<Font> font;
+    Font font;
     Text text;
     Vector2f position;
     float alpha;

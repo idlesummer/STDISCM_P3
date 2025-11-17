@@ -1,10 +1,8 @@
 #pragma once
 #include "Scene.hpp"
 #include "Entity.hpp"
-#include "AssetManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include <iostream>
 
 using namespace sf;
 using namespace std;
@@ -14,11 +12,8 @@ using namespace std;
 class Game {
 public:
     Game(int width, int height, const string& title)
-        : window(VideoMode(width, height), title),
-          currentScene(nullptr),
-          assetManager() {      // 4 worker threads for asset loading
+        : window(VideoMode(width, height), title), currentScene(nullptr) {
         this->window.setFramerateLimit(165);
-        this->preloadAssets();
     }
 
     // Scene management (like React Router navigation)
@@ -34,16 +29,16 @@ public:
             this->currentScene->onCreate();         // Mount new scene
         }
     }
-    
+
     // Main game loop with fixed timestep
     void run() {
         auto TICK = seconds(1.f / 60.f);            // 60 updates per second
         auto clock = Clock();
         auto lag = Time::Zero;
-        
+
         while (this->window.isOpen()) {
             auto elapsed = clock.restart();
-            for (lag += elapsed; lag >= TICK; lag -= TICK) {  
+            for (lag += elapsed; lag >= TICK; lag -= TICK) {
                 this->handleEvents();               // 1. Process events and dispatch to current scene
                 this->handleInputs(TICK);           // 2. Update current scene at fixed timestep
             }
@@ -51,41 +46,29 @@ public:
         }
         this->handleExit();                         // 4. Cleanup on exit
     }
-    
+
     auto getCurrentScene() const { return this->currentScene; }
     auto& getWindow() { return this->window; }
-    auto& getAssetManager() { return this->assetManager; }
 
 private:
-    void preloadAssets() {
-        cout << "[Game] Starting asset preload..." << endl;
-
-        // Load all fonts asynchronously
-        this->assetManager.loadFontAsync("main-font", "assets/fonts/sansation.ttf");
-
-        // Wait for all assets to finish loading before starting the game
-        this->assetManager.awaitLoadingAssets();
-        cout << "[Game] Asset preload complete!" << endl;
-    }
-
     void handleInputs(Time TICK) {
         if (this->currentScene)
             this->currentScene->onUpdate(TICK);
     }
-    
+
     void handleEvents() {
         auto event = Event();
         while (this->window.pollEvent(event)) {
-            if (event.type == Event::Closed) 
+            if (event.type == Event::Closed)
                 this->window.close();
-            if (this->currentScene) 
+            if (this->currentScene)
                 this->currentScene->onInput(event);
         }
     }
 
     void handleRender() {
         this->window.clear(Color::Black);
-        if (this->currentScene) 
+        if (this->currentScene)
             this->currentScene->onDraw(this->window);
         this->window.display();
     }
@@ -99,5 +82,4 @@ private:
 
     RenderWindow window;
     shared_ptr<Scene> currentScene;
-    AssetManager assetManager;
 };

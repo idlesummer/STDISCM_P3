@@ -1,7 +1,6 @@
 #pragma once
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include <string>
 
 using namespace sf;
@@ -11,8 +10,8 @@ using namespace std;
 // Game Over text display with customizable content, position, size, and color
 class GameOverText : public Entity {
 public:
-    GameOverText(const string& content, Vector2f position, shared_ptr<Font> font, int size, Color color)
-        : Entity("GameOverText"), font(font) {
+    GameOverText(const string& content, Vector2f position, int size, Color color)
+        : Entity("GameOverText") {
         this->content = content;
         this->position = position;
         this->size = size;
@@ -20,18 +19,18 @@ public:
     }
 
     void onCreate() override {
-        // Font is now loaded asynchronously by AssetManager
-        if (this->font) {
-            this->text.setFont(*this->font);
-            this->text.setString(this->content);
-            this->text.setCharacterSize(this->size);
-            this->text.setFillColor(this->color);
-            this->text.setPosition(this->position);
+        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
+            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
-            // Center the text
-            auto bounds = this->text.getLocalBounds();
-            this->text.setOrigin(bounds.width / 2, bounds.height / 2);
-        }
+        this->text.setFont(this->font);
+        this->text.setString(this->content);
+        this->text.setCharacterSize(this->size);
+        this->text.setFillColor(this->color);
+        this->text.setPosition(this->position);
+
+        // Center the text
+        auto bounds = this->text.getLocalBounds();
+        this->text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
     void onDraw(RenderWindow& window) override {
@@ -39,7 +38,7 @@ public:
     }
 
 private:
-    shared_ptr<Font> font;
+    Font font;
     Text text;
     string content;
     Vector2f position;

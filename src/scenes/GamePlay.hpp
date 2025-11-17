@@ -23,9 +23,6 @@ public:
     void onCreate() override {
         cout << "=== Game Started ===" << endl;
 
-        // Get font from AssetManager (already preloaded)
-        auto font = this->game->getAssetManager().getFont("main-font");
-
         // Create player
         this->player = make_shared<Player>(Vector2f(400, 300));
         this->addEntity(this->player);
@@ -39,12 +36,13 @@ public:
         this->addEntity(enemy2);
 
         // Create score display
-        this->scoreDisplay = make_shared<ScoreText>(font);
+        this->scoreDisplay = make_shared<ScoreText>();
         this->addEntity(this->scoreDisplay);
 
         // Instructions
-        if (font) {
-            this->instructionText.setFont(*font);
+        if (this->instructionFont.loadFromFile("assets/fonts/sansation.ttf") ||
+            this->instructionFont.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
+            this->instructionText.setFont(this->instructionFont);
             this->instructionText.setString("WASD to move | ESC to return to menu | Survive!");
             this->instructionText.setCharacterSize(18);
             this->instructionText.setFillColor(Color(200, 200, 200));
@@ -102,6 +100,7 @@ private:
     shared_ptr<ScoreText> scoreDisplay;
     float elapsedTime = 0.0f;
 
+    Font instructionFont;
     Text instructionText;
 
     shared_ptr<Scene> createMainMenu();   // Forward declaration
