@@ -24,71 +24,75 @@ public:
     }
 
     void registerEffect(Component* component, std::function<void()> callback, std::vector<std::any> dependencies = {}) {
-        auto key = getEffectKey(component);
+        auto key = this->getEffectKey(component);
 
-        Effect effect;
+        auto effect = Effect();
         effect.callback = callback;
         effect.dependencies = dependencies;
 
-        effects[key] = effect;
-        effectsToRun.push_back(key);
+        this->effects[key] = effect;
+        this->effectsToRun.push_back(key);
     }
 
     void registerEffectWithCleanup(Component* component, std::function<std::function<void()>()> effect, std::vector<std::any> dependencies = {}) {
-        auto key = getEffectKey(component);
+        auto key = this->getEffectKey(component);
 
-        Effect e;
+        auto e = Effect();
         e.dependencies = dependencies;
         e.callback = [effect, &e]() {
             e.cleanup = effect();  // Store cleanup function
         };
 
-        effects[key] = e;
-        effectsToRun.push_back(key);
+        this->effects[key] = e;
+        this->effectsToRun.push_back(key);
     }
 
     void runEffects() {
-        for (const auto& key : effectsToRun) {
-            if (effects.find(key) != effects.end()) {
-                auto& effect = effects[key];
-                if (shouldRunEffect(key, effect)) {
-                    // Run cleanup from previous effect
-                    if (effect.cleanup)
-                        effect.cleanup();
+        for (const auto& key : this->effectsToRun) {
+            if (this->effects.find(key) == this->effects.end())
+                continue;
 
-                    // Run new effect
-                    effect.callback();
+            auto& effect = this->effects[key];
+            if (!this->shouldRunEffect(key, effect))
+                continue;
 
-                    // Store dependencies for next comparison
-                    previousDependencies[key] = effect.dependencies;
-                }
-            }
+            // Run cleanup from previous effect
+            if (effect.cleanup)
+                effect.cleanup();
+
+            // Run new effect
+            effect.callback();
+
+            // Store dependencies for next comparison
+            this->previousDependencies[key] = effect.dependencies;
         }
-        effectsToRun.clear();
+        this->effectsToRun.clear();
     }
 
     void cleanup(Component* component) {
         // Run all cleanup functions for this component
         auto prefix = std::to_string(reinterpret_cast<uintptr_t>(component));
-        for (auto& [key, effect] : effects) {
-            if (key.find(prefix) == 0 && effect.cleanup) {
-                effect.cleanup();
-            }
+        for (auto& [key, effect] : this->effects) {
+            if (key.find(prefix) != 0)
+                continue;
+            if (!effect.cleanup)
+                continue;
+            effect.cleanup();
         }
     }
 
     void reset() {
-        effects.clear();
-        effectsToRun.clear();
-        previousDependencies.clear();
-        effectCounter = 0;
+        this->effects.clear();
+        this->effectsToRun.clear();
+        this->previousDependencies.clear();
+        this->effectCounter = 0;
     }
 
 private:
     EffectManager() : effectCounter(0) {}
 
     std::string getEffectKey(Component* component) {
-        return std::to_string(reinterpret_cast<uintptr_t>(component)) + "_effect_" + std::to_string(effectCounter++);
+        return std::to_string(reinterpret_cast<uintptr_t>(component)) + "_effect_" + std::to_string(this->effectCounter++);
     }
 
     bool shouldRunEffect(const std::string& key, const Effect& effect) {
@@ -97,11 +101,11 @@ private:
             return true;
 
         // First run
-        if (previousDependencies.find(key) == previousDependencies.end())
+        if (this->previousDependencies.find(key) == this->previousDependencies.end())
             return true;
 
         // Compare dependencies (simplified - in real implementation would need deep comparison)
-        auto& prevDeps = previousDependencies[key];
+        auto& prevDeps = this->previousDependencies[key];
         if (prevDeps.size() != effect.dependencies.size())
             return true;
 
