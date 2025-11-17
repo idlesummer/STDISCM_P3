@@ -1,33 +1,28 @@
 #pragma once
 
 #include "../types/Props.h"
-#include "../hooks/StateHook.h"
-#include "../hooks/EffectHook.h"
 #include <SFML/System/Time.hpp>
 #include <memory>
 #include <string>
-#include <functional>
-#include <any>
-#include <vector>
 
 
-// Base component class (like React.Component)
+// Base component class (like React.Component - class-based)
 class Component {
 public:
     Component(const std::string& name = "Component")
         : componentName(name), mounted(false) {}
 
-    virtual ~Component() {
-        if (mounted)
-            EffectManager::getInstance().cleanup(this);
-    }
+    virtual ~Component() = default;
 
     // Main render method - returns virtual DOM tree
     virtual std::shared_ptr<RenderNode> render() = 0;
 
-    // Lifecycle methods
-    virtual void onMount() {}
-    virtual void onUnmount() {}
+    // Lifecycle methods (like class-based React)
+    virtual void componentDidMount() {}
+    virtual void componentWillUnmount() {}
+    virtual void componentDidUpdate() {}
+
+    // Update hook (for game logic)
     virtual void onUpdate(sf::Time deltaTime) {}
 
     // Component identity
@@ -38,37 +33,21 @@ public:
         if (this->mounted)
             return;
         this->mounted = true;
-        this->onMount();
+        this->componentDidMount();
     }
 
     void unmount() {
         if (!this->mounted)
             return;
-        this->onUnmount();
-        EffectManager::getInstance().cleanup(this);
+        this->componentWillUnmount();
         this->mounted = false;
     }
 
 protected:
-    // Hook: useState - Returns a state reference
-    template<typename T>
-    StateRef<T> useState(T initialValue) {
-        return StateManager::getInstance().registerState<T>(this, initialValue);
-    }
-
-    // Hook: useEffect - Run side effects when deps change
-    void useEffect(std::function<void()> effect, std::vector<std::any> deps = {}) {
-        EffectManager::getInstance().registerEffect(this, effect, deps);
-    }
-
-    // Hook: useEffect with cleanup
-    void useEffect(std::function<std::function<void()>()> effect, std::vector<std::any> deps = {}) {
-        EffectManager::getInstance().registerEffectWithCleanup(this, effect, deps);
-    }
-
-    // Trigger re-render
-    void forceUpdate() {
-        StateManager::getInstance().markForRerender(this);
+    // Trigger re-render (like this.setState() in React)
+    void setState() {
+        // Component always re-renders on next frame
+        // No complex state management needed
     }
 
 private:
