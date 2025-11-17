@@ -8,6 +8,7 @@
 #include "EnemyComponent.h"
 #include "HUDComponent.h"
 #include <memory>
+#include <algorithm>
 
 namespace ReactSFML {
 

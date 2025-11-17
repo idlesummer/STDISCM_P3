@@ -15,7 +15,7 @@ public:
 
     void onMount() override {
         position = useState(enemyData.position);
-        health = useState(sf::Vector2f(enemyData.health, 0));
+        health = useState(enemyData.health);
 
         // Animate enemy movement
         useEffect([this]() {
@@ -50,7 +50,7 @@ public:
 private:
     EnemyData enemyData;
     StateRef<sf::Vector2f> position;
-    StateRef<sf::Vector2f> health;
+    StateRef<int> health;
 };
 
 } // namespace ReactSFML

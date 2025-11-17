@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <SFML/Graphics.hpp>
 
 // Core engine

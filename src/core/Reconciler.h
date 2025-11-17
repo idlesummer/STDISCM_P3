@@ -16,7 +16,7 @@ struct SFMLInstance {
     std::vector<std::shared_ptr<SFMLInstance>> children;
 
     // Font for text nodes (shared resource)
-    static sf::Font defaultFont;
+    inline static sf::Font defaultFont;
 };
 
 // Change types for reconciliation
@@ -285,8 +285,5 @@ private:
     std::shared_ptr<SFMLInstance> rootInstance;
     std::unordered_map<std::string, std::shared_ptr<SFMLInstance>> instanceCache;
 };
-
-// Initialize static member
-sf::Font SFMLInstance::defaultFont;
 
 } // namespace ReactSFML
