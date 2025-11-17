@@ -7,7 +7,7 @@
 #include <string>
 #include <functional>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Base component class (like React.Component)
 class Component {
@@ -78,4 +78,4 @@ private:
 // Higher-order component helpers
 using ComponentFactory = std::function<std::shared_ptr<Component>()>;
 
-} // namespace ReactSFML
+} // namespace Reactive

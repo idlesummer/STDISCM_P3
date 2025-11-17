@@ -10,7 +10,7 @@
 #include <memory>
 #include <algorithm>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Main game component that composes all other components
 class GameComponent : public Component {
@@ -113,4 +113,4 @@ private:
     std::vector<std::shared_ptr<EnemyComponent>> enemies;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

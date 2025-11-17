@@ -8,84 +8,81 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Main engine class that manages the React-like game loop
 template<typename TState>
-class ReactSFMLEngine {
+class Engine {
 public:
-    ReactSFMLEngine(int width, int height, const std::string& title,
-                   TState initialState, Reducer<TState> reducer)
+    Engine(int width, int height, const std::string& title,
+           TState initialState, Reducer<TState> reducer)
         : window(sf::VideoMode(width, height), title),
           store(initialState, reducer),
-          reconciler(&window),
+          reconciler(&this->window),
           rootComponent(nullptr) {
 
-        window.setFramerateLimit(60);
+        this->window.setFramerateLimit(60);
     }
 
     // Set the root component (like ReactDOM.render)
     void setRoot(std::shared_ptr<Component> root) {
-        rootComponent = root;
-        if (rootComponent) {
-            rootComponent->mount();
-        }
+        this->rootComponent = root;
+        if (this->rootComponent)
+            this->rootComponent->mount();
     }
 
     // Get store for dispatching actions
     Store<TState>& getStore() {
-        return store;
+        return this->store;
     }
 
     // Main game loop
     void run() {
-        sf::Clock clock;
+        auto clock = sf::Clock();
 
-        while (window.isOpen()) {
-            sf::Time deltaTime = clock.restart();
+        while (this->window.isOpen()) {
+            auto deltaTime = clock.restart();
 
             // 1. Process events
-            processEvents();
+            this->processEvents();
 
             // 2. Update components
-            if (rootComponent) {
-                rootComponent->onUpdate(deltaTime);
-            }
+            if (this->rootComponent)
+                this->rootComponent->onUpdate(deltaTime);
 
             // 3. Run effects
             EffectManager::getInstance().runEffects();
 
             // 4. Render phase: generate virtual DOM
-            if (rootComponent) {
-                auto renderTree = rootComponent->render();
+            if (!this->rootComponent)
+                continue;
 
-                // 5. Reconciliation phase: diff and update SFML objects
-                reconciler.reconcile(renderTree);
+            auto renderTree = this->rootComponent->render();
 
-                // 6. Commit phase: render to screen
-                reconciler.render();
-            }
+            // 5. Reconciliation phase: diff and update SFML objects
+            this->reconciler.reconcile(renderTree);
+
+            // 6. Commit phase: render to screen
+            this->reconciler.render();
         }
     }
 
     // Process SFML events and dispatch actions
     void processEvents() {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
+        auto event = sf::Event();
+        while (this->window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                this->window.close();
 
             // Pass event to event handler if set
-            if (eventHandler) {
-                eventHandler(event, store);
-            }
+            if (this->eventHandler)
+                this->eventHandler(event, this->store);
         }
     }
 
     // Set custom event handler
     void setEventHandler(std::function<void(sf::Event&, Store<TState>&)> handler) {
-        eventHandler = handler;
+        this->eventHandler = handler;
     }
 
 private:
@@ -96,4 +93,4 @@ private:
     std::function<void(sf::Event&, Store<TState>&)> eventHandler;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

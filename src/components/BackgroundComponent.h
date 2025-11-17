@@ -3,7 +3,7 @@
 #include "../core/Component.h"
 #include "../core/RenderNode.h"
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Simple background component
 class BackgroundComponent : public Component {
@@ -27,4 +27,4 @@ public:
     }
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

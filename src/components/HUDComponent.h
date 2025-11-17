@@ -3,7 +3,7 @@
 #include "../core/Component.h"
 #include "../core/RenderNode.h"
 
-namespace ReactSFML {
+namespace Reactive {
 
 // HUD component for score and game info
 class HUDComponent : public Component {
@@ -50,4 +50,4 @@ private:
     bool gameOver;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

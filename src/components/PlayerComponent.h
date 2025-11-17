@@ -5,7 +5,7 @@
 #include "GameState.h"
 #include <iostream>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Player component
 class PlayerComponent : public Component {
@@ -70,4 +70,4 @@ private:
     StateRef<int> health;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

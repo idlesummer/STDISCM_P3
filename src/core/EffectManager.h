@@ -6,7 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace ReactSFML {
+namespace Reactive {
 
 class Component; // Forward declaration
 
@@ -122,4 +122,4 @@ private:
     size_t effectCounter;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

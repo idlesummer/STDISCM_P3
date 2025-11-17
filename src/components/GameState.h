@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Game entity data
 struct EnemyData {
@@ -99,4 +99,4 @@ inline GameState gameReducer(const GameState& state, const Action& action) {
     return newState;
 }
 
-} // namespace ReactSFML
+} // namespace Reactive

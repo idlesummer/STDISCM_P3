@@ -7,7 +7,7 @@
 #include <variant>
 #include <unordered_map>
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Type-safe props using variant
 using PropValue = std::variant<
@@ -44,22 +44,24 @@ public:
     // Helper to get prop with default value
     template<typename T>
     T getProp(const std::string& name, T defaultValue) const {
-        auto it = props.find(name);
-        if (it != props.end()) {
-            if (auto* val = std::get_if<T>(&it->second))
-                return *val;
-        }
+        auto it = this->props.find(name);
+        if (it == this->props.end())
+            return defaultValue;
+
+        if (auto* val = std::get_if<T>(&it->second))
+            return *val;
+
         return defaultValue;
     }
 
     // Builder pattern for cleaner syntax
     RenderNode& withKey(const std::string& k) {
-        key = k;
+        this->key = k;
         return *this;
     }
 
     RenderNode& withChild(std::shared_ptr<RenderNode> child) {
-        children.push_back(child);
+        this->children.push_back(child);
         return *this;
     }
 };
@@ -85,4 +87,4 @@ inline std::shared_ptr<RenderNode> Circle(Props props) {
     return std::make_shared<RenderNode>(NodeType::Circle, props);
 }
 
-} // namespace ReactSFML
+} // namespace Reactive

@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace ReactSFML {
+namespace Reactive {
 
 class Component; // Forward declaration
 
@@ -21,12 +21,24 @@ public:
     StateRef(T* valuePtr, std::function<void(T)> setter)
         : valuePtr(valuePtr), setter(setter) {}
 
-    T get() const { return valuePtr ? *valuePtr : T(); }
-    void set(T newValue) { if (setter) setter(newValue); }
+    T get() const {
+        if (!this->valuePtr)
+            return T();
+        return *this->valuePtr;
+    }
+
+    void set(T newValue) {
+        if (!this->setter)
+            return;
+        this->setter(newValue);
+    }
 
     // Convenient operators
-    operator T() const { return get(); }
-    StateRef& operator=(const T& value) { set(value); return *this; }
+    operator T() const { return this->get(); }
+    StateRef& operator=(const T& value) {
+        this->set(value);
+        return *this;
+    }
 
 private:
     T* valuePtr;
@@ -43,47 +55,46 @@ public:
 
     template<typename T>
     StateRef<T> registerState(Component* component, T initialValue) {
-        auto key = getStateKey(component);
+        auto key = this->getStateKey(component);
 
         // Store state value
-        if (stateValues.find(key) == stateValues.end()) {
-            stateValues[key] = std::make_shared<T>(initialValue);
-        }
+        if (this->stateValues.find(key) == this->stateValues.end())
+            this->stateValues[key] = std::make_shared<T>(initialValue);
 
-        auto valuePtr = std::static_pointer_cast<T>(stateValues[key]);
+        auto valuePtr = std::static_pointer_cast<T>(this->stateValues[key]);
 
         // Create setter that triggers re-render
         auto setter = [this, component, valuePtr](T newValue) {
             *valuePtr = newValue;
-            markForRerender(component);
+            this->markForRerender(component);
         };
 
         return StateRef<T>(valuePtr.get(), setter);
     }
 
     void markForRerender(Component* component) {
-        componentsToRerender.insert(component);
+        this->componentsToRerender.insert(component);
     }
 
     bool needsRerender(Component* component) const {
-        return componentsToRerender.find(component) != componentsToRerender.end();
+        return this->componentsToRerender.find(component) != this->componentsToRerender.end();
     }
 
     void clearRerenderFlag(Component* component) {
-        componentsToRerender.erase(component);
+        this->componentsToRerender.erase(component);
     }
 
     void reset() {
-        stateValues.clear();
-        componentsToRerender.clear();
-        stateCounter = 0;
+        this->stateValues.clear();
+        this->componentsToRerender.clear();
+        this->stateCounter = 0;
     }
 
 private:
     StateManager() : stateCounter(0) {}
 
     std::string getStateKey(Component* component) {
-        return std::to_string(reinterpret_cast<uintptr_t>(component)) + "_" + std::to_string(stateCounter++);
+        return std::to_string(reinterpret_cast<uintptr_t>(component)) + "_" + std::to_string(this->stateCounter++);
     }
 
     std::unordered_map<std::string, std::shared_ptr<void>> stateValues;
@@ -91,4 +102,4 @@ private:
     size_t stateCounter;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive

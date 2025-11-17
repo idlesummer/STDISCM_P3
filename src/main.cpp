@@ -3,13 +3,13 @@
 #include <SFML/Graphics.hpp>
 
 // Core engine
-#include "core/ReactSFMLEngine.h"
+#include "core/Engine.h"
 
 // Components
 #include "components/GameState.h"
 #include "components/GameComponent.h"
 
-using namespace ReactSFML;
+using namespace Reactive;
 
 // Event handler - converts SFML events to actions
 void handleEvents(sf::Event& event, Store<GameState>& store) {
@@ -74,9 +74,9 @@ int main() {
     std::cout << std::endl;
 
     // Create engine with initial state and reducer
-    ReactSFMLEngine<GameState> engine(
+    auto engine = Engine<GameState>(
         800, 600,
-        "React SFML - Demo Game",
+        "Reactive SFML - Demo Game",
         GameState(),
         gameReducer
     );

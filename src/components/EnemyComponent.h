@@ -4,7 +4,7 @@
 #include "../core/RenderNode.h"
 #include "GameState.h"
 
-namespace ReactSFML {
+namespace Reactive {
 
 // Enemy component
 class EnemyComponent : public Component {
@@ -52,4 +52,4 @@ private:
     StateRef<int> health;
 };
 
-} // namespace ReactSFML
+} // namespace Reactive
