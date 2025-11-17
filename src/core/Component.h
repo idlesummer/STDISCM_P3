@@ -33,18 +33,18 @@ public:
     bool isMounted() const { return mounted; }
 
     void mount() {
-        if (!mounted) {
-            mounted = true;
-            onMount();
-        }
+        if (this->mounted)
+            return;
+        this->mounted = true;
+        this->onMount();
     }
 
     void unmount() {
-        if (mounted) {
-            onUnmount();
-            EffectManager::getInstance().cleanup(this);
-            mounted = false;
-        }
+        if (!this->mounted)
+            return;
+        this->onUnmount();
+        EffectManager::getInstance().cleanup(this);
+        this->mounted = false;
     }
 
 protected:
