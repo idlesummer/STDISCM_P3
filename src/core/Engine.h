@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Component.h"
-#include "Reconciler.h"
-#include "Store.h"
-#include "StateManager.h"
-#include "EffectManager.h"
+#include "component/Component.h"
+#include "renderer/Reconciler.h"
+#include "store/Store.h"
+#include "hooks/StateHook.h"
+#include "hooks/EffectHook.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -13,10 +13,9 @@
 template<typename TState>
 class Engine {
 public:
-    Engine(int width, int height, const std::string& title,
-           TState initialState, Reducer<TState> reducer)
+    Engine(int width, int height, const std::string& title, Store<TState>& store)
         : window(sf::VideoMode(width, height), title),
-          store(initialState, reducer),
+          store(&store),
           reconciler(&this->window),
           rootComponent(nullptr) {
 
@@ -32,7 +31,7 @@ public:
 
     // Get store for dispatching actions
     Store<TState>& getStore() {
-        return this->store;
+        return *this->store;
     }
 
     // Main game loop
@@ -75,7 +74,7 @@ public:
 
             // Pass event to event handler if set
             if (this->eventHandler)
-                this->eventHandler(event, this->store);
+                this->eventHandler(event, *this->store);
         }
     }
 
@@ -86,9 +85,8 @@ public:
 
 private:
     sf::RenderWindow window;
-    Store<TState> store;
+    Store<TState>* store;
     Reconciler reconciler;
     std::shared_ptr<Component> rootComponent;
     std::function<void(sf::Event&, Store<TState>&)> eventHandler;
 };
-

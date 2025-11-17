@@ -1,11 +1,10 @@
 #pragma once
 
 #include <functional>
-#include <vector>
 #include <memory>
-#include <any>
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
 
 
 class Component; // Forward declaration
@@ -21,9 +20,7 @@ public:
         : valuePtr(valuePtr), setter(setter) {}
 
     T get() const {
-        if (!this->valuePtr)
-            return T();
-        return *this->valuePtr;
+        return !this->valuePtr ? T() : *this->valuePtr;
     }
 
     void set(T newValue) {
@@ -48,7 +45,7 @@ private:
 class StateManager {
 public:
     static StateManager& getInstance() {
-        static StateManager instance;
+        static auto instance = StateManager();
         return instance;
     }
 
@@ -100,4 +97,3 @@ private:
     std::unordered_set<Component*> componentsToRerender;
     size_t stateCounter;
 };
-

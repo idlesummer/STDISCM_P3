@@ -1,11 +1,14 @@
 #pragma once
 
-#include "RenderNode.h"
-#include "StateManager.h"
-#include "EffectManager.h"
+#include "../types/Props.h"
+#include "../hooks/StateHook.h"
+#include "../hooks/EffectHook.h"
+#include <SFML/System/Time.hpp>
 #include <memory>
 #include <string>
 #include <functional>
+#include <any>
+#include <vector>
 
 
 // Base component class (like React.Component)
@@ -28,8 +31,8 @@ public:
     virtual void onUpdate(sf::Time deltaTime) {}
 
     // Component identity
-    std::string getName() const { return componentName; }
-    bool isMounted() const { return mounted; }
+    std::string getName() const { return this->componentName; }
+    bool isMounted() const { return this->mounted; }
 
     void mount() {
         if (this->mounted)
@@ -39,7 +42,8 @@ public:
     }
 
     void unmount() {
-        if (!this->mounted) return;
+        if (!this->mounted)
+            return;
         this->onUnmount();
         EffectManager::getInstance().cleanup(this);
         this->mounted = false;
@@ -52,14 +56,14 @@ protected:
         return StateManager::getInstance().registerState<T>(this, initialValue);
     }
 
-    // Hook: useEffect - Run side effects when dependencies change
-    void useEffect(std::function<void()> effect, std::vector<std::any> dependencies = {}) {
-        EffectManager::getInstance().registerEffect(this, effect, dependencies);
+    // Hook: useEffect - Run side effects when deps change
+    void useEffect(std::function<void()> effect, std::vector<std::any> deps = {}) {
+        EffectManager::getInstance().registerEffect(this, effect, deps);
     }
 
     // Hook: useEffect with cleanup
-    void useEffect(std::function<std::function<void()>()> effect, std::vector<std::any> dependencies = {}) {
-        EffectManager::getInstance().registerEffectWithCleanup(this, effect, dependencies);
+    void useEffect(std::function<std::function<void()>()> effect, std::vector<std::any> deps = {}) {
+        EffectManager::getInstance().registerEffectWithCleanup(this, effect, deps);
     }
 
     // Trigger re-render

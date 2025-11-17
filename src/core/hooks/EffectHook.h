@@ -3,15 +3,15 @@
 #include <functional>
 #include <vector>
 #include <any>
-#include <memory>
 #include <unordered_map>
+#include <string>
 
 
 class Component; // Forward declaration
 
 struct Effect {
     std::function<void()> callback;
-    std::vector<std::any> dependencies;
+    std::vector<std::any> deps;
     std::function<void()> cleanup;  // Cleanup function (like useEffect return value)
 };
 
@@ -23,22 +23,22 @@ public:
         return instance;
     }
 
-    void registerEffect(Component* component, std::function<void()> callback, std::vector<std::any> dependencies = {}) {
+    void registerEffect(Component* component, std::function<void()> callback, std::vector<std::any> deps = {}) {
         auto key = this->getEffectKey(component);
         auto effect = Effect();
 
         effect.callback = callback;
-        effect.dependencies = dependencies;
-        
+        effect.deps = deps;
+
         this->effects[key] = effect;
         this->effectsToRun.push_back(key);
     }
 
-    void registerEffectWithCleanup(Component* component, std::function<std::function<void()>()> effect, std::vector<std::any> dependencies = {}) {
+    void registerEffectWithCleanup(Component* component, std::function<std::function<void()>()> effect, std::vector<std::any> deps = {}) {
         auto key = this->getEffectKey(component);
         auto e = Effect();
 
-        e.dependencies = dependencies;
+        e.deps = deps;
         e.callback = [effect, &e]() { e.cleanup = effect(); };  // Store cleanup function
 
         this->effects[key] = e;
@@ -61,8 +61,8 @@ public:
             // Run new effect
             effect.callback();
 
-            // Store dependencies for next comparison
-            this->previousDependencies[key] = effect.dependencies;
+            // Store deps for next comparison
+            this->previousDependencies[key] = effect.deps;
         }
         this->effectsToRun.clear();
     }
@@ -92,22 +92,22 @@ private:
     }
 
     bool shouldRunEffect(const std::string& key, const Effect& effect) {
-        // Empty dependencies = run every time
-        if (effect.dependencies.empty())
+        // Empty deps = run every time
+        if (effect.deps.empty())
             return true;
 
         // First run
         if (this->previousDependencies.find(key) == this->previousDependencies.end())
             return true;
 
-        // Compare dependencies (simplified - in real implementation would need deep comparison)
+        // Compare deps (simplified - in real implementation would need deep comparison)
         auto& prevDeps = this->previousDependencies[key];
-        if (prevDeps.size() != effect.dependencies.size())
+        if (prevDeps.size() != effect.deps.size())
             return true;
 
-        // Dependencies changed
+        // deps changed
         for (size_t i = 0; i < prevDeps.size(); i++) {
-            if (prevDeps[i].type() != effect.dependencies[i].type())
+            if (prevDeps[i].type() != effect.deps[i].type())
                 return true;
             // Note: Proper comparison would need type-specific logic
         }
