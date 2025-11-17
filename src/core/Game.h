@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Scene.h"
 #include "Entity.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -7,23 +8,42 @@
 #include <algorithm>
 
 
-// Main game engine - simplified, no virtual DOM!
+// Main game engine with scene management (like React Router!)
 class Game {
 public:
     Game(int width, int height, const std::string& title)
-        : window(sf::VideoMode(width, height), title) {
+        : window(sf::VideoMode(width, height), title), currentScene(nullptr) {
         window.setFramerateLimit(165);
     }
 
-    // Add entity to the game world
+    // Scene management (like React Router navigation)
+    void changeScene(std::shared_ptr<Scene> newScene) {
+        if (currentScene) {
+            currentScene->onDestroy();      // Unmount old scene
+            currentScene->clearEntities();  // Cleanup entities
+        }
+
+        currentScene = newScene;
+
+        if (currentScene) {
+            currentScene->setGame(this);    // Give scene access to game
+            currentScene->onCreate();       // Mount new scene
+        }
+    }
+
+    std::shared_ptr<Scene> getCurrentScene() const {
+        return currentScene;
+    }
+
+    // Legacy API: Add entity directly to game (no scene)
+    // Kept for backward compatibility
     void addEntity(std::shared_ptr<Entity> entity) {
-        entity->onCreate();  // Call lifecycle hook
+        entity->onCreate();
         entities.push_back(entity);
     }
 
-    // Remove entity by reference
     void removeEntity(std::shared_ptr<Entity> entity) {
-        entity->onDestroy();  // Call lifecycle hook
+        entity->onDestroy();
         auto it = std::find(entities.begin(), entities.end(), entity);
         if (it != entities.end())
             entities.erase(it);
@@ -39,27 +59,44 @@ public:
             // 1. Process events
             processEvents();
 
-            // 2. Update all active entities
-            for (auto& entity : entities)
-                if (entity->isActive())
-                    entity->update(dt);
+            // 2. Update current scene (if using scenes)
+            if (currentScene) {
+                currentScene->onUpdate(dt);
+            }
+            // Or update entities directly (legacy mode)
+            else {
+                for (auto& entity : entities)
+                    if (entity->isActive())
+                        entity->update(dt);
+            }
 
             // 3. Render phase - clear, draw, display
             window.clear(sf::Color::Black);
 
-            for (auto& entity : entities)
-                if (entity->isActive())
-                    entity->draw(window);
+            // Draw scene (if using scenes)
+            if (currentScene) {
+                currentScene->onDraw(window);
+            }
+            // Or draw entities directly (legacy mode)
+            else {
+                for (auto& entity : entities)
+                    if (entity->isActive())
+                        entity->draw(window);
+            }
 
             window.display();
         }
 
-        // Cleanup - call onDestroy for all entities
+        // Cleanup
+        if (currentScene) {
+            currentScene->onDestroy();
+            currentScene->clearEntities();
+        }
         for (auto& entity : entities)
             entity->onDestroy();
     }
 
-    // Access to window for custom event handling
+    // Access to window
     sf::RenderWindow& getWindow() { return window; }
 
 private:
@@ -70,10 +107,11 @@ private:
                 window.close();
 
             // You can add custom event handling here
-            // or pass events to entities if needed
+            // or pass events to scenes/entities if needed
         }
     }
 
     sf::RenderWindow window;
-    std::vector<std::shared_ptr<Entity>> entities;
+    std::shared_ptr<Scene> currentScene;
+    std::vector<std::shared_ptr<Entity>> entities;  // Legacy: direct entities
 };

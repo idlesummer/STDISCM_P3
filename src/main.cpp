@@ -1,28 +1,32 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-// New simplified architecture!
+// New scene-based architecture!
 #include "core/Game.h"
-#include "entities/Player.h"
+#include "scenes/MainMenuScene.h"
+#include "scenes/GamePlayScene.h"
+#include "scenes/GameOverScene.h"
 
 using namespace std;
 
 
 int main() {
-    cout << "=== Simple 2D Game Engine - React-Style Lifecycle Hooks ===" << endl;
-    cout << "Controls: WASD or Arrow Keys to move" << endl;
+    cout << "============================================" << endl;
+    cout << "  Simple 2D Game Engine" << endl;
+    cout << "  React-Style Lifecycle + Scene Management" << endl;
+    cout << "============================================" << endl;
     cout << endl;
 
     // Create game instance
-    auto game = Game(800, 600, "Simple 2D Game - Moving Circle");
+    auto game = Game(800, 600, "Simple 2D Game - Scene System Demo");
 
-    // Create and add player entity
-    auto player = make_shared<Player>(sf::Vector2f(400, 300));
-    game.addEntity(player);
+    // Start with main menu scene (like initial route in React Router!)
+    game.changeScene(make_shared<MainMenuScene>());
 
     // Run the game loop
     game.run();
 
-    cout << "Game ended!" << endl;
+    cout << endl;
+    cout << "Game ended. Thanks for playing!" << endl;
     return 0;
 }
