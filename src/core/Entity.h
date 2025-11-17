@@ -13,11 +13,12 @@ public:
 
     virtual ~Entity() = default;
 
-    // Lifecycle hooks (React-style!)
-    virtual void onCreate() {}              // Like componentDidMount
-    virtual void update(sf::Time dt) {}     // Game logic every frame
-    virtual void draw(sf::RenderWindow& window) {}  // Direct rendering
-    virtual void onDestroy() {}             // Like componentWillUnmount
+    // Lifecycle hooks (React-style! - all use on* prefix for consistency)
+    virtual void onCreate() {}                      // Like componentDidMount
+    virtual void onInput() {}                       // Handle input (like event handlers)
+    virtual void onUpdate(sf::Time dt) {}           // Game logic every frame
+    virtual void onDraw(sf::RenderWindow& window) {} // Direct rendering
+    virtual void onDestroy() {}                     // Like componentWillUnmount
 
     // Entity management
     std::string getName() const { return entityName; }

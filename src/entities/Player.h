@@ -24,12 +24,12 @@ public:
         sprite.setPosition(position);
     }
 
-    // Update hook - game logic every frame (like useEffect(() => {}, []))
-    void update(Time dt) override {
+    // Input hook - handle input (like event handlers in React: onClick, onChange, etc.)
+    void onInput() override {
         bool moved = false;
         Vector2f delta(0, 0);
 
-        // Handle input (like event handlers in React)
+        // Handle keyboard input
         if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
             delta.x = -speed;
             moved = true;
@@ -47,7 +47,7 @@ public:
             moved = true;
         }
 
-        // Update state (like this.setState() in React)
+        // Update state based on input (like this.setState() in React)
         if (moved) {
             position = position + delta;
 
@@ -60,8 +60,14 @@ public:
         }
     }
 
+    // Update hook - game logic every frame (like useEffect(() => {}, []))
+    void onUpdate(Time dt) override {
+        // Game logic that doesn't involve input goes here
+        // For example: animation, physics, AI reactions, etc.
+    }
+
     // Draw hook - direct rendering (no virtual DOM!)
-    void draw(RenderWindow& window) override {
+    void onDraw(RenderWindow& window) override {
         window.draw(sprite);
     }
 

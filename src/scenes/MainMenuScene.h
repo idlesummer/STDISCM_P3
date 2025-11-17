@@ -27,7 +27,7 @@ public:
         text.setFont(font);
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void onDraw(sf::RenderWindow& window) override {
         window.draw(text);
     }
 
@@ -57,7 +57,7 @@ public:
         text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
-    void update(sf::Time dt) override {
+    void onUpdate(sf::Time dt) override {
         // Pulse effect
         alpha += fadeDirection * 200 * dt.asSeconds();
 
@@ -72,7 +72,7 @@ public:
         text.setFillColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(alpha)));
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void onDraw(sf::RenderWindow& window) override {
         window.draw(text);
     }
 
@@ -122,16 +122,18 @@ public:
         // In a real implementation, you'd want a better way to handle this
     }
 
-    void onUpdate(sf::Time dt) override {
-        // Update all menu entities (for animations)
-        updateEntities(dt);
-
+    void onInput() override {
         // Check for Enter key to start game
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
             std::cout << "Starting game..." << std::endl;
             // Navigate to gameplay scene (defined below to avoid circular dependency)
             game->changeScene(createGamePlayScene());
         }
+    }
+
+    void onUpdate(sf::Time dt) override {
+        // Update all menu entities (for animations)
+        updateEntities(dt);
     }
 
     void onDraw(sf::RenderWindow& window) override {

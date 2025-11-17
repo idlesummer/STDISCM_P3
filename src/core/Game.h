@@ -59,7 +59,18 @@ public:
             // 1. Process events
             processEvents();
 
-            // 2. Update current scene (if using scenes)
+            // 2. Handle input for current scene (if using scenes)
+            if (currentScene) {
+                currentScene->onInput();
+            }
+            // Or input for entities directly (legacy mode)
+            else {
+                for (auto& entity : entities)
+                    if (entity->isActive())
+                        entity->onInput();
+            }
+
+            // 3. Update current scene (if using scenes)
             if (currentScene) {
                 currentScene->onUpdate(dt);
             }
@@ -67,10 +78,10 @@ public:
             else {
                 for (auto& entity : entities)
                     if (entity->isActive())
-                        entity->update(dt);
+                        entity->onUpdate(dt);
             }
 
-            // 3. Render phase - clear, draw, display
+            // 4. Render phase - clear, draw, display
             window.clear(sf::Color::Black);
 
             // Draw scene (if using scenes)
@@ -81,7 +92,7 @@ public:
             else {
                 for (auto& entity : entities)
                     if (entity->isActive())
-                        entity->draw(window);
+                        entity->onDraw(window);
             }
 
             window.display();

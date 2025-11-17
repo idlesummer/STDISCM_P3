@@ -35,7 +35,7 @@ public:
         text.setOrigin(bounds.width / 2, bounds.height / 2);
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void onDraw(sf::RenderWindow& window) override {
         window.draw(text);
     }
 
@@ -105,14 +105,16 @@ public:
         addEntity(instruction);
     }
 
-    void onUpdate(sf::Time dt) override {
-        updateEntities(dt);
-
+    void onInput() override {
         // Check for Enter to return to menu
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
             std::cout << "Returning to main menu..." << std::endl;
             game->changeScene(createMainMenuScene());
         }
+    }
+
+    void onUpdate(sf::Time dt) override {
+        updateEntities(dt);
     }
 
     void onDraw(sf::RenderWindow& window) override {

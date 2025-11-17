@@ -25,7 +25,7 @@ public:
         sprite.setPosition(position);
     }
 
-    void update(sf::Time dt) override {
+    void onUpdate(sf::Time dt) override {
         // Simple AI: move in a circular pattern
         elapsedTime += dt.asSeconds();
         position.x = 400 + 200 * std::cos(elapsedTime * speed * 0.1f);
@@ -34,7 +34,7 @@ public:
         sprite.setPosition(position);
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void onDraw(sf::RenderWindow& window) override {
         window.draw(sprite);
     }
 
@@ -64,12 +64,12 @@ public:
         updateText();
     }
 
-    void update(sf::Time dt) override {
+    void onUpdate(sf::Time dt) override {
         score += dt.asSeconds() * 10;  // Score increases over time
         updateText();
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void onDraw(sf::RenderWindow& window) override {
         window.draw(text);
     }
 
@@ -121,9 +121,9 @@ public:
         }
     }
 
-    void onUpdate(sf::Time dt) override {
-        // Update all entities
-        updateEntities(dt);
+    void onInput() override {
+        // Handle input for all entities (player movement, etc.)
+        inputEntities();
 
         // Check for ESC to return to menu
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -131,6 +131,11 @@ public:
             game->changeScene(createMainMenuScene());
             return;
         }
+    }
+
+    void onUpdate(sf::Time dt) override {
+        // Update all entities
+        updateEntities(dt);
 
         // Simple collision detection (game over if touching enemy)
         // Note: In a real game, you'd want proper collision detection
