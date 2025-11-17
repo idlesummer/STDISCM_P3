@@ -28,19 +28,16 @@ public:
 
     // Input hook - track key press/release events (event-based, like React event handlers)
     void onInput(Event& event) override {
-        auto isPressed = (event.type == Event::KeyPressed);
-        auto isReleased = (event.type == Event::KeyReleased);
-
-        if (isPressed || isReleased) {
-            if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A)
-                this->moveLeft = isPressed;
-            if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D)
-                this->moveRight = isPressed;
-            if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W)
-                this->moveUp = isPressed;
-            if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S)
-                this->moveDown = isPressed;
-        }
+        auto pressed = event.type == Event::KeyPressed;
+        auto released = event.type == Event::KeyReleased;
+        if (!pressed && !released)
+            return;
+        
+        auto key = event.key.code;
+        if (key == Keyboard::Left  || key == Keyboard::A) this->moveLeft = pressed;
+        if (key == Keyboard::Right || key == Keyboard::D) this->moveRight = pressed;
+        if (key == Keyboard::Up    || key == Keyboard::W) this->moveUp = pressed;
+        if (key == Keyboard::Down  || key == Keyboard::S) this->moveDown = pressed;
     }
 
     // Update hook - apply movement based on tracked input state
@@ -48,14 +45,10 @@ public:
         // Calculate velocity from tracked key states
         auto velocity = Vector2f(0, 0);
 
-        if (this->moveLeft)
-            velocity.x = -this->speed;
-        if (this->moveRight)
-            velocity.x = this->speed;
-        if (this->moveUp)
-            velocity.y = -this->speed;
-        if (this->moveDown)
-            velocity.y = this->speed;
+        if (this->moveLeft)  velocity.x = -this->speed;
+        if (this->moveRight) velocity.x = this->speed;
+        if (this->moveUp)    velocity.y = -this->speed;
+        if (this->moveDown)  velocity.y = this->speed;
 
         // Update position based on velocity and delta time
         this->position += velocity * dt.asSeconds();
@@ -77,10 +70,10 @@ public:
     }
 
 private:
-    // Movement state
-    float speed;  // pixels per second
-    bool moveLeft, moveRight, moveUp, moveDown;
-
-    // Visual representation
+    float speed;
+    bool moveLeft;
+    bool moveRight;
+    bool moveUp;
+    bool moveDown;
     CircleShape sprite;
 };
