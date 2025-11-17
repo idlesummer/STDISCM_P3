@@ -12,7 +12,9 @@ using namespace std;
 class Player : public Entity {
 public:
     Player(Vector2f initialPosition = Vector2f(400, 300))
-        : Entity("Player", initialPosition), speed(200.0f) {}
+        : Entity("Player", initialPosition),
+          speed(200.0f),
+          moveLeft(false), moveRight(false), moveUp(false), moveDown(false) {}
 
     void onCreate() override {
         cout << "Player entity created!" << endl;
@@ -24,27 +26,43 @@ public:
         this->sprite.setPosition(this->position);
     }
 
+    // Input hook - track key press/release events (event-based, like React event handlers)
     void onInput(Event& event) override {
-        // Handle one-time input events here
-        // For example: jumping when space is pressed, shooting, etc.
-        //
-        // if (event.type == Event::KeyPressed) {
-        //     if (event.key.code == Keyboard::Space)
-        //         jump();
-        // }
+        if (event.type == Event::KeyPressed) {
+            if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A)
+                this->moveLeft = true;
+            if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D)
+                this->moveRight = true;
+            if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W)
+                this->moveUp = true;
+            if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S)
+                this->moveDown = true;
+        }
+
+        if (event.type == Event::KeyReleased) {
+            if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A)
+                this->moveLeft = false;
+            if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D)
+                this->moveRight = false;
+            if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W)
+                this->moveUp = false;
+            if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S)
+                this->moveDown = false;
+        }
     }
 
+    // Update hook - apply movement based on tracked input state
     void onUpdate(Time dt) override {
-        // Handle continuous input (state-based)
+        // Calculate velocity from tracked key states
         auto velocity = Vector2f(0, 0);
 
-        if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+        if (this->moveLeft)
             velocity.x = -this->speed;
-        if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+        if (this->moveRight)
             velocity.x = this->speed;
-        if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W))
+        if (this->moveUp)
             velocity.y = -this->speed;
-        if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+        if (this->moveDown)
             velocity.y = this->speed;
 
         // Update position based on velocity and delta time
@@ -67,6 +85,10 @@ public:
     }
 
 private:
+    // Movement state
     float speed;  // pixels per second
+    bool moveLeft, moveRight, moveUp, moveDown;
+
+    // Visual representation
     CircleShape sprite;
 };
