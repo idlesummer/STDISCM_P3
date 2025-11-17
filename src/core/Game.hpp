@@ -20,34 +20,32 @@ public:
     // Scene management (like React Router navigation)
     void changeScene(shared_ptr<Scene> newScene) {
         if (this->currentScene) {
-            this->currentScene->onDestroy();      // Unmount old scene
-            this->currentScene->clearEntities();  // Cleanup entities
+            this->currentScene->onDestroy();        // Unmount old scene
+            this->currentScene->clearEntities();    // Cleanup entities
         }
 
         this->currentScene = newScene;
-
         if (this->currentScene) {
-            this->currentScene->setGame(this);    // Give scene access to game
-            this->currentScene->onCreate();       // Mount new scene
+            this->currentScene->setGame(this);      // Give scene access to game
+            this->currentScene->onCreate();         // Mount new scene
         }
     }
     
     // Main game loop with fixed timestep
     void run() {
-        auto TICK = seconds(1.f / 60.f);  // 60 updates per second
+        auto TICK = seconds(1.f / 60.f);            // 60 updates per second
         auto clock = Clock();
         auto lag = Time::Zero;
         
         while (this->window.isOpen()) {
             auto elapsed = clock.restart();
-            
             for (lag += elapsed; lag >= TICK; lag -= TICK) {  
-                this->handleEvents();       // 1. Process events and dispatch to current scene
-                this->handleInputs(TICK);   // 2. Update current scene at fixed timestep
+                this->handleEvents();               // 1. Process events and dispatch to current scene
+                this->handleInputs(TICK);           // 2. Update current scene at fixed timestep
             }
-            this->handleRender();           // 3. Render phase - runs as fast as possible (uncapped)
+            this->handleRender();                   // 3. Render phase runs as fast as possible (uncapped)
         }
-        this->handleExit();                 // Cleanup on exit
+        this->handleExit();                         // 4. Cleanup on exit
     }
     
     auto getCurrentScene() const { return this->currentScene; }
