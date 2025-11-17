@@ -59,13 +59,12 @@ public:
 
     shared_ptr<RenderNode> render() override {
         auto state = this->store->getState();
-
-        auto props = Props();
-        props["radius"] = 30.0f;
-        props["color"] = Color::Green;
-        props["position"] = state.pos;
-
-        return Circle(props);
+        
+        return Circle(Props{
+            {"position", state.pos},
+            {"color", Color::Green},
+            {"radius", 30.0f},
+        });
     }
 
 private:
