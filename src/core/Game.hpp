@@ -32,7 +32,7 @@ public:
         }
     }
 
-    shared_ptr<Scene> getCurrentScene() const {
+    auto getCurrentScene() const {
         return this->currentScene;
     }
 
@@ -43,34 +43,49 @@ public:
         auto lag = Time::Zero;
 
         while (this->window.isOpen()) {
-            for (lag += clock.restart(); lag >= TICK; lag -= TICK) {  // Fixed timestep update loop
+            auto elapsed = clock.restart();
 
-                // 1. Process events and dispatch to current scene
-                auto event = Event();
-                while (this->window.pollEvent(event)) {
-                    if (event.type == Event::Closed) this->window.close();  // Handle window close event
-                    if (this->currentScene) this->currentScene->onInput(event);   // Dispatch input events to current scene
-                }
-
-                // 2. Update current scene at fixed timestep
-                if (this->currentScene) this->currentScene->onUpdate(TICK);
+            for (lag += elapsed; lag >= TICK; lag -= TICK) {  
+                this->handleEvents();       // 1. Process events and dispatch to current scene
+                this->handleInputs(TICK);   // 2. Update current scene at fixed timestep
             }
-
-            // 3. Render phase - runs as fast as possible (uncapped)
-            this->window.clear(Color::Black);
-            if (this->currentScene) this->currentScene->onDraw(this->window);
-            this->window.display();
+            this->handleRender();           // 3. Render phase - runs as fast as possible (uncapped)
         }
+        this->handleExit();                 // Cleanup on exit
+    }
 
-        // Cleanup on exit
+    // Access to window
+    auto& getWindow() { return this->window; }
+
+private:
+    void handleInputs(Time TICK) {
+        if (this->currentScene)
+            this->currentScene->onUpdate(TICK);
+    }
+    
+    void handleEvents() {
+        auto event = Event();
+        while (this->window.pollEvent(event)) {
+            if (event.type == Event::Closed) 
+                this->window.close();
+            if (this->currentScene) 
+                this->currentScene->onInput(event);
+        }
+    }
+
+    void handleRender() {
+        this->window.clear(Color::Black);
+        if (this->currentScene) 
+            this->currentScene->onDraw(this->window);
+        this->window.display();
+    }
+
+    void handleExit() {
         if (this->currentScene) {
             this->currentScene->onDestroy();
             this->currentScene->clearEntities();
         }
     }
-
-    // Access to window
-    RenderWindow& getWindow() { return this->window; }
 
 private:
     RenderWindow window;
