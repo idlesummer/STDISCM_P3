@@ -23,7 +23,6 @@ public:
         // Effect to log health changes
         useEffect([this]() {
             std::cout << "Player health: " << health.get() << std::endl;
-            return []() {};  // No cleanup
         }, {});
     }
 

@@ -43,7 +43,7 @@ void handleEvents(sf::Event& event, Store<GameState>& store) {
                     static int enemyIdCounter = 0;
                     EnemyData enemy;
                     enemy.id = enemyIdCounter++;
-                    enemy.position = sf::Vector2f(rand() % 700 + 50, 50);
+                    enemy.position = sf::Vector2f(static_cast<float>(rand() % 700 + 50), 50.0f);
                     enemy.health = 50;
                     enemy.speed = 2.0f;
 

@@ -20,7 +20,6 @@ public:
         // Animate enemy movement
         useEffect([this]() {
             // This would be called each frame in a real implementation
-            return []() {};  // No cleanup
         }, {});
     }
 

@@ -15,11 +15,14 @@ class Component; // Forward declaration
 template<typename T>
 class StateRef {
 public:
+    // Default constructor (for member variable declaration)
+    StateRef() : valuePtr(nullptr), setter(nullptr) {}
+
     StateRef(T* valuePtr, std::function<void(T)> setter)
         : valuePtr(valuePtr), setter(setter) {}
 
-    T get() const { return *valuePtr; }
-    void set(T newValue) { setter(newValue); }
+    T get() const { return valuePtr ? *valuePtr : T(); }
+    void set(T newValue) { if (setter) setter(newValue); }
 
     // Convenient operators
     operator T() const { return get(); }
