@@ -19,29 +19,27 @@ struct Effect {
 class EffectManager {
 public:
     static EffectManager& getInstance() {
-        static EffectManager instance;
+        static auto instance = EffectManager();
         return instance;
     }
 
     void registerEffect(Component* component, std::function<void()> callback, std::vector<std::any> dependencies = {}) {
         auto key = this->getEffectKey(component);
-
         auto effect = Effect();
+
         effect.callback = callback;
         effect.dependencies = dependencies;
-
+        
         this->effects[key] = effect;
         this->effectsToRun.push_back(key);
     }
 
     void registerEffectWithCleanup(Component* component, std::function<std::function<void()>()> effect, std::vector<std::any> dependencies = {}) {
         auto key = this->getEffectKey(component);
-
         auto e = Effect();
+
         e.dependencies = dependencies;
-        e.callback = [effect, &e]() {
-            e.cleanup = effect();  // Store cleanup function
-        };
+        e.callback = [effect, &e]() { e.cleanup = effect(); };  // Store cleanup function
 
         this->effects[key] = e;
         this->effectsToRun.push_back(key);
@@ -73,10 +71,8 @@ public:
         // Run all cleanup functions for this component
         auto prefix = std::to_string(reinterpret_cast<uintptr_t>(component));
         for (auto& [key, effect] : this->effects) {
-            if (key.find(prefix) != 0)
-                continue;
-            if (!effect.cleanup)
-                continue;
+            if (key.find(prefix) != 0) continue;
+            if (!effect.cleanup)       continue;
             effect.cleanup();
         }
     }
@@ -124,4 +120,3 @@ private:
     std::unordered_map<std::string, std::vector<std::any>> previousDependencies;
     size_t effectCounter;
 };
-
