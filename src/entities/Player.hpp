@@ -14,7 +14,6 @@ public:
     Player(Vector2f initialPosition = Vector2f(400, 300))
         : Entity("Player", initialPosition), speed(200.0f) {}
 
-    // Lifecycle hook - called once when entity is created
     void onCreate() override {
         cout << "Player entity created!" << endl;
 
@@ -25,7 +24,6 @@ public:
         this->sprite.setPosition(this->position);
     }
 
-    // Input hook - handle discrete input events (like onClick, onKeyPress)
     void onInput(Event& event) override {
         // Handle one-time input events here
         // For example: jumping when space is pressed, shooting, etc.
@@ -36,7 +34,6 @@ public:
         // }
     }
 
-    // Update hook - continuous game logic (like useEffect(() => {}, []))
     void onUpdate(Time dt) override {
         // Handle continuous input (state-based)
         auto velocity = Vector2f(0, 0);
@@ -61,12 +58,10 @@ public:
         this->sprite.setPosition(this->position);
     }
 
-    // Draw hook - direct rendering (no virtual DOM!)
     void onDraw(RenderWindow& window) override {
         window.draw(this->sprite);
     }
 
-    // Cleanup hook - called when entity is destroyed
     void onDestroy() override {
         cout << "Player entity destroyed!" << endl;
     }
