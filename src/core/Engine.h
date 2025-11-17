@@ -8,7 +8,6 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-namespace Reactive {
 
 // Main engine class that manages the React-like game loop
 template<typename TState>
@@ -93,4 +92,3 @@ private:
     std::function<void(sf::Event&, Store<TState>&)> eventHandler;
 };
 
-} // namespace Reactive

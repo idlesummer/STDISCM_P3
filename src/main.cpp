@@ -7,8 +7,6 @@
 #include "core/RenderNode.h"
 #include "core/Store.h"
 
-using namespace Reactive;
-
 // Simple state - just position
 struct GameState : public State {
     sf::Vector2f position;

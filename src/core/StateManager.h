@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace Reactive {
 
 class Component; // Forward declaration
 
@@ -102,4 +101,3 @@ private:
     size_t stateCounter;
 };
 
-} // namespace Reactive

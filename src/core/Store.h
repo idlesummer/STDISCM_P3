@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <iostream>
 
-namespace Reactive {
 
 // Action (like Redux actions)
 struct Action {
@@ -104,4 +103,3 @@ inline Middleware createLoggerMiddleware() {
 template<typename TState>
 using ThunkAction = std::function<void(Store<TState>&)>;
 
-} // namespace Reactive

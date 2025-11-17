@@ -7,7 +7,6 @@
 #include <variant>
 #include <unordered_map>
 
-namespace Reactive {
 
 // Type-safe props using variant
 using PropValue = std::variant<
@@ -87,4 +86,3 @@ inline std::shared_ptr<RenderNode> Circle(Props props) {
     return std::make_shared<RenderNode>(NodeType::Circle, props);
 }
 
-} // namespace Reactive

@@ -6,7 +6,6 @@
 #include <memory>
 #include <unordered_map>
 
-namespace Reactive {
 
 class Component; // Forward declaration
 
@@ -122,4 +121,3 @@ private:
     size_t effectCounter;
 };
 
-} // namespace Reactive

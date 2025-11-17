@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <string>
 
-namespace Reactive {
 
 // Represents an actual SFML drawable object
 struct SFMLInstance {
@@ -322,4 +321,3 @@ private:
     std::unordered_map<std::string, std::shared_ptr<SFMLInstance>> instanceCache;
 };
 
-} // namespace Reactive
