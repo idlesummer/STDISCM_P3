@@ -29,7 +29,7 @@ public:
     // Update hook - handle input and update state (like event handlers in React)
     void onUpdate(Time deltaTime) override {
         bool moved = false;
-        Vector2f delta(0, 0);
+        auto delta = Vector2f(0, 0);
 
         // Check keyboard state (like handling events in React)
         if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
