@@ -14,7 +14,7 @@ using namespace std;
 
 class AssetManager {
 public:
-    AssetManager(size_t nthreads = 4)
+    AssetManager(size_t nthreads = 0)
         : pool(nthreads == 0 ? thread::hardware_concurrency() : nthreads),
           fonts(),
           fontsMutex(),
