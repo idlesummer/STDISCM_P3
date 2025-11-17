@@ -23,7 +23,7 @@ public:
 
     // Lifecycle hooks (React-style! - all use on* prefix for consistency)
     virtual void onCreate() {}                  // Like componentDidMount (scene enters)
-    virtual void onInput() {}                   // Handle input (like event handlers)
+    virtual void onInput(Event& event) {}       // Handle input events (like onClick, onKeyPress)
     virtual void onUpdate(Time dt) {}           // Every frame while scene is active
     virtual void onDraw(RenderWindow& window) {} // Render the scene
     virtual void onDestroy() {}                 // Like componentWillUnmount (scene exits)
@@ -56,10 +56,10 @@ public:
 
 protected:
     // Helper methods for derived scenes
-    void inputEntities() {
+    void inputEntities(Event& event) {
         for (auto& entity : entities)
             if (entity->isActive())
-                entity->onInput();
+                entity->onInput(event);
     }
 
     void updateEntities(Time dt) {

@@ -59,18 +59,23 @@ public:
         while (window.isOpen()) {
             Time dt = clock.restart();
 
-            // 1. Process events
-            processEvents();
+            // 1. Process events and dispatch to scenes/entities
+            Event event;
+            while (window.pollEvent(event)) {
+                // Handle window events
+                if (event.type == Event::Closed)
+                    window.close();
 
-            // 2. Handle input for current scene (if using scenes)
-            if (currentScene) {
-                currentScene->onInput();
-            }
-            // Or input for entities directly (legacy mode)
-            else {
-                for (auto& entity : entities)
-                    if (entity->isActive())
-                        entity->onInput();
+                // 2. Dispatch input events to current scene (if using scenes)
+                if (currentScene) {
+                    currentScene->onInput(event);
+                }
+                // Or input for entities directly (legacy mode)
+                else {
+                    for (auto& entity : entities)
+                        if (entity->isActive())
+                            entity->onInput(event);
+                }
             }
 
             // 3. Update current scene (if using scenes)
@@ -114,17 +119,6 @@ public:
     RenderWindow& getWindow() { return window; }
 
 private:
-    void processEvents() {
-        Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == Event::Closed)
-                window.close();
-
-            // You can add custom event handling here
-            // or pass events to scenes/entities if needed
-        }
-    }
-
     RenderWindow window;
     shared_ptr<Scene> currentScene;
     vector<shared_ptr<Entity>> entities;  // Legacy: direct entities

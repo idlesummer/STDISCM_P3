@@ -12,7 +12,7 @@ using namespace std;
 class Player : public Entity {
 public:
     Player(Vector2f initialPosition = Vector2f(400, 300))
-        : Entity("Player"), position(initialPosition), speed(10.0f) {}
+        : Entity("Player"), position(initialPosition), speed(200.0f) {}
 
     // Lifecycle hook - called once when entity is created
     void onCreate() override {
@@ -25,46 +25,40 @@ public:
         sprite.setPosition(position);
     }
 
-    // Input hook - handle input (like event handlers in React: onClick, onChange, etc.)
-    void onInput() override {
-        bool moved = false;
-        Vector2f delta(0, 0);
-
-        // Handle keyboard input
-        if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
-            delta.x = -speed;
-            moved = true;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D)) {
-            delta.x = speed;
-            moved = true;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) {
-            delta.y = -speed;
-            moved = true;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S)) {
-            delta.y = speed;
-            moved = true;
-        }
-
-        // Update state based on input (like this.setState() in React)
-        if (moved) {
-            position = position + delta;
-
-            // Clamp to screen bounds
-            position.x = max(50.0f, min(750.0f, position.x));
-            position.y = max(50.0f, min(550.0f, position.y));
-
-            // Update sprite position
-            sprite.setPosition(position);
-        }
+    // Input hook - handle discrete input events (like onClick, onKeyPress)
+    void onInput(Event& event) override {
+        // Handle one-time input events here
+        // For example: jumping when space is pressed, shooting, etc.
+        //
+        // if (event.type == Event::KeyPressed) {
+        //     if (event.key.code == Keyboard::Space)
+        //         jump();
+        // }
     }
 
-    // Update hook - game logic every frame (like useEffect(() => {}, []))
+    // Update hook - continuous game logic (like useEffect(() => {}, []))
     void onUpdate(Time dt) override {
-        // Game logic that doesn't involve input goes here
-        // For example: animation, physics, AI reactions, etc.
+        // Handle continuous input (state-based)
+        Vector2f velocity(0, 0);
+
+        if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+            velocity.x = -speed;
+        if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+            velocity.x = speed;
+        if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W))
+            velocity.y = -speed;
+        if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+            velocity.y = speed;
+
+        // Update position based on velocity and delta time
+        position += velocity * dt.asSeconds();
+
+        // Clamp to screen bounds
+        position.x = max(50.0f, min(750.0f, position.x));
+        position.y = max(50.0f, min(550.0f, position.y));
+
+        // Update sprite position
+        sprite.setPosition(position);
     }
 
     // Draw hook - direct rendering (no virtual DOM!)
@@ -80,7 +74,7 @@ public:
 private:
     // State
     Vector2f position;
-    float speed;
+    float speed;  // pixels per second
 
     // Visual representation
     CircleShape sprite;

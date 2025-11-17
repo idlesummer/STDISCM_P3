@@ -69,9 +69,9 @@ public:
         addEntity(instruction);
     }
 
-    void onInput() override {
-        // Check for Enter to return to menu
-        if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+    void onInput(Event& event) override {
+        // Check for Enter key press event to return to menu
+        if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
             cout << "Returning to main menu..." << endl;
             game->changeScene(createMainMenu());
         }

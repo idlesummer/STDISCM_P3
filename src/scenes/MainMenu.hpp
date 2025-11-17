@@ -47,9 +47,9 @@ public:
         addEntity(instruction);
     }
 
-    void onInput() override {
-        // Check for Enter key to start game
-        if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+    void onInput(Event& event) override {
+        // Check for Enter key press event to start game
+        if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
             cout << "Starting game..." << endl;
             // Navigate to gameplay scene
             game->changeScene(createGamePlay());

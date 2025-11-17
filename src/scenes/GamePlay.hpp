@@ -50,12 +50,12 @@ public:
         }
     }
 
-    void onInput() override {
-        // Handle input for all entities (player movement, etc.)
-        inputEntities();
+    void onInput(Event& event) override {
+        // Dispatch input events to all entities
+        inputEntities(event);
 
-        // Check for ESC to return to menu
-        if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+        // Check for ESC key press to return to menu
+        if (event.type == Event::KeyPressed && event.key.code == Keyboard::Escape) {
             cout << "Returning to main menu..." << endl;
             game->changeScene(createMainMenu());
             return;
