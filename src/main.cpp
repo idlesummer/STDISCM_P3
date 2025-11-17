@@ -5,47 +5,16 @@
 #include "core/Engine.h"
 #include "core/component/Component.h"
 #include "core/types/Props.h"
-#include "core/types/State.h"
-#include "core/types/Action.h"
-#include "core/store/Store.h"
-#include "core/store/Middleware.h"
 
 using namespace sf;
 using namespace std;
 
 
-// Simple state - just position
-struct GameState : public State {
-    Vector2f pos;
-
-    GameState() : pos(400, 300) {}
-
-    State* clone() const override {
-        return new GameState(*this);
-    }
-};
-
-// Reducer - pure function that updates state
-GameState gameReducer(const GameState& state, const Action& action) {
-    auto newState = GameState(state);
-
-    if (action.type == "MOVE") {
-        auto delta = action.getPayload<Vector2f>();
-        newState.pos = state.pos + delta;
-
-        // Clamp to screen bounds
-        newState.pos.x = max(50.0f, min(750.0f, newState.pos.x));
-        newState.pos.y = max(50.0f, min(550.0f, newState.pos.y));
-    }
-
-    return newState;
-}
-
-// Simple component - class-based React style (no hooks!)
+// Simple component with internal state - React-style!
 class CircleComponent : public Component {
 public:
-    CircleComponent(Store<GameState>* store)
-        : Component("Circle"), store(store) {}
+    CircleComponent(Vector2f initialPosition = Vector2f(400, 300))
+        : Component("Circle"), position(initialPosition), speed(10.0f) {}
 
     // Lifecycle method - called once when component mounts
     void componentDidMount() override {
@@ -57,51 +26,54 @@ public:
         cout << "Circle component unmounting..." << endl;
     }
 
+    // Update hook - handle input and update state (like event handlers in React)
+    void onUpdate(Time deltaTime) override {
+        bool moved = false;
+        Vector2f delta(0, 0);
+
+        // Check keyboard state (like handling events in React)
+        if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
+            delta.x = -this->speed;
+            moved = true;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D)) {
+            delta.x = this->speed;
+            moved = true;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) {
+            delta.y = -this->speed;
+            moved = true;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S)) {
+            delta.y = this->speed;
+            moved = true;
+        }
+
+        // Update internal state (like this.setState() in React)
+        if (moved) {
+            this->position = this->position + delta;
+
+            // Clamp to screen bounds
+            this->position.x = max(50.0f, min(750.0f, this->position.x));
+            this->position.y = max(50.0f, min(550.0f, this->position.y));
+
+            this->setState();  // Trigger re-render
+        }
+    }
+
+    // Render method - returns virtual DOM (like React's render())
     shared_ptr<RenderNode> render() override {
-        auto state = this->store->getState();
-        
         return Circle(Props{
-            {"position", state.pos},
+            {"position", this->position},
             {"color", Color::Green},
             {"radius", 30.0f},
         });
     }
 
 private:
-    Store<GameState>* store;
+    Vector2f position;  // Internal component state
+    float speed;
 };
-
-// Event handler - converts SFML events to actions
-void handleEvents(Event& event, Store<GameState>& store) {
-    if (event.type == Event::KeyPressed) {
-        auto delta = Vector2f(0, 0);
-        auto speed = 10.0f;
-
-        switch (event.key.code) {
-            case Keyboard::Left:
-            case Keyboard::A:
-                delta.x = -speed;
-                break;
-            case Keyboard::Right:
-            case Keyboard::D:
-                delta.x = speed;
-                break;
-            case Keyboard::Up:
-            case Keyboard::W:
-                delta.y = -speed;
-                break;
-            case Keyboard::Down:
-            case Keyboard::S:
-                delta.y = speed;
-                break;
-            default:
-                return;
-        }
-
-        if (delta.x != 0 || delta.y != 0)
-            store.dispatch(Action{"MOVE", delta});
-    }
-}
 
 // Main entry point
 int main() {
@@ -109,16 +81,11 @@ int main() {
     cout << "Controls: WASD or Arrow Keys to move" << endl;
     cout << endl;
 
-    // Create store with initial state and reducer (like React's createStore)
-    auto store = Store<GameState>(GameState(), gameReducer);
-    store.addMiddleware(createLoggerMiddleware());  // Optional: Add logger to see actions
+    // Create engine (like ReactDOM.render)
+    auto engine = Engine(800, 600, "Reactive SFML - Moving Circle");
 
-    // Create engine with store (like React's ReactDOM.render with Provider)
-    auto engine = Engine<GameState>(800, 600, "Reactive SFML - Moving Circle", store);
-    engine.setEventHandler(handleEvents);   // Set event handler
-
-    // Create and mount the circle component (passing store reference)
-    auto circle = make_shared<CircleComponent>(&store);
+    // Create and mount the circle component with initial props
+    auto circle = make_shared<CircleComponent>(Vector2f(400, 300));
     engine.setRoot(circle);
 
     // Run the game loop

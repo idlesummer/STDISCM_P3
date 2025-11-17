@@ -2,18 +2,15 @@
 
 #include "component/Component.h"
 #include "renderer/Reconciler.h"
-#include "store/Store.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
 
 // Main engine class that manages the React-like game loop
-template<typename TState>
 class Engine {
 public:
-    Engine(int width, int height, const std::string& title, Store<TState>& store)
+    Engine(int width, int height, const std::string& title)
         : window(sf::VideoMode(width, height), title),
-          store(&store),
           reconciler(&this->window),
           rootComponent(nullptr) {
 
@@ -27,11 +24,6 @@ public:
             this->rootComponent->mount();
     }
 
-    // Get store for dispatching actions
-    Store<TState>& getStore() {
-        return *this->store;
-    }
-
     // Main game loop
     void run() {
         auto clock = sf::Clock();
@@ -39,7 +31,7 @@ public:
         while (this->window.isOpen()) {
             auto deltaTime = clock.restart();
             this->processEvents();                  // 1. Process events
-            
+
             if (this->rootComponent)                // 2. Update components
                 this->rootComponent->onUpdate(deltaTime);
 
@@ -52,28 +44,27 @@ public:
         }
     }
 
-    // Process SFML events and dispatch actions
+    // Process SFML events
     void processEvents() {
         auto event = sf::Event();
         while (this->window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 this->window.close();
 
-            // Pass event to event handler if set
-            if (this->eventHandler)
-                this->eventHandler(event, *this->store);
+            // Pass event to root component if set
+            if (this->rootComponent && this->eventHandler)
+                this->eventHandler(event);
         }
     }
 
-    // Set custom event handler
-    void setEventHandler(std::function<void(sf::Event&, Store<TState>&)> handler) {
+    // Set custom event handler (for events that need immediate response)
+    void setEventHandler(std::function<void(sf::Event&)> handler) {
         this->eventHandler = handler;
     }
 
 private:
     sf::RenderWindow window;
-    Store<TState>* store;
     Reconciler reconciler;
     std::shared_ptr<Component> rootComponent;
-    std::function<void(sf::Event&, Store<TState>&)> eventHandler;
+    std::function<void(sf::Event&)> eventHandler;
 };
