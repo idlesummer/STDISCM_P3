@@ -36,30 +36,34 @@ public:
         return currentScene;
     }
 
-    // Main game loop
+    // Main game loop with fixed timestep
     void run() {
+        const auto TICK = seconds(1.f / 60.f);  // 60 updates per second
+
         auto clock = Clock();
+        auto lag = Time::Zero;
 
         while (window.isOpen()) {
-            auto dt = clock.restart();
+            // Fixed timestep update loop
+            for (lag += clock.restart(); lag >= TICK; lag -= TICK) {
+                // 1. Process events and dispatch to current scene
+                auto event = Event();
+                while (window.pollEvent(event)) {
+                    // Handle window close event
+                    if (event.type == Event::Closed)
+                        window.close();
 
-            // 1. Process events and dispatch to current scene
-            auto event = Event();
-            while (window.pollEvent(event)) {
-                // Handle window close event
-                if (event.type == Event::Closed)
-                    window.close();
+                    // Dispatch input events to current scene
+                    if (currentScene)
+                        currentScene->onInput(event);
+                }
 
-                // Dispatch input events to current scene
+                // 2. Update current scene at fixed timestep
                 if (currentScene)
-                    currentScene->onInput(event);
+                    currentScene->onUpdate(TICK);
             }
 
-            // 2. Update current scene
-            if (currentScene)
-                currentScene->onUpdate(dt);
-
-            // 3. Render phase - clear, draw, display
+            // 3. Render phase - runs as fast as possible (uncapped)
             window.clear(Color::Black);
 
             if (currentScene)
