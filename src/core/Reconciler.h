@@ -191,6 +191,40 @@ private:
         return changes;
     }
 
+    // Helper to compare two PropValues
+    bool propValueEquals(const PropValue& a, const PropValue& b) {
+        if (a.index() != b.index())
+            return false;
+
+        // Compare based on actual type
+        if (auto* aInt = std::get_if<int>(&a)) {
+            return *aInt == std::get<int>(b);
+        }
+        else if (auto* aFloat = std::get_if<float>(&a)) {
+            return *aFloat == std::get<float>(b);
+        }
+        else if (auto* aStr = std::get_if<std::string>(&a)) {
+            return *aStr == std::get<std::string>(b);
+        }
+        else if (auto* aBool = std::get_if<bool>(&a)) {
+            return *aBool == std::get<bool>(b);
+        }
+        else if (auto* aVec = std::get_if<sf::Vector2f>(&a)) {
+            auto bVec = std::get<sf::Vector2f>(b);
+            return aVec->x == bVec.x && aVec->y == bVec.y;
+        }
+        else if (auto* aColor = std::get_if<sf::Color>(&a)) {
+            auto bColor = std::get<sf::Color>(b);
+            return aColor->r == bColor.r && aColor->g == bColor.g &&
+                   aColor->b == bColor.b && aColor->a == bColor.a;
+        }
+        else if (auto* aTexture = std::get_if<sf::Texture*>(&a)) {
+            return *aTexture == std::get<sf::Texture*>(b);
+        }
+
+        return false;
+    }
+
     // Check if props changed
     bool propsChanged(const Props& oldProps, const Props& newProps) {
         if (oldProps.size() != newProps.size())
@@ -198,9 +232,11 @@ private:
 
         for (const auto& [key, value] : newProps) {
             auto it = oldProps.find(key);
-            if (it == oldProps.end() || it->second.index() != value.index())
+            if (it == oldProps.end())
                 return true;
-            // Simplified - would need deep comparison per type
+
+            if (!propValueEquals(it->second, value))
+                return true;
         }
 
         return false;
