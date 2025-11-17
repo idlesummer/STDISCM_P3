@@ -32,7 +32,6 @@ public:
     // Position management
     auto getPosition() const { return this->position; }
     void setPosition(Vector2f newPosition) { this->position = newPosition; }
-    void setPosition(float x, float y) { this->position = Vector2f(x, y); }
 
 protected:
     string entityName;
