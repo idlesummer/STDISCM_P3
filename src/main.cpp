@@ -25,11 +25,6 @@ struct GameState : public State {
     }
 };
 
-// Action creators
-Action createMoveAction(Vector2f delta) {
-    return Action{"MOVE", delta};
-}
-
 // Reducer - pure function that updates state
 GameState gameReducer(const GameState& state, const Action& action) {
     auto newState = GameState(state);
@@ -105,7 +100,7 @@ void handleEvents(Event& event, Store<GameState>& store) {
         }
 
         if (delta.x != 0 || delta.y != 0)
-            store.dispatch(createMoveAction(delta));
+            store.dispatch(Action{"MOVE", delta});
     }
 }
 
