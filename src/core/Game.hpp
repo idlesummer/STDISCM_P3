@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Scene.hpp"
 #include "Entity.hpp"
 #include <SFML/Graphics.hpp>
