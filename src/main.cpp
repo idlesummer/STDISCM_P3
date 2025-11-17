@@ -1,100 +1,61 @@
 #include <iostream>
-#include <cstdlib>
 #include <SFML/Graphics.hpp>
 
-// Core engine
-#include "core/ReactSFMLEngine.h"
-
-// Components
-#include "components/GameState.h"
-#include "components/GameComponent.h"
-
-using namespace ReactSFML;
-
-// Event handler - converts SFML events to actions
-void handleEvents(sf::Event& event, Store<GameState>& store) {
-    const auto& state = store.getState();
-
-    // Keyboard input for player movement
-    if (event.type == sf::Event::KeyPressed) {
-        sf::Vector2f delta(0, 0);
-        float speed = 5.0f;
-
-        switch (event.key.code) {
-            case sf::Keyboard::Left:
-            case sf::Keyboard::A:
-                delta.x = -speed;
-                break;
-            case sf::Keyboard::Right:
-            case sf::Keyboard::D:
-                delta.x = speed;
-                break;
-            case sf::Keyboard::Up:
-            case sf::Keyboard::W:
-                delta.y = -speed;
-                break;
-            case sf::Keyboard::Down:
-            case sf::Keyboard::S:
-                delta.y = speed;
-                break;
-            case sf::Keyboard::Space:
-                // Spawn enemy on spacebar
-                if (!state.gameOver) {
-                    static int enemyIdCounter = 0;
-                    EnemyData enemy;
-                    enemy.id = enemyIdCounter++;
-                    enemy.position = sf::Vector2f(static_cast<float>(rand() % 700 + 50), 50.0f);
-                    enemy.health = 50;
-                    enemy.speed = 2.0f;
-
-                    store.dispatch(createSpawnEnemyAction(enemy));
-                }
-                break;
-            case sf::Keyboard::H:
-                // Test damage
-                store.dispatch(createDamagePlayerAction(10));
-                break;
-            default:
-                break;
-        }
-
-        if (delta.x != 0 || delta.y != 0) {
-            store.dispatch(createMovePlayerAction(delta));
-        }
-    }
-}
-
-// Main entry point
+// Ultra-minimal test - no React architecture, just SFML
 int main() {
-    std::cout << "=== React-Inspired SFML Game Engine ===" << std::endl;
-    std::cout << "Controls:" << std::endl;
-    std::cout << "  WASD / Arrow Keys - Move player" << std::endl;
-    std::cout << "  Space - Spawn enemy" << std::endl;
-    std::cout << "  H - Take damage (test)" << std::endl;
-    std::cout << std::endl;
+    std::cout << "=== Minimal SFML Test ===" << std::endl;
+    std::cout << "Use WASD to move the circle" << std::endl;
 
-    // Create engine with initial state and reducer
-    ReactSFMLEngine<GameState> engine(
-        800, 600,
-        "React SFML - Demo Game",
-        GameState(),
-        gameReducer
-    );
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Minimal SFML");
+    window.setFramerateLimit(60);
 
-    // Optional: Add logger middleware
-    engine.getStore().addMiddleware(createLoggerMiddleware());
+    sf::CircleShape circle(30);
+    circle.setFillColor(sf::Color::Green);
+    circle.setPosition(400, 300);
+    circle.setOrigin(30, 30);  // Center the circle
 
-    // Set event handler
-    engine.setEventHandler(handleEvents);
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
 
-    // Create root game component
-    auto gameComponent = std::make_shared<GameComponent>(&engine.getStore());
-    engine.setRoot(gameComponent);
+            if (event.type == sf::Event::KeyPressed) {
+                float speed = 10.0f;
+                sf::Vector2f pos = circle.getPosition();
 
-    // Run the game loop
-    engine.run();
+                switch (event.key.code) {
+                    case sf::Keyboard::A:
+                    case sf::Keyboard::Left:
+                        pos.x -= speed;
+                        std::cout << "Left - new X: " << pos.x << std::endl;
+                        break;
+                    case sf::Keyboard::D:
+                    case sf::Keyboard::Right:
+                        pos.x += speed;
+                        std::cout << "Right - new X: " << pos.x << std::endl;
+                        break;
+                    case sf::Keyboard::W:
+                    case sf::Keyboard::Up:
+                        pos.y -= speed;
+                        std::cout << "Up - new Y: " << pos.y << std::endl;
+                        break;
+                    case sf::Keyboard::S:
+                    case sf::Keyboard::Down:
+                        pos.y += speed;
+                        std::cout << "Down - new Y: " << pos.y << std::endl;
+                        break;
+                }
 
-    std::cout << "Game ended!" << std::endl;
+                circle.setPosition(pos);
+            }
+        }
+
+        window.clear(sf::Color(20, 20, 40));
+        window.draw(circle);
+        window.display();
+    }
 
     return 0;
 }
