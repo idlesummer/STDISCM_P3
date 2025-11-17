@@ -56,7 +56,6 @@ public:
 
         // Check if state actually changed
         auto changed = true;  // Simplified - would need deep comparison
-
         if (!changed)
             return;
 
