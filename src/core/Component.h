@@ -15,9 +15,8 @@ public:
         : componentName(name), mounted(false) {}
 
     virtual ~Component() {
-        if (mounted) {
+        if (mounted)
             EffectManager::getInstance().cleanup(this);
-        }
     }
 
     // Main render method - returns virtual DOM tree
@@ -40,8 +39,7 @@ public:
     }
 
     void unmount() {
-        if (!this->mounted)
-            return;
+        if (!this->mounted) return;
         this->onUnmount();
         EffectManager::getInstance().cleanup(this);
         this->mounted = false;
@@ -76,4 +74,3 @@ private:
 
 // Higher-order component helpers
 using ComponentFactory = std::function<std::shared_ptr<Component>()>;
-
