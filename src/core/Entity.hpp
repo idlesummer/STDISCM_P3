@@ -34,20 +34,6 @@ public:
     void setPosition(Vector2f newPosition) { this->position = newPosition; }
     void setPosition(float x, float y) { this->position = Vector2f(x, y); }
 
-    // Helper for state management (optional)
-    template<typename T>
-    class State {
-        T value;
-    public:
-        State(T v) : value(v) {}
-        auto get() const { return this->value; }
-        void set(T v) { this->value = v; }
-
-        // Convenience operators
-        auto& operator=(T v) { this->value = v; return *this; }
-        operator T() const { return this->value; }
-    };
-
 protected:
     string entityName;
     bool active;
