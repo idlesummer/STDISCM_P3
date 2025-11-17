@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
 

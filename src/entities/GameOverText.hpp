@@ -1,11 +1,10 @@
 #pragma once
-
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
 
 using namespace sf;
 using namespace std;
-#include <string>
 
 
 // Game Over text display with customizable content, position, size, and color

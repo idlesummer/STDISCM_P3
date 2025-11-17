@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../core/Entity.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -14,7 +13,10 @@ public:
     Player(Vector2f initialPosition = Vector2f(400, 300))
         : Entity("Player", initialPosition),
           speed(200.0f),
-          moveLeft(false), moveRight(false), moveUp(false), moveDown(false) {}
+          moveLeft(false), 
+          moveRight(false), 
+          moveUp(false), 
+          moveDown(false) {}
 
     void onCreate() override {
         cout << "Player entity created!" << endl;
@@ -22,7 +24,7 @@ public:
         // Initialize sprite
         this->sprite.setRadius(30.0f);
         this->sprite.setFillColor(Color::Green);
-        this->sprite.setOrigin(30.0f, 30.0f);  // Center the origin
+        this->sprite.setOrigin(30.0f, 30.0f);
         this->sprite.setPosition(this->position);
     }
 
