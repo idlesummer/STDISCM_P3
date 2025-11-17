@@ -44,7 +44,7 @@ public:
 
         while (this->window.isOpen()) {
             auto elapsed = clock.restart();
-
+            
             for (lag += elapsed; lag >= TICK; lag -= TICK) {  
                 this->handleEvents();       // 1. Process events and dispatch to current scene
                 this->handleInputs(TICK);   // 2. Update current scene at fixed timestep
@@ -87,7 +87,6 @@ private:
         }
     }
 
-private:
     RenderWindow window;
     shared_ptr<Scene> currentScene;
 };

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Entity.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -17,7 +16,8 @@ class Game;
 class Scene {
 public:
     Scene(const string& name = "Scene")
-        : sceneName(name), game(nullptr) {}
+        : sceneName(name), 
+          game(nullptr) {}
 
     virtual ~Scene() = default;
 
@@ -50,9 +50,8 @@ public:
 
     // Access to game instance (for scene transitions)
     void setGame(Game* gameInstance) { this->game = gameInstance; }
-    Game* getGame() const { return this->game; }
-
-    string getName() const { return this->sceneName; }
+    auto* getGame() const { return this->game; }
+    auto getName() const { return this->sceneName; }
 
 protected:
     // Helper methods for derived scenes

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
 #include <string>
@@ -11,8 +10,9 @@ using namespace std;
 // Base Entity class - like React.Component but simplified for games
 class Entity {
 public:
-    Entity(const string& name = "Entity")
-        : entityName(name), active(true) {}
+    Entity(const string& name = "Entity") 
+        : entityName(name), 
+          active(true) {}
 
     virtual ~Entity() = default;
 
@@ -24,8 +24,8 @@ public:
     virtual void onDestroy() {}                 // Like componentWillUnmount
 
     // Entity management
-    string getName() const { return entityName; }
-    bool isActive() const { return active; }
+    auto getName() const { return entityName; }
+    auto isActive() const { return active; }
     void setActive(bool isActive) { active = isActive; }
 
     // Helper for state management (optional)
@@ -34,12 +34,12 @@ public:
         T value;
     public:
         State(T v) : value(v) {}
-        T get() const { return value; }
-        void set(T v) { value = v; }
+        auto get() const { return this->value; }
+        void set(T v) { this->value = v; }
 
         // Convenience operators
-        operator T() const { return value; }
-        State& operator=(T v) { value = v; return *this; }
+        auto& operator=(T v) { this->value = v; return *this; }
+        operator T() const { return this->value; }
     };
 
 protected:
