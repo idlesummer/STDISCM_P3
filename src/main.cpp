@@ -98,23 +98,20 @@ int main() {
     std::cout << "Controls: WASD or Arrow Keys to move" << std::endl;
     std::cout << std::endl;
 
-    // Create engine with initial state and reducer
-    auto engine = Engine<GameState>(
-        800, 600,
-        "Reactive SFML - Moving Circle",
-        GameState(),
-        gameReducer
-    );
+    // Create store with initial state and reducer (like React's createStore)
+    auto store = Store<GameState>(GameState(), gameReducer);
 
     // Optional: Add logger to see actions
-    engine.getStore().addMiddleware(createLoggerMiddleware());
+    store.addMiddleware(createLoggerMiddleware());
+
+    // Create engine with store (like React's ReactDOM.render with Provider)
+    auto engine = Engine<GameState>(800, 600, "Reactive SFML - Moving Circle", store);
 
     // Set event handler
     engine.setEventHandler(handleEvents);
 
-    // Create and mount the circle component
-    auto circle = std::make_shared<CircleComponent>(&engine.getStore());
-    circle->mount();
+    // Create and mount the circle component (passing store reference)
+    auto circle = std::make_shared<CircleComponent>(&store);
     engine.setRoot(circle);
 
     // Run the game loop
