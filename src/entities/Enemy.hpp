@@ -29,7 +29,6 @@ public:
         this->elapsedTime += dt.asSeconds();
         this->position.x = 400 + 200 * cos(this->elapsedTime * this->speed * 0.1f);
         this->position.y = 300 + 200 * sin(this->elapsedTime * this->speed * 0.1f);
-
         this->sprite.setPosition(this->position);
     }
 

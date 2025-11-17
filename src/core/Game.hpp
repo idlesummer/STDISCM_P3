@@ -31,17 +31,13 @@ public:
             this->currentScene->onCreate();       // Mount new scene
         }
     }
-
-    auto getCurrentScene() const {
-        return this->currentScene;
-    }
-
+    
     // Main game loop with fixed timestep
     void run() {
         auto TICK = seconds(1.f / 60.f);  // 60 updates per second
         auto clock = Clock();
         auto lag = Time::Zero;
-
+        
         while (this->window.isOpen()) {
             auto elapsed = clock.restart();
             
@@ -53,8 +49,8 @@ public:
         }
         this->handleExit();                 // Cleanup on exit
     }
-
-    // Access to window
+    
+    auto getCurrentScene() const { return this->currentScene; }
     auto& getWindow() { return this->window; }
 
 private:
