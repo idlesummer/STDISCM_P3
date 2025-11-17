@@ -42,45 +42,44 @@ public:
 
     // Get current state (read-only)
     const TState& getState() const {
-        return state;
+        return this->state;
     }
 
     // Dispatch an action
     void dispatch(const Action& action) {
         // Run middleware before reducer
-        for (auto& middleware : middlewares) {
+        for (auto& middleware : this->middlewares)
             middleware(action);
-        }
 
         // Run reducer
-        TState newState = reducer(state, action);
+        auto newState = this->reducer(this->state, action);
 
         // Check if state actually changed
-        bool changed = true;  // Simplified - would need deep comparison
+        auto changed = true;  // Simplified - would need deep comparison
 
-        if (changed) {
-            state = newState;
+        if (!changed)
+            return;
 
-            // Notify all subscribers
-            for (auto& subscriber : subscribers) {
-                subscriber(state);
-            }
-        }
+        this->state = newState;
+
+        // Notify all subscribers
+        for (auto& subscriber : this->subscribers)
+            subscriber(this->state);
     }
 
     // Subscribe to state changes
     void subscribe(std::function<void(const TState&)> callback) {
-        subscribers.push_back(callback);
+        this->subscribers.push_back(callback);
     }
 
     // Add middleware
     void addMiddleware(Middleware middleware) {
-        middlewares.push_back(middleware);
+        this->middlewares.push_back(middleware);
     }
 
     // Clear all subscribers (useful for cleanup)
     void clearSubscribers() {
-        subscribers.clear();
+        this->subscribers.clear();
     }
 
 private:
