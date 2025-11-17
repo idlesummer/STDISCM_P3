@@ -13,7 +13,7 @@ using namespace std;
 class Enemy : public Entity {
 public:
     Enemy(Vector2f initialPosition)
-        : Entity("Enemy"), position(initialPosition), speed(3.0f) {}
+        : Entity("Enemy", initialPosition), speed(3.0f) {}
 
     void onCreate() override {
         cout << "Enemy spawned!" << endl;
@@ -37,10 +37,7 @@ public:
         window.draw(this->sprite);
     }
 
-    Vector2f getPosition() const { return this->position; }
-
 private:
-    Vector2f position;
     float speed;
     float elapsedTime = 0.0f;
     CircleShape sprite;

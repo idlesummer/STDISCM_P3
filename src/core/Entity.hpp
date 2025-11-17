@@ -10,9 +10,10 @@ using namespace std;
 // Base Entity class - like React.Component but simplified for games
 class Entity {
 public:
-    Entity(const string& name = "Entity") 
-        : entityName(name), 
-          active(true) {}
+    Entity(const string& name = "Entity", Vector2f initialPosition = Vector2f(0, 0))
+        : entityName(name),
+          active(true),
+          position(initialPosition) {}
 
     virtual ~Entity() = default;
 
@@ -24,9 +25,14 @@ public:
     virtual void onDestroy() {}                 // Like componentWillUnmount
 
     // Entity management
-    auto getName() const { return entityName; }
-    auto isActive() const { return active; }
-    void setActive(bool isActive) { active = isActive; }
+    auto getName() const { return this->entityName; }
+    auto isActive() const { return this->active; }
+    void setActive(bool isActive) { this->active = isActive; }
+
+    // Position management
+    auto getPosition() const { return this->position; }
+    void setPosition(Vector2f newPosition) { this->position = newPosition; }
+    void setPosition(float x, float y) { this->position = Vector2f(x, y); }
 
     // Helper for state management (optional)
     template<typename T>
@@ -45,4 +51,5 @@ public:
 protected:
     string entityName;
     bool active;
+    Vector2f position;
 };

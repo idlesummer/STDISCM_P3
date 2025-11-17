@@ -12,7 +12,7 @@ using namespace std;
 class Player : public Entity {
 public:
     Player(Vector2f initialPosition = Vector2f(400, 300))
-        : Entity("Player"), position(initialPosition), speed(200.0f) {}
+        : Entity("Player", initialPosition), speed(200.0f) {}
 
     // Lifecycle hook - called once when entity is created
     void onCreate() override {
@@ -73,7 +73,6 @@ public:
 
 private:
     // State
-    Vector2f position;
     float speed;  // pixels per second
 
     // Visual representation
