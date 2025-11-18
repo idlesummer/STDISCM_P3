@@ -73,7 +73,7 @@ struct TetrominoData {
 // Tetromino definitions - complete data for each piece type
 const TetrominoData I_PIECE = {
     .type = 'I',
-    .pivot = {{2, 1}},
+    .pivot = nullopt,
     .shape = {{
         {0, 0, 0, 0},
         {1, 1, 1, 1},
@@ -84,7 +84,7 @@ const TetrominoData I_PIECE = {
 
 const TetrominoData O_PIECE = {
     .type = 'O',
-    .pivot = {{1, 1}},  // Rotating O doesn't change it, so pivot doesn't matter
+    .pivot = nullopt,
     .shape = {{
         {0, 0, 0, 0},
         {0, 1, 1, 0},
@@ -95,7 +95,7 @@ const TetrominoData O_PIECE = {
 
 const TetrominoData T_PIECE = {
     .type = 'T',
-    .pivot = nullopt,  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
         {0, 1, 0, 0},
         {1, 1, 1, 0},
@@ -106,7 +106,7 @@ const TetrominoData T_PIECE = {
 
 const TetrominoData S_PIECE = {
     .type = 'S',
-    .pivot = nullopt,  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
         {0, 1, 1, 0},
         {1, 1, 0, 0},
@@ -117,7 +117,7 @@ const TetrominoData S_PIECE = {
 
 const TetrominoData Z_PIECE = {
     .type = 'Z',
-    .pivot = nullopt,  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
         {1, 1, 0, 0},
         {0, 1, 1, 0},
@@ -128,7 +128,7 @@ const TetrominoData Z_PIECE = {
 
 const TetrominoData J_PIECE = {
     .type = 'J',
-    .pivot = nullopt,  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
         {0, 0, 1, 0},
         {1, 1, 1, 0},
@@ -139,7 +139,7 @@ const TetrominoData J_PIECE = {
 
 const TetrominoData L_PIECE = {
     .type = 'L',
-    .pivot = nullopt,  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
         {1, 0, 0, 0},
         {1, 1, 1, 0},
