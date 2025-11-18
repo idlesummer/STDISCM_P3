@@ -72,7 +72,7 @@ const ShapeMatrix SHAPE_L = {{
 }};
 
 // Color mapping for each tetromino type
-inline Color getTetrominoColor(TetrominoType type) {
+Color getTetrominoColor(TetrominoType type) {
     switch (type) {
         case TetrominoType::I: return Color::Cyan;
         case TetrominoType::O: return Color::Yellow;
@@ -86,7 +86,7 @@ inline Color getTetrominoColor(TetrominoType type) {
 }
 
 // Get base shape matrix for a tetromino type
-inline ShapeMatrix getBaseShape(TetrominoType type) {
+ShapeMatrix getBaseShape(TetrominoType type) {
     switch (type) {
         case TetrominoType::I: return SHAPE_I;
         case TetrominoType::O: return SHAPE_O;
@@ -100,7 +100,7 @@ inline ShapeMatrix getBaseShape(TetrominoType type) {
 }
 
 // Rotate a shape matrix 90 degrees clockwise
-inline ShapeMatrix rotateShape(const ShapeMatrix& shape) {
+ShapeMatrix rotateShape(const ShapeMatrix& shape) {
     ShapeMatrix rotated{};
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
