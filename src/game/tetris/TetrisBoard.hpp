@@ -16,6 +16,7 @@ public:
     TetrisBoard()
         : grid{},
           totalLinesCleared(0) {
+
         this->reset();
     }
 
@@ -44,9 +45,8 @@ public:
                 }
 
                 // Check if cell is occupied
-                if (this->grid[boardY][boardX] != 0) {
+                if (this->grid[boardY][boardX] != 0)
                     return false;
-                }
             }
         }
         return true;
@@ -94,15 +94,13 @@ public:
 
             // Shift all rows above down
             for (int shiftY = y; shiftY > 0; shiftY--) {
-                for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) {
+                for (int x = 0; x < TETRIS_BOARD_WIDTH; x++)
                     this->grid[shiftY][x] = this->grid[shiftY - 1][x];
-                }
             }
 
             // Clear top row
-            for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) {
+            for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) 
                 this->grid[0][x] = 0;
-            }
 
             // Check same row again since we shifted
             y++;
@@ -119,9 +117,8 @@ public:
 
     // Get cell value at position
     int getCell(int x, int y) const {
-        if (x < 0 || x >= TETRIS_BOARD_WIDTH || y < 0 || y >= TETRIS_BOARD_HEIGHT) {
+        if (x < 0 || x >= TETRIS_BOARD_WIDTH || y < 0 || y >= TETRIS_BOARD_HEIGHT)
             return -1; // Out of bounds
-        }
         return this->grid[y][x];
     }
 
