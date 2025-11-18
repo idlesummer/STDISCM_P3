@@ -1,5 +1,6 @@
 #pragma once
 #include "../core/Entity.hpp"
+#include "../game/tetris/TetrisScoring.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 
@@ -8,23 +9,19 @@ using namespace sf;
 
 class TetrisScoreText : public Entity {
 private:
+    TetrisScoring tetrisScoring; // Pure game logic
     Text scoreText;
     Text linesText;
     Text levelText;
-    int score;
-    int lines;
-    int level;
     Font font;
 
 public:
     TetrisScoreText(Vector2f position)
         : Entity("TetrisScoreText", position),
+          tetrisScoring(),
           scoreText(),
           linesText(),
           levelText(),
-          score(0),
-          lines(0),
-          level(1),
           font() {
     }
 
@@ -58,41 +55,32 @@ public:
     }
 
     void addScore(int points) {
-        this->score += points;
+        this->tetrisScoring.addScore(points);
         this->updateDisplay();
     }
 
     void addLines(int linesCleared) {
-        this->lines += linesCleared;
-
-        // Award points based on lines cleared
-        switch (linesCleared) {
-            case 1: this->addScore(100 * this->level); break;
-            case 2: this->addScore(300 * this->level); break;
-            case 3: this->addScore(500 * this->level); break;
-            case 4: this->addScore(800 * this->level); break; // Tetris!
-        }
-
-        // Level up every 10 lines
-        this->level = 1 + (this->lines / 10);
+        this->tetrisScoring.addLines(linesCleared);
         this->updateDisplay();
     }
 
     void reset() {
-        this->score = 0;
-        this->lines = 0;
-        this->level = 1;
+        this->tetrisScoring.reset();
         this->updateDisplay();
     }
 
-    int getScore() const { return this->score; }
-    int getLines() const { return this->lines; }
-    int getLevel() const { return this->level; }
+    int getScore() const { return this->tetrisScoring.getScore(); }
+    int getLines() const { return this->tetrisScoring.getLines(); }
+    int getLevel() const { return this->tetrisScoring.getLevel(); }
+
+    // Access to underlying game logic (if needed)
+    TetrisScoring& getTetrisScoring() { return this->tetrisScoring; }
+    const TetrisScoring& getTetrisScoring() const { return this->tetrisScoring; }
 
 private:
     void updateDisplay() {
-        this->scoreText.setString("Score: " + to_string(this->score));
-        this->linesText.setString("Lines: " + to_string(this->lines));
-        this->levelText.setString("Level: " + to_string(this->level));
+        this->scoreText.setString("Score: " + to_string(this->tetrisScoring.getScore()));
+        this->linesText.setString("Lines: " + to_string(this->tetrisScoring.getLines()));
+        this->levelText.setString("Level: " + to_string(this->tetrisScoring.getLevel()));
     }
 };

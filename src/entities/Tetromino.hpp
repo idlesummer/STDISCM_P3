@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/Entity.hpp"
 #include "../utils/TetrominoShapes.hpp"
+#include "../game/tetris/TetrisPiece.hpp"
 #include "Board.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -11,21 +12,16 @@ using namespace Tetris;
 
 class Tetromino : public Entity {
 private:
-    TetrominoType type;
-    ShapeMatrix currentShape;
+    TetrisPiece tetrisPiece;    // Pure game logic
     Color color;
-    int gridX, gridY;           // Position in grid coordinates
     RectangleShape blockShape;
-    Board* board;               // Reference to the game board
+    Board* board;               // Reference to the game board for rendering position
     Vector2f boardPosition;
 
 public:
     Tetromino(TetrominoType type, Board* board)
-        : type(type),
+        : tetrisPiece(type, &board->getTetrisBoard()),
           board(board),
-          gridX(3),
-          gridY(0),
-          currentShape(getBaseShape(type)),
           color(getTetrominoColor(type)),
           blockShape(),
           boardPosition() {
@@ -43,90 +39,61 @@ public:
 
     void onDraw(RenderWindow& window) override {
         // Draw each block of the tetromino
+        const auto& shape = this->tetrisPiece.getShape();
+        int gridX = this->tetrisPiece.getX();
+        int gridY = this->tetrisPiece.getY();
+
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
-                if (this->currentShape[y][x] == 0)
+                if (shape[y][x] == 0)
                     continue;
 
                 this->blockShape.setPosition(
-                    this->boardPosition.x + (this->gridX + x) * BLOCK_SIZE,
-                    this->boardPosition.y + (this->gridY + y) * BLOCK_SIZE
+                    this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
+                    this->boardPosition.y + (gridY + y) * BLOCK_SIZE
                 );
                 window.draw(this->blockShape);
             }
         }
     }
 
-    // Movement methods
+    // Delegate movement methods to TetrisPiece
     auto moveLeft() {
-        if (this->board->isValidPosition(this->currentShape, this->gridX - 1, this->gridY)) {
-            this->gridX--;
-            return true;
-        }
-        return false;
+        return this->tetrisPiece.moveLeft();
     }
 
     auto moveRight() {
-        if (this->board->isValidPosition(this->currentShape, this->gridX + 1, this->gridY)) {
-            this->gridX++;
-            return true;
-        }
-        return false;
+        return this->tetrisPiece.moveRight();
     }
 
     auto moveDown() {
-        if (this->board->isValidPosition(this->currentShape, this->gridX, this->gridY + 1)) {
-            this->gridY++;
-            return true;
-        }
-        return false;
+        return this->tetrisPiece.moveDown();
     }
 
-    // Rotate clockwise
     auto rotate() {
-        auto rotated = rotateShape(this->currentShape);
-
-        // Try basic rotation
-        if (this->board->isValidPosition(rotated, this->gridX, this->gridY)) {
-            this->currentShape = rotated;
-            return true;
-        }
-
-        // Try wall kicks (simple version - just try moving left or right)
-        if (this->board->isValidPosition(rotated, this->gridX - 1, this->gridY)) {
-            this->currentShape = rotated;
-            this->gridX--;
-            return true;
-        }
-
-        if (this->board->isValidPosition(rotated, this->gridX + 1, this->gridY)) {
-            this->currentShape = rotated;
-            this->gridX++;
-            return true;
-        }
-
-        return false;
+        return this->tetrisPiece.rotate();
     }
 
-    // Hard drop - move down until collision
     void hardDrop() {
-        while (this->moveDown()); // Keep moving down
+        this->tetrisPiece.hardDrop();
     }
 
-    // Place this tetromino on the board
     void placeOnBoard() {
-        this->board->placeTetromino(this->currentShape, this->gridX, this->gridY, this->type);
+        this->tetrisPiece.placeOnBoard();
     }
 
-    // Check if piece can be placed at starting position
     bool canSpawn() const {
-        return this->board->isValidPosition(this->currentShape, this->gridX, this->gridY);
+        return this->tetrisPiece.canSpawn();
     }
 
     // Getters
-    TetrominoType getType() const { return this->type; }
-    ShapeMatrix getShape() const { return this->currentShape; }
+    TetrominoType getType() const { return this->tetrisPiece.getType(); }
+    ShapeMatrix getShape() const { return this->tetrisPiece.getShape(); }
     Color getColor() const { return this->color; }
-    int getGridX() const { return this->gridX; }
-    int getGridY() const { return this->gridY; }
+    int getGridX() const { return this->tetrisPiece.getX(); }
+    int getGridY() const { return this->tetrisPiece.getY(); }
+
+    // Access to underlying game logic (if needed)
+    TetrisPiece& getTetrisPiece() { return this->tetrisPiece; }
+    const TetrisPiece& getTetrisPiece() const { return this->tetrisPiece; }
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/Entity.hpp"
 #include "../utils/TetrominoShapes.hpp"
+#include "../game/tetris/TetrisBoard.hpp"
 #include <SFML/Graphics.hpp>
 #include <array>
 
@@ -10,22 +11,17 @@ using namespace Tetris;
 
 class Board : public Entity {
 private:
-    // Board grid: 0 = empty, 1-7 = color index
-    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> grid;
+    TetrisBoard tetrisBoard; // Pure game logic
     RectangleShape blockShape;
     RectangleShape borderShape;
     Vector2f boardPosition;
-    int linesCleared;
 
 public:
     Board()
-        : blockShape(),
+        : tetrisBoard(),
+          blockShape(),
           borderShape(),
-          boardPosition(),
-          linesCleared(0) {
-
-        for (auto& row : this->grid)
-            row.fill(0);
+          boardPosition() {
     }
 
     void onCreate() override {
@@ -70,106 +66,48 @@ public:
         window.draw(gridLines);
 
         // Draw placed blocks
+        const auto& grid = this->tetrisBoard.getGrid();
         for (auto y = 0; y < BOARD_HEIGHT; y++) {
             for (auto x = 0; x < BOARD_WIDTH; x++) {
-                if (this->grid[y][x] == 0)
+                if (grid[y][x] == 0)
                     continue;
                 auto posX = this->boardPosition.x + x * BLOCK_SIZE;
                 auto posY = this->boardPosition.y + y * BLOCK_SIZE;
                 this->blockShape.setPosition(posX, posY);
-                this->blockShape.setFillColor(this->getColorFromIndex(this->grid[y][x]));
+                this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
                 window.draw(this->blockShape);
             }
         }
     }
 
-    // Check if a position is valid (within bounds and not occupied)
+    // Delegate game logic to TetrisBoard
     auto isValidPosition(const ShapeMatrix& shape, int gridX, int gridY) const {
-        for (auto y = 0; y < 4; y++) {
-            for (auto x = 0; x < 4; x++) {
-                if (shape[y][x] == 0)
-                    continue;
-
-                auto boardX = gridX + x;
-                auto boardY = gridY + y;
-
-                if (!(boardX >= 0 && boardX < BOARD_WIDTH && boardY > 0 && boardY < BOARD_HEIGHT))
-                    return false;
-
-                if (this->grid[boardY][boardX] != 0)
-                    return false;
-            }
-        }
-        return true;
+        // Convert ShapeMatrix to TetrisShape (they're the same type)
+        return this->tetrisBoard.isValidPosition(shape, gridX, gridY);
     }
 
-    // Place a tetromino on the board
     void placeTetromino(const ShapeMatrix& shape, int gridX, int gridY, TetrominoType type) {
-        auto colorIndex = static_cast<int>(type) + 1;
-
-        for (auto y = 0; y < 4; y++) {
-            for (auto x = 0; x < 4; x++) {
-                if (shape[y][x] == 0)
-                    continue;
-
-                auto boardX = gridX + x;
-                auto boardY = gridY + y;
-                if (boardX >= 0 && boardX < BOARD_WIDTH && boardY >= 0 && boardY < BOARD_HEIGHT)
-                    this->grid[boardY][boardX] = colorIndex;
-            }
-        }
+        this->tetrisBoard.placePiece(shape, gridX, gridY, type);
     }
 
-    // Check and clear completed lines, return number of lines cleared
     auto clearLines() {
-        auto cleared = 0;
-
-        for (auto y = BOARD_HEIGHT - 1; y >= 0; y--) {
-            auto isComplete = true;
-
-            for (auto x = 0; x < BOARD_WIDTH; x++) {
-                if (this->grid[y][x] != 0) continue;
-                isComplete = false;
-                break;
-            }
-
-            if (!isComplete)
-                continue;
-
-            cleared++;
-            this->linesCleared++;
-
-            // Shift all rows above down
-            for (auto shiftY = y; shiftY > 0; shiftY--)
-                for (auto x = 0; x < BOARD_WIDTH; x++)
-                    this->grid[shiftY][x] = this->grid[shiftY - 1][x];
-
-            // Clear top row
-            for (auto x = 0; x < BOARD_WIDTH; x++)
-                this->grid[0][x] = 0;
-
-            // Check same row again since we shifted
-            y++;
-        }
-
-        return cleared;
+        return this->tetrisBoard.clearLines();
     }
 
-    // Check if the top row has any blocks (game over condition)
     bool isTopRowOccupied() const {
-        return ranges::any_of(this->grid[0], [](auto cell) {
-            return cell != 0;
-        });
+        return this->tetrisBoard.isTopRowOccupied();
     }
 
     void reset() {
-        for (auto& row : this->grid)
-            row.fill(0);
-        this->linesCleared = 0;
+        this->tetrisBoard.reset();
     }
 
     auto getBoardPosition() const { return this->boardPosition; }
-    auto getTotalLinesCleared() const { return this->linesCleared; }
+    auto getTotalLinesCleared() const { return this->tetrisBoard.getTotalLinesCleared(); }
+
+    // Access to underlying game logic (if needed)
+    TetrisBoard& getTetrisBoard() { return this->tetrisBoard; }
+    const TetrisBoard& getTetrisBoard() const { return this->tetrisBoard; }
 
 private:
     auto getColorFromIndex(int index) const -> Color {
