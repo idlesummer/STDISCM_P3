@@ -49,6 +49,26 @@ public:
         // Draw border
         window.draw(borderShape);
 
+        // Draw grid lines (light grey)
+        Color gridColor(40, 40, 40);  // Light grey
+        VertexArray gridLines(Lines);
+
+        // Vertical lines
+        for (int x = 0; x <= BOARD_WIDTH; x++) {
+            float xPos = boardPosition.x + x * BLOCK_SIZE;
+            gridLines.append(Vertex(Vector2f(xPos, boardPosition.y), gridColor));
+            gridLines.append(Vertex(Vector2f(xPos, boardPosition.y + BOARD_HEIGHT * BLOCK_SIZE), gridColor));
+        }
+
+        // Horizontal lines
+        for (int y = 0; y <= BOARD_HEIGHT; y++) {
+            float yPos = boardPosition.y + y * BLOCK_SIZE;
+            gridLines.append(Vertex(Vector2f(boardPosition.x, yPos), gridColor));
+            gridLines.append(Vertex(Vector2f(boardPosition.x + BOARD_WIDTH * BLOCK_SIZE, yPos), gridColor));
+        }
+
+        window.draw(gridLines);
+
         // Draw placed blocks
         for (int y = 0; y < BOARD_HEIGHT; y++) {
             for (int x = 0; x < BOARD_WIDTH; x++) {
