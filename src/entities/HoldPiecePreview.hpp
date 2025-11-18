@@ -7,7 +7,7 @@ using namespace std;
 using namespace sf;
 using namespace Tetris;
 
-class HoldBoxPreview : public Entity {
+class HoldPiecePreview : public Entity {
 private:
     char heldType;
     ShapeMatrix heldShape;
@@ -19,8 +19,8 @@ private:
     bool isLocked; // Visual feedback when hold is locked
 
 public:
-    HoldBoxPreview(Vector2f position)
-        : Entity("HoldBoxPreview", position),
+    HoldPiecePreview(Vector2f position)
+        : Entity("HoldPiecePreview", position),
           heldType('\0'),
           heldShape(),
           heldColor(),

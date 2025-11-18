@@ -4,7 +4,7 @@
 #include "../entities/Tetromino.hpp"
 #include "../entities/TetrisScoreText.hpp"
 #include "../entities/NextPiecePreview.hpp"
-#include "../entities/HoldBoxPreview.hpp"
+#include "../entities/HoldPiecePreview.hpp"
 #include "../entities/MenuText.hpp"
 #include "../utils/TetrominoShapes.hpp"
 #include <SFML/Graphics.hpp>
@@ -21,7 +21,7 @@ private:
     shared_ptr<Tetromino> activePiece;
     shared_ptr<TetrisScoreText> scoreDisplay;
     shared_ptr<NextPiecePreview> nextPreview;
-    shared_ptr<HoldBoxPreview> holdPreview;
+    shared_ptr<HoldPiecePreview> holdPreview;
     shared_ptr<MenuText> titleText;
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
@@ -82,7 +82,7 @@ public:
         this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
         this->addEntity(this->nextPreview);
 
-        this->holdPreview = make_shared<HoldBoxPreview>(Vector2f(400, 320));
+        this->holdPreview = make_shared<HoldPiecePreview>(Vector2f(400, 320));
         this->addEntity(this->holdPreview);
 
         this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
