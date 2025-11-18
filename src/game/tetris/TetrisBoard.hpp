@@ -5,8 +5,6 @@
 
 using namespace std;
 
-// Pure Tetris board logic - no rendering or external dependencies
-// Can be used in any project
 
 class TetrisBoard {
 private:
@@ -24,31 +22,28 @@ public:
 
     // Reset the board to empty state
     void reset() {
-        for (auto& row : this->grid) {
+        for (auto& row : this->grid)
             row.fill(0);
-        }
         this->totalLinesCleared = 0;
     }
 
     // Check if a position is valid (within bounds and not occupied)
-    bool isValidPosition(const TetrisShape& shape, int gridX, int gridY) const {
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
+    auto isValidPosition(const TetrisShape& shape, int gridX, int gridY) const {
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
                     continue;
 
-                int boardX = gridX + x;
-                int boardY = gridY + y;
+                auto boardX = gridX + x;
+                auto boardY = gridY + y;
 
                 // Check bounds
-                if (!this->isInBounds(boardX, boardY)) {
+                if (!this->isInBounds(boardX, boardY))
                     return false;
-                }
 
                 // Check if cell is occupied
-                if (this->isOccupied(boardX, boardY)) {
+                if (this->isOccupied(boardX, boardY))
                     return false;
-                }
             }
         }
         return true;
@@ -56,31 +51,30 @@ public:
 
     // Place a tetromino on the board
     void placePiece(const TetrisShape& shape, int gridX, int gridY, TetrominoType type) {
-        int colorIndex = static_cast<int>(type) + 1;
+        auto colorIndex = static_cast<int>(type) + 1;
 
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
                     continue;
 
-                int boardX = gridX + x;
-                int boardY = gridY + y;
+                auto boardX = gridX + x;
+                auto boardY = gridY + y;
 
-                if (this->isInBounds(boardX, boardY)) {
+                if (this->isInBounds(boardX, boardY))
                     this->grid[boardY][boardX] = colorIndex;
-                }
             }
         }
     }
 
     // Check and clear completed lines, return number of lines cleared
     int clearLines() {
-        int cleared = 0;
+        auto cleared = 0;
 
-        for (int y = TETRIS_BOARD_HEIGHT - 1; y >= 0; y--) {
-            bool isComplete = true;
+        for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0; y--) {
+            auto isComplete = true;
 
-            for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) {
+            for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++) {
                 if (!this->isOccupied(x, y)) {
                     isComplete = false;
                     break;
@@ -94,10 +88,9 @@ public:
             this->totalLinesCleared++;
 
             // Shift all rows above down
-            for (int shiftY = y; shiftY > 0; shiftY--) {
-                for (int x = 0; x < TETRIS_BOARD_WIDTH; x++)
+            for (auto shiftY = y; shiftY > 0; shiftY--)
+                for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++)
                     this->grid[shiftY][x] = this->grid[shiftY - 1][x];
-            }
 
             // Clear top row
             for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) 
@@ -111,17 +104,13 @@ public:
     }
 
     // Check if the top row has any blocks (game over condition)
-    bool isTopRowOccupied() const {
-        return any_of(this->grid[0].begin(), this->grid[0].end(),
-                          [](int cell) { return cell != 0; });
+    auto isTopRowOccupied() const {
+        return ranges::any_of(this->grid[0], [](auto cell) { return cell != 0; });
     }
 
     // Get cell value at position
     int getCell(int x, int y) const {
-        if (!this->isInBounds(x, y)) {
-            return -1; // Out of bounds
-        }
-        return this->grid[y][x];
+        return this->isInBounds(x, y) ? this->grid[y][x] : -1;
     }
 
     // Get the entire grid (for rendering or serialization)

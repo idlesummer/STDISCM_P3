@@ -30,7 +30,7 @@ public:
 
     // Add cleared lines and calculate score
     // Returns the points awarded
-    int addLines(int linesCleared) {
+    auto addLines(int linesCleared) {
         if (linesCleared <= 0)
             return 0;
 
@@ -58,39 +58,35 @@ public:
         }
 
         this->score += points;
-
-        // Update level (every 10 lines)
-        this->level = 1 + (this->lines / 10);
-
+        this->level = 1 + (this->lines / 10);   // Update level (every 10 lines)
         return points;
     }
 
     // Calculate fall speed based on level
     // Returns fall interval in seconds
-    float getFallInterval() const {
+    auto getFallInterval() const {
         // Start at 1.0 second, decrease by 0.1s per level
         // Minimum 0.1 seconds at level 10+
-        float interval = 1.0f - (this->level - 1) * 0.1f;
+        auto interval = 1.0f - (this->level - 1) * 0.1f;
         return (interval < 0.1f) ? 0.1f : interval;
     }
 
     // Getters
-    int getScore() const {
+    auto getScore() const {
         return this->score;
     }
 
-    int getLines() const {
+    auto getLines() const {
         return this->lines;
     }
 
-    int getLevel() const {
+    auto getLevel() const {
         return this->level;
     }
 
     // Set level manually (useful for starting at different difficulties)
     void setLevel(int newLevel) {
-        if (newLevel > 0) {
+        if (newLevel > 0)
             this->level = newLevel;
-        }
     }
 };

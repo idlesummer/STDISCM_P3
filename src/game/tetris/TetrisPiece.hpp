@@ -23,7 +23,7 @@ public:
     }
 
     // Movement methods - return true if successful, false if blocked
-    bool moveLeft() {
+    auto moveLeft() {
         if (this->board && this->board->isValidPosition(this->currentShape, this->gridX - 1, this->gridY)) {
             this->gridX--;
             return true;
@@ -31,7 +31,7 @@ public:
         return false;
     }
 
-    bool moveRight() {
+    auto moveRight() {
         if (this->board && this->board->isValidPosition(this->currentShape, this->gridX + 1, this->gridY)) {
             this->gridX++;
             return true;
@@ -39,7 +39,7 @@ public:
         return false;
     }
 
-    bool moveDown() {
+    auto moveDown() {
         if (this->board && this->board->isValidPosition(this->currentShape, this->gridX, this->gridY + 1)) {
             this->gridY++;
             return true;
@@ -48,7 +48,7 @@ public:
     }
 
     // Rotate clockwise with wall kick support
-    bool rotate() {
+    auto rotate() {
         TetrisShape rotated = rotateTetrisShape(this->currentShape);
 
         if (!this->board)
@@ -77,42 +77,40 @@ public:
     }
 
     // Hard drop - move down until collision, return number of rows dropped
-    int hardDrop() {
+    auto hardDrop() {
         int rowsDropped = 0;
-        while (this->moveDown()) {
+        while (this->moveDown())
             rowsDropped++;
-        }
         return rowsDropped;
     }
 
     // Place this piece on the board
     void placeOnBoard() {
-        if (this->board) {
+        if (this->board)
             this->board->placePiece(this->currentShape, this->gridX, this->gridY, this->type);
-        }
     }
 
     // Check if piece can be placed at current position (spawn check)
-    bool canSpawn() const {
+    auto canSpawn() const {
         if (!this->board)
             return false;
         return this->board->isValidPosition(this->currentShape, this->gridX, this->gridY);
     }
 
     // Getters
-    TetrominoType getType() const {
+    auto getType() const {
         return this->type;
     }
 
-    const TetrisShape& getShape() const {
+    const auto& getShape() const {
         return this->currentShape;
     }
 
-    int getX() const {
+    auto getX() const {
         return this->gridX;
     }
 
-    int getY() const {
+    auto getY() const {
         return this->gridY;
     }
 

@@ -7,8 +7,8 @@
 #include <random>
 #include <functional>
 
-// Pure Tetris game controller - coordinates all game logic
-// No rendering or input handling - those should be handled by the UI layer
+using namespace std;
+
 
 enum class TetrisGameState {
     Playing,
@@ -20,17 +20,17 @@ class TetrisGame {
 private:
     TetrisBoard board;
     TetrisScoring scoring;
-    std::unique_ptr<TetrisPiece> activePiece;
+    unique_ptr<TetrisPiece> activePiece;
     TetrominoType nextPieceType;
     TetrisGameState state;
     float fallTimer;
 
     // Random number generation
-    std::mt19937 rng;
-    std::uniform_int_distribution<int> pieceDistribution;
+    mt19937 rng;
+    uniform_int_distribution<int> pieceDistribution;
 
     // Callback for game over event (optional)
-    std::function<void(int finalScore, int finalLines)> onGameOverCallback;
+    function<void(int finalScore, int finalLines)> onGameOverCallback;
 
 public:
     TetrisGame()
@@ -40,7 +40,7 @@ public:
           nextPieceType(TetrominoType::NONE),
           state(TetrisGameState::Playing),
           fallTimer(0.0f),
-          rng(std::random_device{}()),
+          rng(random_device{}()),
           pieceDistribution(0, 6),
           onGameOverCallback(nullptr) {
         this->initialize();
@@ -67,44 +67,41 @@ public:
 
         // Update fall timer
         this->fallTimer += deltaTime;
-
         float fallInterval = this->scoring.getFallInterval();
 
-        if (this->fallTimer >= fallInterval) {
-            this->fallTimer = 0.0f;
+        if (this->fallTimer < fallInterval)
+            return;
 
-            // Try to move piece down
-            if (!this->activePiece->moveDown()) {
-                // Piece can't move down - lock it
-                this->lockPiece();
-            }
-        }
+        this->fallTimer = 0.0f;
+
+        // Try to move piece down
+        if (!this->activePiece->moveDown()) 
+            this->lockPiece();              // Piece can't move down - lock it
     }
 
     // Input handling methods - return true if action was successful
-    bool moveActiveLeft() {
+    auto moveActiveLeft() {
         if (this->state != TetrisGameState::Playing || !this->activePiece)
             return false;
         return this->activePiece->moveLeft();
     }
 
-    bool moveActiveRight() {
+    auto moveActiveRight() {
         if (this->state != TetrisGameState::Playing || !this->activePiece)
             return false;
         return this->activePiece->moveRight();
     }
 
-    bool moveActiveDown() {
+    auto moveActiveDown() {
         if (this->state != TetrisGameState::Playing || !this->activePiece)
             return false;
         bool moved = this->activePiece->moveDown();
-        if (moved) {
+        if (moved)
             this->fallTimer = 0.0f; // Reset fall timer
-        }
         return moved;
     }
 
-    bool rotateActive() {
+    auto rotateActive() {
         if (this->state != TetrisGameState::Playing || !this->activePiece)
             return false;
         return this->activePiece->rotate();
@@ -118,15 +115,13 @@ public:
     }
 
     void pause() {
-        if (this->state == TetrisGameState::Playing) {
+        if (this->state == TetrisGameState::Playing)
             this->state = TetrisGameState::Paused;
-        }
     }
 
     void resume() {
-        if (this->state == TetrisGameState::Paused) {
+        if (this->state == TetrisGameState::Paused)
             this->state = TetrisGameState::Playing;
-        }
     }
 
     // Getters for UI
@@ -159,30 +154,29 @@ public:
     }
 
     // Set callback for game over event
-    void setGameOverCallback(std::function<void(int, int)> callback) {
+    void setGameOverCallback(function<void(int, int)> callback) {
         this->onGameOverCallback = callback;
     }
 
 private:
-    TetrominoType getRandomPieceType() {
+    auto getRandomPieceType() -> TetrominoType {
         int random = this->pieceDistribution(this->rng);
         return static_cast<TetrominoType>(random);
     }
 
     void spawnNewPiece() {
         // Use the next piece
-        TetrominoType typeToSpawn = this->nextPieceType;
+        auto typeToSpawn = this->nextPieceType;
 
         // Generate new next piece
         this->nextPieceType = this->getRandomPieceType();
 
         // Create the new piece
-        this->activePiece = std::make_unique<TetrisPiece>(typeToSpawn, &this->board);
+        this->activePiece = make_unique<TetrisPiece>(typeToSpawn, &this->board);
 
         // Check if piece can spawn (game over check)
-        if (!this->activePiece->canSpawn()) {
+        if (!this->activePiece->canSpawn())
             this->triggerGameOver();
-        }
     }
 
     void lockPiece() {
@@ -195,9 +189,8 @@ private:
 
         // Clear completed lines
         int linesCleared = this->board.clearLines();
-        if (linesCleared > 0) {
+        if (linesCleared > 0)
             this->scoring.addLines(linesCleared);
-        }
 
         // Check for game over (top row occupied)
         if (this->board.isTopRowOccupied()) {
@@ -214,8 +207,7 @@ private:
         this->activePiece = nullptr;
 
         // Call game over callback if set
-        if (this->onGameOverCallback) {
+        if (this->onGameOverCallback)
             this->onGameOverCallback(this->scoring.getScore(), this->scoring.getLines());
-        }
     }
 };
