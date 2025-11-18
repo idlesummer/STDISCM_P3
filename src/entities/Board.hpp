@@ -101,6 +101,7 @@ public:
     auto getBoardPosition() const { return this->boardPosition; }
 
     // Access to underlying game logic (if needed)
+    TetrisBoard& getTetrisBoard() { return this->tetrisBoard; }
     const TetrisBoard& getTetrisBoard() const { return this->tetrisBoard; }
 
 private:
