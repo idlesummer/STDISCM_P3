@@ -9,7 +9,7 @@ using namespace Tetris;
 
 class NextPiecePreview : public Entity {
 private:
-    TetrominoType nextType;
+    char nextType;
     ShapeMatrix nextShape;
     Color nextColor;
     RectangleShape blockShape;
@@ -20,7 +20,7 @@ private:
 public:
     NextPiecePreview(Vector2f position)
         : Entity("NextPiecePreview", position),
-          nextType(TetrominoType::NONE),
+          nextType('\0'),
           nextShape(),
           nextColor(),
           blockShape(),
@@ -55,7 +55,7 @@ public:
         window.draw(this->label);
         window.draw(this->border);
 
-        if (this->nextType == TetrominoType::NONE)
+        if (this->nextType == '\0')
             return;
 
         // Calculate bounding box of the piece
@@ -104,7 +104,7 @@ public:
         }
     }
 
-    void setNextPiece(TetrominoType type) {
+    void setNextPiece(char type) {
         this->nextType = type;
         this->nextShape = getBaseShape(type);
         this->nextColor = getTetrominoColor(type);

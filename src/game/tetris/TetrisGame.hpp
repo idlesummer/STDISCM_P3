@@ -21,7 +21,7 @@ private:
     TetrisBoard board;
     TetrisScoring scoring;
     unique_ptr<TetrisPiece> activePiece;
-    TetrominoType nextPieceType;
+    char nextPieceType;
     TetrisGameState state;
     float fallTimer;
 
@@ -37,7 +37,7 @@ public:
         : board(),
           scoring(),
           activePiece(nullptr),
-          nextPieceType(TetrominoType::NONE),
+          nextPieceType('\0'),
           state(TetrisGameState::Playing),
           fallTimer(0.0f),
           rng(random_device{}()),
@@ -137,7 +137,7 @@ public:
         return this->activePiece.get();
     }
 
-    TetrominoType getNextPieceType() const {
+    char getNextPieceType() const {
         return this->nextPieceType;
     }
 
@@ -159,9 +159,10 @@ public:
     }
 
 private:
-    auto getRandomPieceType() -> TetrominoType {
+    auto getRandomPieceType() -> char {
+        const char pieces[] = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
         int random = this->pieceDistribution(this->rng);
-        return static_cast<TetrominoType>(random);
+        return pieces[random];
     }
 
     void spawnNewPiece() {

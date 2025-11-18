@@ -19,7 +19,7 @@ private:
     Vector2f boardPosition;
 
 public:
-    Tetromino(TetrominoType type, Board* board)
+    Tetromino(char type, Board* board)
         : tetrisPiece(type, &board->getTetrisBoard()),
           board(board),
           color(getTetrominoColor(type)),
@@ -87,7 +87,7 @@ public:
     }
 
     // Getters
-    TetrominoType getType() const { return this->tetrisPiece.getType(); }
+    char getType() const { return this->tetrisPiece.getType(); }
     ShapeMatrix getShape() const { return this->tetrisPiece.getShape(); }
     Color getColor() const { return this->color; }
     int getGridX() const { return this->tetrisPiece.getX(); }

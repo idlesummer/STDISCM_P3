@@ -50,8 +50,19 @@ public:
     }
 
     // Place a tetromino on the board
-    void placePiece(const TetrisShape& shape, int gridX, int gridY, TetrominoType type) {
-        auto colorIndex = static_cast<int>(type) + 1;
+    void placePiece(const TetrisShape& shape, int gridX, int gridY, char type) {
+        // Map piece type to color index (1-7)
+        int colorIndex = 0;
+        switch (type) {
+            case 'I': colorIndex = 1; break;
+            case 'O': colorIndex = 2; break;
+            case 'T': colorIndex = 3; break;
+            case 'S': colorIndex = 4; break;
+            case 'Z': colorIndex = 5; break;
+            case 'J': colorIndex = 6; break;
+            case 'L': colorIndex = 7; break;
+            default: colorIndex = 0; break;
+        }
 
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {

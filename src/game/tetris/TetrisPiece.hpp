@@ -7,19 +7,19 @@
 
 class TetrisPiece {
 private:
-    TetrominoType type;
+    char type;
     TetrisShape currentShape;
     int gridX;
     int gridY;
     TetrisBoard* board; // Non-owning pointer to the game board
 
 public:
-    TetrisPiece(TetrominoType type, TetrisBoard* board, int startX = 3, int startY = 0)
+    TetrisPiece(char type, TetrisBoard* board, int startX = 3, int startY = 0)
         : type(type),
           board(board),
           gridX(startX),
           gridY(startY),
-          currentShape(getTetrisBaseShape(type)) {
+          currentShape(getTetromino(type).shape) {
     }
 
     // Movement methods - return true if successful, false if blocked
@@ -49,7 +49,8 @@ public:
 
     // Rotate clockwise with wall kick support
     auto rotate() {
-        TetrisShape rotated = rotateTetrisShape(this->currentShape, this->type);
+        auto pieceData = getTetromino(this->type);
+        TetrisShape rotated = TetrominoData{this->type, this->currentShape, pieceData.pivot}.rotate();
 
         if (!this->board)
             return false;
