@@ -25,39 +25,36 @@ struct TetrominoData {
     TetrisShape shape;
 
     // Rotate this tetromino 90 degrees clockwise
-    TetrisShape rotate() const {
-        auto rotated = TetrisShape{};
+    auto rotate() const {
+        auto rotated = TetrisShape();
 
         // nullopt pivot means rotate entire 4x4 matrix (for 3x3 shapes centered at 1,1)
         if (!pivot.has_value()) {
-            for (int y = 0; y < 4; y++) {
-                for (int x = 0; x < 4; x++) {
-                    // Rotate entire 4x4 matrix: (x, y) -> (3-y, x)
+            for (auto y = 0; y < 4; y++)
+                for (auto x = 0; x < 4; x++) // Rotate entire 4x4 matrix: (x, y) to (3-y, x)
                     rotated[x][3 - y] = shape[y][x];
-                }
-            }
             return rotated;
         }
 
         // Standard pivot-based rotation for I and O pieces
         auto [px, py] = pivot.value();
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
                     continue;
 
                 // Translate to pivot
-                int dx = x - px;
-                int dy = y - py;
+                auto dx = x - px;
+                auto dy = y - py;
 
                 // Rotate 90 degrees clockwise: (x, y) -> (-y, x)
                 // (In screen coordinates where y increases downward)
-                int rx = -dy;
-                int ry = dx;
+                auto rx = -dy;
+                auto ry = dx;
 
                 // Translate back
-                int newX = rx + px;
-                int newY = ry + py;
+                auto newX = rx + px;
+                auto newY = ry + py;
 
                 // Bounds check
                 if (newX >= 0 && newX < 4 && newY >= 0 && newY < 4) {
