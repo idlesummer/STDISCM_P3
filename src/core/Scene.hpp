@@ -22,7 +22,7 @@ protected:
 public:
     Scene(const string& name = "Scene")
         : sceneName(name),
-            game(nullptr) {}
+          game(nullptr) {}
 
     virtual ~Scene() = default;
 
