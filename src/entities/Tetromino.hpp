@@ -107,12 +107,12 @@ public:
         this->tetrisPiece.placeOnBoard();
     }
 
-    bool canSpawn() const {
+    auto canSpawn() const {
         return this->tetrisPiece.canSpawn();
     }
 
     // Getters
-    char getType() const { return this->tetrisPiece.getType(); }
-    int getGridX() const { return this->tetrisPiece.getX(); }
-    int getGridY() const { return this->tetrisPiece.getY(); }
+    auto getType() const { return this->tetrisPiece.getType(); }
+    auto getGridX() const { return this->tetrisPiece.getX(); }
+    auto getGridY() const { return this->tetrisPiece.getY(); }
 };

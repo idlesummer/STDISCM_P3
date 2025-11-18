@@ -21,7 +21,7 @@ constexpr int BLOCK_SIZE = 30;
 using ShapeMatrix = TetrisShape;
 
 // SFML-specific: Color mapping for each tetromino type
-inline Color getTetrominoColor(char type) {
+auto getTetrominoColor(char type) {
     switch (type) {
         case 'I': return Color::Cyan;
         case 'O': return Color::Yellow;
@@ -35,7 +35,7 @@ inline Color getTetrominoColor(char type) {
 }
 
 // Wrapper function for backward compatibility
-inline TetrisShape getBaseShape(char type) {
+auto getBaseShape(char type) {
     return getTetromino(type).shape;
 }
 
