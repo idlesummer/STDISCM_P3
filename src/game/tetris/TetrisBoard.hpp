@@ -41,8 +41,7 @@ public:
                 int boardY = gridY + y;
 
                 // Check bounds
-                if (boardX < 0 || boardX >= TETRIS_BOARD_WIDTH ||
-                    boardY < 0 || boardY >= TETRIS_BOARD_HEIGHT) {
+                if (!this->isInBounds(boardX, boardY)) {
                     return false;
                 }
 
@@ -66,8 +65,7 @@ public:
                 int boardX = gridX + x;
                 int boardY = gridY + y;
 
-                if (boardX >= 0 && boardX < TETRIS_BOARD_WIDTH &&
-                    boardY >= 0 && boardY < TETRIS_BOARD_HEIGHT) {
+                if (this->isInBounds(boardX, boardY)) {
                     this->grid[boardY][boardX] = colorIndex;
                 }
             }
@@ -119,8 +117,9 @@ public:
 
     // Get cell value at position
     int getCell(int x, int y) const {
-        if (x < 0 || x >= TETRIS_BOARD_WIDTH || y < 0 || y >= TETRIS_BOARD_HEIGHT)
+        if (!this->isInBounds(x, y)) {
             return -1; // Out of bounds
+        }
         return this->grid[y][x];
     }
 
@@ -139,5 +138,12 @@ public:
 
     int getHeight() const {
         return TETRIS_BOARD_HEIGHT;
+    }
+
+private:
+    // Helper: Check if coordinates are within board bounds
+    bool isInBounds(int x, int y) const {
+        return x >= 0 && x < TETRIS_BOARD_WIDTH &&
+               y >= 0 && y < TETRIS_BOARD_HEIGHT;
     }
 };
