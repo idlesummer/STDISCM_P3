@@ -13,8 +13,8 @@ constexpr auto TETRIS_BOARD_HEIGHT = 20;
 // 1 = filled, 0 = empty
 using TetrisShape = array<array<int, 4>, 4>;
 
-// Pivot point - optional to support "no rotation" pieces
-// nullopt = no rotation (O-piece)
+// Pivot point - optional to support different grid sizes
+// nullopt = 3x3 shape (center pivot implied)
 // {x, y} = integer pivot point in 4×4 grid
 using Pivot = optional<pair<int, int>>;
 
@@ -26,9 +26,10 @@ struct TetrominoData {
 
     // Rotate this tetromino 90 degrees clockwise
     TetrisShape rotate() const {
-        // No rotation for pieces without a pivot (O-piece)
+        // For 3x3 shapes (pivot is nullopt), rotation would be handled differently
+        // Currently all standard tetrominos are 4x4
         if (!pivot.has_value()) {
-            return shape;
+            return shape;  // Placeholder for 3x3 rotation logic
         }
 
         auto rotated = TetrisShape{};
@@ -82,7 +83,7 @@ const TetrominoData O_PIECE = {
         {0, 1, 1, 0},
         {0, 0, 0, 0}
     }},
-    .pivot = nullopt
+    .pivot = {{1, 1}}  // Rotating O doesn't change it, so pivot doesn't matter
 };
 
 const TetrominoData T_PIECE = {
