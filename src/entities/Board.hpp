@@ -9,28 +9,20 @@ using namespace sf;
 using namespace Tetris;
 
 class Board : public Entity {
-private:
-    // Board grid: 0 = empty, 1-7 = color index
-    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> grid;
-
-    // Visual representation
-    RectangleShape blockShape;
-    RectangleShape borderShape;
-
-    Vector2f boardPosition;
-    int linesCleared;
-
 public:
-    Board() : linesCleared(0) {
-        // Initialize empty grid
-        for (auto& row : grid) {
+    Board() 
+        : blockShape(),
+          borderShape(),
+          boardPosition(),
+          linesCleared(0) {
+
+        for (auto& row : grid)  
             row.fill(0);
-        }
     }
 
     void onCreate() override {
         // Position board in center-left of screen
-        boardPosition = Vector2f(50.0f, 50.0f);
+        this->boardPosition = Vector2f(50.0f, 50.0f);
 
         // Setup block shape template
         blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
@@ -39,7 +31,7 @@ public:
 
         // Setup border
         borderShape.setSize(Vector2f(BOARD_WIDTH * BLOCK_SIZE, BOARD_HEIGHT * BLOCK_SIZE));
-        borderShape.setPosition(boardPosition);
+        borderShape.setPosition(this->boardPosition);
         borderShape.setFillColor(Color::Transparent);
         borderShape.setOutlineThickness(2.0f);
         borderShape.setOutlineColor(Color::White);
@@ -47,22 +39,22 @@ public:
 
     void onDraw(RenderWindow& window) override {
         // Draw border
-        window.draw(borderShape);
+        window.draw(this->borderShape);
 
         // Draw grid lines (light grey)
-        Color gridColor(40, 40, 40);  // Light grey
-        VertexArray gridLines(Lines);
+        auto gridColor = Color(40, 40, 40);  // Light grey
+        auto gridLines = VertexArray(Lines);
 
         // Vertical lines
-        for (int x = 0; x <= BOARD_WIDTH; x++) {
-            float xPos = boardPosition.x + x * BLOCK_SIZE;
-            gridLines.append(Vertex(Vector2f(xPos, boardPosition.y), gridColor));
-            gridLines.append(Vertex(Vector2f(xPos, boardPosition.y + BOARD_HEIGHT * BLOCK_SIZE), gridColor));
+        for (auto x = 0; x <= BOARD_WIDTH; x++) {
+            auto xPos = this->boardPosition.x + x * BLOCK_SIZE;
+            gridLines.append(Vertex(Vector2f(xPos, this->boardPosition.y), gridColor));
+            gridLines.append(Vertex(Vector2f(xPos, this->boardPosition.y + BOARD_HEIGHT * BLOCK_SIZE), gridColor));
         }
 
         // Horizontal lines
-        for (int y = 0; y <= BOARD_HEIGHT; y++) {
-            float yPos = boardPosition.y + y * BLOCK_SIZE;
+        for (auto y = 0; y <= BOARD_HEIGHT; y++) {
+            auto yPos = boardPosition.y + y * BLOCK_SIZE;
             gridLines.append(Vertex(Vector2f(boardPosition.x, yPos), gridColor));
             gridLines.append(Vertex(Vector2f(boardPosition.x + BOARD_WIDTH * BLOCK_SIZE, yPos), gridColor));
         }
@@ -70,39 +62,34 @@ public:
         window.draw(gridLines);
 
         // Draw placed blocks
-        for (int y = 0; y < BOARD_HEIGHT; y++) {
-            for (int x = 0; x < BOARD_WIDTH; x++) {
-                if (grid[y][x] != 0) {
-                    blockShape.setPosition(
-                        boardPosition.x + x * BLOCK_SIZE,
-                        boardPosition.y + y * BLOCK_SIZE
-                    );
-                    blockShape.setFillColor(getColorFromIndex(grid[y][x]));
-                    window.draw(blockShape);
-                }
+        for (auto y = 0; y < BOARD_HEIGHT; y++) {
+            for (auto x = 0; x < BOARD_WIDTH; x++) {
+                if (grid[y][x] == 0)
+                    continue;
+                auto posX = this->boardPosition.x + x * BLOCK_SIZE;
+                auto posY = this->boardPosition.y + y * BLOCK_SIZE;
+                this->blockShape.setPosition(posX, posY);
+                this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+                window.draw(blockShape);
             }
         }
     }
 
     // Check if a position is valid (within bounds and not occupied)
-    bool isValidPosition(const ShapeMatrix& shape, int gridX, int gridY) const {
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                if (shape[y][x] != 0) {
-                    int boardX = gridX + x;
-                    int boardY = gridY + y;
+    auto isValidPosition(const ShapeMatrix& shape, int gridX, int gridY) const {
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
+                if (shape[y][x] == 0)
+                    continue;
 
-                    // Check bounds
-                    if (boardX < 0 || boardX >= BOARD_WIDTH ||
-                        boardY < 0 || boardY >= BOARD_HEIGHT) {
-                        return false;
-                    }
+                auto boardX = gridX + x;
+                auto boardY = gridY + y;
 
-                    // Check collision with placed blocks
-                    if (grid[boardY][boardX] != 0) {
-                        return false;
-                    }
-                }
+                if (!(boardX >= 0 && boardX < BOARD_WIDTH && boardY > 0 && boardY < BOARD_HEIGHT)) 
+                    return false;
+
+                if (grid[boardY][boardX] != 0) 
+                    return false;
             }
         }
         return true;
@@ -110,54 +97,51 @@ public:
 
     // Place a tetromino on the board
     void placeTetromino(const ShapeMatrix& shape, int gridX, int gridY, TetrominoType type) {
-        int colorIndex = static_cast<int>(type) + 1;
+        auto colorIndex = static_cast<int>(type) + 1;
 
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                if (shape[y][x] != 0) {
-                    int boardX = gridX + x;
-                    int boardY = gridY + y;
-                    if (boardX >= 0 && boardX < BOARD_WIDTH &&
-                        boardY >= 0 && boardY < BOARD_HEIGHT) {
-                        grid[boardY][boardX] = colorIndex;
-                    }
-                }
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
+                if (shape[y][x] == 0)
+                    continue;
+
+                auto boardX = gridX + x;
+                auto boardY = gridY + y;
+                if (boardX >= 0 && boardX < BOARD_WIDTH && boardY >= 0 && boardY < BOARD_HEIGHT)
+                    grid[boardY][boardX] = colorIndex;
             }
         }
     }
 
     // Check and clear completed lines, return number of lines cleared
-    int clearLines() {
-        int cleared = 0;
+    auto clearLines() {
+        auto cleared = 0;
 
-        for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
-            bool isComplete = true;
-            for (int x = 0; x < BOARD_WIDTH; x++) {
-                if (grid[y][x] == 0) {
-                    isComplete = false;
-                    break;
-                }
+        for (auto y = BOARD_HEIGHT - 1; y >= 0; y--) {
+            auto isComplete = true;
+
+            for (auto x = 0; x < BOARD_WIDTH; x++) {
+                if (grid[y][x] != 0) continue;
+                isComplete = false;
+                break;
             }
 
-            if (isComplete) {
-                cleared++;
-                linesCleared++;
+            if (!isComplete)
+                break;
 
-                // Shift all rows above down
-                for (int shiftY = y; shiftY > 0; shiftY--) {
-                    for (int x = 0; x < BOARD_WIDTH; x++) {
-                        grid[shiftY][x] = grid[shiftY - 1][x];
-                    }
-                }
+            cleared++;
+            linesCleared++;
 
-                // Clear top row
-                for (int x = 0; x < BOARD_WIDTH; x++) {
-                    grid[0][x] = 0;
-                }
+            // Shift all rows above down
+            for (auto shiftY = y; shiftY > 0; shiftY--)
+                for (auto x = 0; x < BOARD_WIDTH; x++)
+                    grid[shiftY][x] = grid[shiftY - 1][x];
 
-                // Check same row again since we shifted
-                y++;
-            }
+            // Clear top row
+            for (auto x = 0; x < BOARD_WIDTH; x++)
+                grid[0][x] = 0;
+
+            // Check same row again since we shifted
+            y++;
         }
 
         return cleared;
@@ -165,26 +149,22 @@ public:
 
     // Check if the top row has any blocks (game over condition)
     bool isTopRowOccupied() const {
-        for (int x = 0; x < BOARD_WIDTH; x++) {
-            if (grid[0][x] != 0) {
-                return true;
-            }
-        }
-        return false;
+        return ranges::any_of(this->grid[0], [](auto cell) {
+            return cell != 0;
+        });
     }
-
-    Vector2f getBoardPosition() const { return boardPosition; }
-    int getTotalLinesCleared() const { return linesCleared; }
-
+    
     void reset() {
-        for (auto& row : grid) {
+        for (auto& row : grid)
             row.fill(0);
-        }
         linesCleared = 0;
     }
+    
+    auto getBoardPosition() const { return boardPosition; }
+    auto getTotalLinesCleared() const { return linesCleared; }
 
 private:
-    Color getColorFromIndex(int index) const {
+    auto getColorFromIndex(int index) const -> Color {
         switch (index) {
             case 1: return Color::Cyan;      // I
             case 2: return Color::Yellow;    // O
@@ -196,4 +176,11 @@ private:
             default: return Color::White;
         }
     }
+
+    // Board grid: 0 = empty, 1-7 = color index
+    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> grid;
+    RectangleShape blockShape;
+    RectangleShape borderShape;
+    Vector2f boardPosition;
+    int linesCleared;
 };

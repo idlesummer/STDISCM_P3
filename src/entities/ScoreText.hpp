@@ -10,12 +10,14 @@ using namespace std;
 // Score display that updates in real-time
 class ScoreText : public Entity {
 public:
-    ScoreText() : Entity("ScoreText"), score(0) {}
+    ScoreText() 
+        : Entity("ScoreText"), 
+          font(),
+          text(),
+          score(0) {}
 
     void onCreate() override {
-        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
-            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-
+        this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
         this->text.setCharacterSize(24);
         this->text.setFillColor(Color::White);
@@ -32,11 +34,12 @@ public:
         window.draw(this->text);
     }
 
-    int getScore() const { return static_cast<int>(this->score); }
+    auto getScore() const { return static_cast<int>(this->score); }
 
 private:
     void updateText() {
-        this->text.setString("Score: " + to_string(static_cast<int>(this->score)));
+        auto score = to_string(static_cast<int>(this->score));
+        this->text.setString("Score: " + score);
     }
 
     Font font;

@@ -11,17 +11,16 @@ using namespace std;
 class GameOverText : public Entity {
 public:
     GameOverText(const string& content, Vector2f position, int size, Color color)
-        : Entity("GameOverText") {
-        this->content = content;
-        this->position = position;
-        this->size = size;
-        this->color = color;
-    }
+        : Entity("GameOverText"),
+          font(),
+          text(),
+          content(content),
+          position(position),
+          size(size),
+          color(color) {}
 
     void onCreate() override {
-        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
-            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-
+        this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
         this->text.setString(this->content);
         this->text.setCharacterSize(this->size);

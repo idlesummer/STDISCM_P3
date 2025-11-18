@@ -8,29 +8,22 @@ using namespace sf;
 using namespace Tetris;
 
 class NextPiecePreview : public Entity {
-private:
-    TetrominoType nextType;
-    ShapeMatrix nextShape;
-    Color nextColor;
-
-    RectangleShape blockShape;
-    RectangleShape border;
-    Text label;
-
-    Font font;
-
 public:
     NextPiecePreview(Vector2f position)
-        : nextType(TetrominoType::NONE) {
+        : nextType(TetrominoType::NONE),
+          nextShape(),
+          nextColor(),
+          blockShape(),
+          border(),
+          label(),
+          font() {
+
         this->position = position;
     }
 
     void onCreate() override {
-        // Load font
-        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
-            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-
         // Setup label
+        this->font.loadFromFile("assets/fonts/sansation.ttf");
         label.setFont(font);
         label.setString("Next:");
         label.setCharacterSize(20);
@@ -54,33 +47,41 @@ public:
         window.draw(label);
         window.draw(border);
 
-        if (nextType != TetrominoType::NONE) {
-            // Calculate center offset for preview
-            Vector2f previewPos(position.x + 30, position.y + 60);
+        if (nextType == TetrominoType::NONE)
+            return;
 
-            // Draw the next piece
-            for (int y = 0; y < 4; y++) {
-                for (int x = 0; x < 4; x++) {
-                    if (nextShape[y][x] != 0) {
-                        blockShape.setPosition(
-                            previewPos.x + x * BLOCK_SIZE,
-                            previewPos.y + y * BLOCK_SIZE
-                        );
-                        blockShape.setFillColor(nextColor);
-                        window.draw(blockShape);
-                    }
-                }
+        // Calculate center offset for preview
+        auto previewPos = Vector2f(this->position.x + 30, this->position.y + 60);
+
+        // Draw the next piece
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
+                if (this->nextShape[y][x] == 0)
+                    continue;
+                    
+                auto posX = previewPos.x + x * BLOCK_SIZE;
+                auto posY = previewPos.y + y * BLOCK_SIZE;
+                this->blockShape.setPosition(posX, posY);
+                this->blockShape.setFillColor(this->nextColor);
+                window.draw(this->blockShape);
             }
         }
     }
 
     void setNextPiece(TetrominoType type) {
-        nextType = type;
-        nextShape = getBaseShape(type);
-        nextColor = getTetrominoColor(type);
+        this->nextType = type;
+        this->nextShape = getBaseShape(type);
+        this->nextColor = getTetrominoColor(type);
     }
 
-    TetrominoType getNextType() const {
-        return nextType;
-    }
+    auto getNextType() const { return this->nextType; }
+
+private:
+    TetrominoType nextType;
+    ShapeMatrix nextShape;
+    Color nextColor;
+    RectangleShape blockShape;
+    RectangleShape border;
+    Text label;
+    Font font;
 };

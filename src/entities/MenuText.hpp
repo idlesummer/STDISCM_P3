@@ -10,7 +10,10 @@ using namespace std;
 class MenuText : public Entity {
 public:
     MenuText(const string& content, Vector2f position, int size = 48)
-        : Entity("MenuText") {
+        : Entity("MenuText"),
+          font(),
+          text() {
+
         this->text.setString(content);
         this->text.setCharacterSize(size);
         this->text.setFillColor(Color::White);
@@ -18,9 +21,7 @@ public:
     }
 
     void onCreate() override {
-        // Try to load font (will use default if fails)
-        if (!this->font.loadFromFile("assets/fonts/sansation.ttf"))
-            this->font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+        this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
     }
 
