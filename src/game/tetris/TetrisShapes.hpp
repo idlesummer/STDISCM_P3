@@ -24,6 +24,11 @@ struct TetrominoData {
     Pivot pivot;
     TetrisShape shape;
 
+    // Check if coordinates are within the 4x4 shape bounds
+    static constexpr auto isInBounds(int x, int y) -> bool {
+        return x >= 0 && x < 4 && y >= 0 && y < 4;
+    }
+
     // Rotate this tetromino 90 degrees clockwise
     auto rotate() const {
         auto rotated = TetrisShape();
@@ -57,7 +62,7 @@ struct TetrominoData {
                 auto newY = ry + py;
 
                 // Bounds check
-                if (newX >= 0 && newX < 4 && newY >= 0 && newY < 4) {
+                if (isInBounds(newX, newY)) {
                     rotated[newY][newX] = shape[y][x];
                 }
             }
