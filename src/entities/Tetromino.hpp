@@ -10,7 +10,18 @@ using namespace Tetris;
 
 
 class Tetromino : public Entity {
+private:
+    // --- Fields ---
+    TetrominoType type;
+    ShapeMatrix currentShape;
+    Color color;
+    int gridX, gridY;           // Position in grid coordinates
+    RectangleShape blockShape;
+    Board* board;               // Reference to the game board
+    Vector2f boardPosition;
+
 public:
+    // --- Constructor ---
     Tetromino(TetrominoType type, Board* board)
         : type(type),
           board(board),
@@ -21,6 +32,7 @@ public:
         this->color = getTetrominoColor(type);
     }
 
+    // --- Methods ---
     void onCreate() override {
         this->boardPosition = this->board->getBoardPosition();
 
@@ -119,13 +131,4 @@ public:
     Color getColor() const { return this->color; }
     int getGridX() const { return this->gridX; }
     int getGridY() const { return this->gridY; }
-
-private:
-    TetrominoType type;
-    ShapeMatrix currentShape;
-    Color color;
-    int gridX, gridY;           // Position in grid coordinates
-    RectangleShape blockShape;
-    Board* board;               // Reference to the game board
-    Vector2f boardPosition;
 };

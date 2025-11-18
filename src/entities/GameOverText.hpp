@@ -9,7 +9,17 @@ using namespace std;
 
 // Game Over text display with customizable content, position, size, and color
 class GameOverText : public Entity {
+private:
+    // --- Fields ---
+    Font font;
+    Text text;
+    string content;
+    Vector2f position;
+    int size;
+    Color color;
+
 public:
+    // --- Constructor ---
     GameOverText(const string& content, Vector2f position, int size, Color color)
         : Entity("GameOverText"),
           font(),
@@ -19,6 +29,7 @@ public:
           size(size),
           color(color) {}
 
+    // --- Methods ---
     void onCreate() override {
         this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
@@ -35,12 +46,4 @@ public:
     void onDraw(RenderWindow& window) override {
         window.draw(this->text);
     }
-
-private:
-    Font font;
-    Text text;
-    string content;
-    Vector2f position;
-    int size;
-    Color color;
 };

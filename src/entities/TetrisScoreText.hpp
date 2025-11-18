@@ -7,15 +7,27 @@ using namespace std;
 using namespace sf;
 
 class TetrisScoreText : public Entity {
+private:
+    // --- Fields ---
+    Text scoreText;
+    Text linesText;
+    Text levelText;
+    int score;
+    int lines;
+    int level;
+    Font font;
+
 public:
+    // --- Constructor ---
     TetrisScoreText(Vector2f position)
-        : score(0), 
-          lines(0), 
+        : score(0),
+          lines(0),
           level(1) {
 
         this->position = position;
     }
 
+    // --- Methods ---
     void onCreate() override {
         // Score text
         this->font.loadFromFile("assets/fonts/sansation.ttf");
@@ -78,17 +90,10 @@ public:
     int getLevel() const { return this->level; }
 
 private:
+    // --- Private Methods ---
     void updateDisplay() {
         this->scoreText.setString("Score: " + to_string(this->score));
         this->linesText.setString("Lines: " + to_string(this->lines));
         this->levelText.setString("Level: " + to_string(this->level));
     }
-
-    Text scoreText;
-    Text linesText;
-    Text levelText;
-    int score;
-    int lines;
-    int level;
-    Font font;
 };

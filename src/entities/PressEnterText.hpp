@@ -8,10 +8,20 @@ using namespace std;
 
 // Pulsing "Press Enter" instruction text with animation
 class PressEnterText : public Entity {
+private:
+    // --- Fields ---
+    Font font;
+    Text text;
+    Vector2f position;
+    float alpha;
+    int fadeDirection;
+
 public:
+    // --- Constructor ---
     PressEnterText(Vector2f position)
         : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
 
+    // --- Methods ---
     void onCreate() override {
         this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
@@ -42,11 +52,4 @@ public:
     void onDraw(RenderWindow& window) override {
         window.draw(this->text);
     }
-
-private:
-    Font font;
-    Text text;
-    Vector2f position;
-    float alpha;
-    int fadeDirection;
 };

@@ -8,7 +8,13 @@ using namespace std;
 
 // Simple text entity for menu displays
 class MenuText : public Entity {
+private:
+    // --- Fields ---
+    Font font;
+    Text text;
+
 public:
+    // --- Constructor ---
     MenuText(const string& content, Vector2f position, int size = 48)
         : Entity("MenuText"),
           font(),
@@ -20,6 +26,7 @@ public:
         this->text.setPosition(position);
     }
 
+    // --- Methods ---
     void onCreate() override {
         this->font.loadFromFile("assets/fonts/sansation.ttf");
         this->text.setFont(this->font);
@@ -28,8 +35,4 @@ public:
     void onDraw(RenderWindow& window) override {
         window.draw(this->text);
     }
-
-private:
-    Font font;
-    Text text;
 };

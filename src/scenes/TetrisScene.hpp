@@ -16,6 +16,7 @@ using namespace Tetris;
 
 class TetrisScene : public Scene {
 private:
+    // --- Fields ---
     shared_ptr<Board> board;
     shared_ptr<Tetromino> activePiece;
     shared_ptr<TetrisScoreText> scoreDisplay;
@@ -43,6 +44,7 @@ private:
     TetrominoType nextPieceType;
 
 public:
+    // --- Constructor ---
     TetrisScene() : isGameOver(false), isPaused(false),
         fallTimer(Time::Zero), moveTimer(Time::Zero),
         rng(random_device{}()), pieceDistribution(0, 6) {
@@ -50,6 +52,7 @@ public:
         this->fallInterval = seconds(1.0f); // Start at 1 second per fall
     }
 
+    // --- Methods ---
     void onCreate() override {
         // Create board
         this->board = make_shared<Board>();
@@ -158,6 +161,7 @@ public:
     }
 
 private:
+    // --- Private Methods ---
     TetrominoType getRandomPieceType() {
         int random = this->pieceDistribution(this->rng);
         return static_cast<TetrominoType>(random);

@@ -8,7 +8,18 @@ using namespace sf;
 using namespace Tetris;
 
 class NextPiecePreview : public Entity {
+private:
+    // --- Fields ---
+    TetrominoType nextType;
+    ShapeMatrix nextShape;
+    Color nextColor;
+    RectangleShape blockShape;
+    RectangleShape border;
+    Text label;
+    Font font;
+
 public:
+    // --- Constructor ---
     NextPiecePreview(Vector2f position)
         : nextType(TetrominoType::NONE),
           nextShape(),
@@ -21,6 +32,7 @@ public:
         this->position = position;
     }
 
+    // --- Methods ---
     void onCreate() override {
         // Setup label
         this->font.loadFromFile("assets/fonts/sansation.ttf");
@@ -58,7 +70,7 @@ public:
             for (auto x = 0; x < 4; x++) {
                 if (this->nextShape[y][x] == 0)
                     continue;
-                    
+
                 auto posX = previewPos.x + x * BLOCK_SIZE;
                 auto posY = previewPos.y + y * BLOCK_SIZE;
                 this->blockShape.setPosition(posX, posY);
@@ -75,13 +87,4 @@ public:
     }
 
     auto getNextType() const { return this->nextType; }
-
-private:
-    TetrominoType nextType;
-    ShapeMatrix nextShape;
-    Color nextColor;
-    RectangleShape blockShape;
-    RectangleShape border;
-    Text label;
-    Font font;
 };

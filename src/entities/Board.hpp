@@ -9,7 +9,17 @@ using namespace sf;
 using namespace Tetris;
 
 class Board : public Entity {
+private:
+    // --- Fields ---
+    // Board grid: 0 = empty, 1-7 = color index
+    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> grid;
+    RectangleShape blockShape;
+    RectangleShape borderShape;
+    Vector2f boardPosition;
+    int linesCleared;
+
 public:
+    // --- Constructor ---
     Board()
         : blockShape(),
           borderShape(),
@@ -20,6 +30,7 @@ public:
             row.fill(0);
     }
 
+    // --- Methods ---
     void onCreate() override {
         // Position board in center-left of screen
         this->boardPosition = Vector2f(50.0f, 50.0f);
@@ -153,7 +164,7 @@ public:
             return cell != 0;
         });
     }
-    
+
     void reset() {
         for (auto& row : this->grid)
             row.fill(0);
@@ -164,6 +175,7 @@ public:
     auto getTotalLinesCleared() const { return this->linesCleared; }
 
 private:
+    // --- Private Methods ---
     auto getColorFromIndex(int index) const -> Color {
         switch (index) {
             case 1: return Color::Cyan;      // I
@@ -176,11 +188,4 @@ private:
             default: return Color::White;
         }
     }
-
-    // Board grid: 0 = empty, 1-7 = color index
-    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> grid;
-    RectangleShape blockShape;
-    RectangleShape borderShape;
-    Vector2f boardPosition;
-    int linesCleared;
 };
