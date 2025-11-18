@@ -66,7 +66,7 @@ public:
         this->addEntity(titleText);
 
         controlsText = make_shared<MenuText>(
-            "Arrow Keys: Move/Rotate | Space: Hard Drop | ESC: Quit",
+            "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | ESC: Quit",
             Vector2f(50, 650), 16);
         this->addEntity(controlsText);
 
@@ -94,19 +94,23 @@ public:
 
             switch (event.key.code) {
                 case Keyboard::Left:
+                case Keyboard::A:
                     activePiece->moveLeft();
                     break;
 
                 case Keyboard::Right:
+                case Keyboard::D:
                     activePiece->moveRight();
                     break;
 
                 case Keyboard::Down:
+                case Keyboard::S:
                     activePiece->moveDown();
                     fallTimer = Time::Zero; // Reset fall timer
                     break;
 
                 case Keyboard::Up:
+                case Keyboard::W:
                     activePiece->rotate();
                     break;
 
