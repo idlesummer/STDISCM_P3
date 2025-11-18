@@ -141,14 +141,13 @@ public:
         return TETRIS_BOARD_HEIGHT;
     }
 
-private:
-    // Helper: Check if coordinates are within board bounds
+    // Bounds checking helpers (public for external use)
     auto isInBounds(int x, int y) const -> bool {
         return x >= 0 && x < TETRIS_BOARD_WIDTH &&
                y >= 0 && y < TETRIS_BOARD_HEIGHT;
     }
 
-    // Helper: Check if a cell is occupied (non-zero value)
+    // Check if a cell is occupied (non-zero value)
     auto isOccupied(int x, int y) const -> bool {
         return this->isInBounds(x, y) && this->grid[y][x] != 0;
     }
