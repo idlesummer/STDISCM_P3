@@ -34,10 +34,6 @@ private:
     Time fallTimer;
     Time fallInterval;
 
-    // Input timing (for key repeat)
-    Time moveTimer;
-    const Time moveDelay = seconds(0.15f);
-
     // Random number generation
     mt19937 rng;
     uniform_int_distribution<int> pieceDistribution;
@@ -62,7 +58,6 @@ public:
           isPaused(false),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)),
-          moveTimer(Time::Zero),
           rng(random_device{}()),
           pieceDistribution(0, 6),
           nextPieceType('\0'),
@@ -156,11 +151,7 @@ public:
         // Update fall timer
         this->fallTimer += dt;
 
-        // Adjust fall speed based on lines (level = 1 + lines/10)
-        auto level = 1 + (this->scoreDisplay->getLines() / 10);
-        auto currentFallInterval = seconds(max(0.1f, 1.0f - (level - 1) * 0.1f));
-
-        if (this->fallTimer >= currentFallInterval) {
+        if (this->fallTimer >= this->fallInterval) {
             this->fallTimer = Time::Zero;
 
             // Try to move piece down
