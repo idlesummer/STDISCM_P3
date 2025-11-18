@@ -4,6 +4,7 @@
 #include "../entities/Tetromino.hpp"
 #include "../entities/TetrisScoreText.hpp"
 #include "../entities/NextPiecePreview.hpp"
+#include "../entities/HoldBoxPreview.hpp"
 #include "../entities/MenuText.hpp"
 #include "../utils/TetrominoShapes.hpp"
 #include <SFML/Graphics.hpp>
@@ -20,6 +21,7 @@ private:
     shared_ptr<Tetromino> activePiece;
     shared_ptr<TetrisScoreText> scoreDisplay;
     shared_ptr<NextPiecePreview> nextPreview;
+    shared_ptr<HoldBoxPreview> holdPreview;
     shared_ptr<MenuText> titleText;
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
@@ -42,12 +44,17 @@ private:
 
     char nextPieceType;
 
+    // Hold system
+    char heldPieceType;
+    bool canSwapHold;
+
 public:
     TetrisScene()
         : board(),
           activePiece(),
           scoreDisplay(),
           nextPreview(),
+          holdPreview(),
           titleText(),
           gameOverText(),
           controlsText(),
@@ -58,7 +65,9 @@ public:
           moveTimer(Time::Zero),
           rng(random_device{}()),
           pieceDistribution(0, 6),
-          nextPieceType('\0') {
+          nextPieceType('\0'),
+          heldPieceType('\0'),
+          canSwapHold(true) {
     }
 
     void onCreate() override {
@@ -73,11 +82,14 @@ public:
         this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
         this->addEntity(this->nextPreview);
 
+        this->holdPreview = make_shared<HoldBoxPreview>(Vector2f(400, 320));
+        this->addEntity(this->holdPreview);
+
         this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
         this->addEntity(this->titleText);
 
         this->controlsText = make_shared<MenuText>(
-            "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | ESC: Quit",
+            "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | Shift: Hold | ESC: Quit",
             Vector2f(50, 650), 16);
         this->addEntity(this->controlsText);
 
@@ -128,6 +140,11 @@ public:
                 case Keyboard::Space:
                     this->activePiece->hardDrop();
                     this->lockPiece();
+                    break;
+
+                case Keyboard::LShift:
+                case Keyboard::RShift:
+                    this->holdPiece();
                     break;
 
                 case Keyboard::Escape:
@@ -194,6 +211,47 @@ private:
         }
     }
 
+    void holdPiece() {
+        // Can't hold if no active piece or hold is locked
+        if (!this->activePiece || !this->canSwapHold)
+            return;
+
+        // Get current piece type
+        char currentType = this->activePiece->getType();
+
+        // Remove current piece from entities
+        this->removeEntity(this->activePiece);
+        this->activePiece = nullptr;
+
+        if (this->heldPieceType == '\0') {
+            // First time holding - store current, spawn next
+            this->heldPieceType = currentType;
+            this->holdPreview->setHeldPiece(this->heldPieceType);
+            this->spawnNewPiece();
+        } else {
+            // Swap current with held piece
+            char temp = this->heldPieceType;
+            this->heldPieceType = currentType;
+            this->holdPreview->setHeldPiece(this->heldPieceType);
+
+            // Spawn the previously held piece
+            this->activePiece = make_shared<Tetromino>(temp, this->board.get());
+            this->addEntity(this->activePiece);
+
+            // Check if piece can spawn (game over check)
+            if (!this->activePiece->canSpawn()) {
+                this->triggerGameOver();
+            }
+        }
+
+        // Lock hold until piece is placed
+        this->canSwapHold = false;
+        this->holdPreview->setLocked(true);
+
+        // Reset fall timer
+        this->fallTimer = Time::Zero;
+    }
+
     void lockPiece() {
         if (!this->activePiece) return;
 
@@ -215,6 +273,10 @@ private:
             this->triggerGameOver();
             return;
         }
+
+        // Reset hold ability for next piece
+        this->canSwapHold = true;
+        this->holdPreview->setLocked(false);
 
         // Spawn next piece
         this->spawnNewPiece();
@@ -247,6 +309,10 @@ private:
         this->isPaused = false;
         this->fallTimer = Time::Zero;
         this->activePiece = nullptr;
+
+        // Reset hold state
+        this->heldPieceType = '\0';
+        this->canSwapHold = true;
 
         // Recreate everything
         this->onCreate();
