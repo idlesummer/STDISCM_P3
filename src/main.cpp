@@ -3,9 +3,6 @@
 
 // New scene-based architecture!
 #include "core/Game.hpp"
-#include "scenes/MainMenu.hpp"
-#include "scenes/GamePlay.hpp"
-#include "scenes/GameOver.hpp"
 #include "scenes/TetrisScene.hpp"
 
 using namespace std;
