@@ -24,30 +24,30 @@ public:
     void onCreate() override {
         // Setup label
         this->font.loadFromFile("assets/fonts/sansation.ttf");
-        label.setFont(font);
-        label.setString("Next:");
-        label.setCharacterSize(20);
-        label.setFillColor(Color::White);
-        label.setPosition(position);
+        this->label.setFont(this->font);
+        this->label.setString("Next:");
+        this->label.setCharacterSize(20);
+        this->label.setFillColor(Color::White);
+        this->label.setPosition(this->position);
 
         // Setup border for preview area
-        border.setSize(Vector2f(120, 120));
-        border.setPosition(position.x, position.y + 30);
-        border.setFillColor(Color::Transparent);
-        border.setOutlineThickness(2.0f);
-        border.setOutlineColor(Color::White);
+        this->border.setSize(Vector2f(120, 120));
+        this->border.setPosition(this->position.x, this->position.y + 30);
+        this->border.setFillColor(Color::Transparent);
+        this->border.setOutlineThickness(2.0f);
+        this->border.setOutlineColor(Color::White);
 
         // Setup block shape
-        blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-        blockShape.setOutlineThickness(1.0f);
-        blockShape.setOutlineColor(Color(50, 50, 50));
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+        this->blockShape.setOutlineThickness(1.0f);
+        this->blockShape.setOutlineColor(Color(50, 50, 50));
     }
 
     void onDraw(RenderWindow& window) override {
-        window.draw(label);
-        window.draw(border);
+        window.draw(this->label);
+        window.draw(this->border);
 
-        if (nextType == TetrominoType::NONE)
+        if (this->nextType == TetrominoType::NONE)
             return;
 
         // Calculate center offset for preview

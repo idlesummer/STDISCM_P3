@@ -47,76 +47,76 @@ public:
         fallTimer(Time::Zero), moveTimer(Time::Zero),
         rng(random_device{}()), pieceDistribution(0, 6) {
 
-        fallInterval = seconds(1.0f); // Start at 1 second per fall
+        this->fallInterval = seconds(1.0f); // Start at 1 second per fall
     }
 
     void onCreate() override {
         // Create board
-        board = make_shared<Board>();
-        this->addEntity(board);
+        this->board = make_shared<Board>();
+        this->addEntity(this->board);
 
         // Create UI
-        scoreDisplay = make_shared<TetrisScoreText>(Vector2f(400, 50));
-        this->addEntity(scoreDisplay);
+        this->scoreDisplay = make_shared<TetrisScoreText>(Vector2f(400, 50));
+        this->addEntity(this->scoreDisplay);
 
-        nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
-        this->addEntity(nextPreview);
+        this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
+        this->addEntity(this->nextPreview);
 
-        titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
-        this->addEntity(titleText);
+        this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
+        this->addEntity(this->titleText);
 
-        controlsText = make_shared<MenuText>(
+        this->controlsText = make_shared<MenuText>(
             "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | ESC: Quit",
             Vector2f(50, 650), 16);
-        this->addEntity(controlsText);
+        this->addEntity(this->controlsText);
 
         // Generate first pieces
-        nextPieceType = getRandomPieceType();
-        nextPreview->setNextPiece(nextPieceType);
+        this->nextPieceType = this->getRandomPieceType();
+        this->nextPreview->setNextPiece(this->nextPieceType);
 
         // Spawn first piece
-        spawnNewPiece();
+        this->spawnNewPiece();
     }
 
     void onInput(Event& event) override {
         Scene::onInput(event);
 
-        if (isGameOver) {
+        if (this->isGameOver) {
             // Restart on Enter
             if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
-                restartGame();
+                this->restartGame();
             }
             return;
         }
 
         if (event.type == Event::KeyPressed) {
-            if (!activePiece) return;
+            if (!this->activePiece) return;
 
             switch (event.key.code) {
                 case Keyboard::Left:
                 case Keyboard::A:
-                    activePiece->moveLeft();
+                    this->activePiece->moveLeft();
                     break;
 
                 case Keyboard::Right:
                 case Keyboard::D:
-                    activePiece->moveRight();
+                    this->activePiece->moveRight();
                     break;
 
                 case Keyboard::Down:
                 case Keyboard::S:
-                    activePiece->moveDown();
-                    fallTimer = Time::Zero; // Reset fall timer
+                    this->activePiece->moveDown();
+                    this->fallTimer = Time::Zero; // Reset fall timer
                     break;
 
                 case Keyboard::Up:
                 case Keyboard::W:
-                    activePiece->rotate();
+                    this->activePiece->rotate();
                     break;
 
                 case Keyboard::Space:
-                    activePiece->hardDrop();
-                    lockPiece();
+                    this->activePiece->hardDrop();
+                    this->lockPiece();
                     break;
 
                 case Keyboard::Escape:
@@ -133,21 +133,21 @@ public:
         // Update all entities (animations, etc.)
         this->updateEntities(dt);
 
-        if (isGameOver || !activePiece) return;
+        if (this->isGameOver || !this->activePiece) return;
 
         // Update fall timer
-        fallTimer += dt;
+        this->fallTimer += dt;
 
         // Adjust fall speed based on level
-        Time currentFallInterval = seconds(max(0.1f, 1.0f - (scoreDisplay->getLevel() - 1) * 0.1f));
+        Time currentFallInterval = seconds(max(0.1f, 1.0f - (this->scoreDisplay->getLevel() - 1) * 0.1f));
 
-        if (fallTimer >= currentFallInterval) {
-            fallTimer = Time::Zero;
+        if (this->fallTimer >= currentFallInterval) {
+            this->fallTimer = Time::Zero;
 
             // Try to move piece down
-            if (!activePiece->moveDown()) {
+            if (!this->activePiece->moveDown()) {
                 // Piece can't move down - lock it
-                lockPiece();
+                this->lockPiece();
             }
         }
     }
@@ -159,63 +159,63 @@ public:
 
 private:
     TetrominoType getRandomPieceType() {
-        int random = pieceDistribution(rng);
+        int random = this->pieceDistribution(this->rng);
         return static_cast<TetrominoType>(random);
     }
 
     void spawnNewPiece() {
         // Use the next piece
-        TetrominoType typeToSpawn = nextPieceType;
+        TetrominoType typeToSpawn = this->nextPieceType;
 
         // Generate new next piece
-        nextPieceType = getRandomPieceType();
-        nextPreview->setNextPiece(nextPieceType);
+        this->nextPieceType = this->getRandomPieceType();
+        this->nextPreview->setNextPiece(this->nextPieceType);
 
         // Create the new piece
-        activePiece = make_shared<Tetromino>(typeToSpawn, board.get());
-        this->addEntity(activePiece);
+        this->activePiece = make_shared<Tetromino>(typeToSpawn, this->board.get());
+        this->addEntity(this->activePiece);
 
         // Check if piece can spawn (game over check)
-        if (!activePiece->canSpawn()) {
-            triggerGameOver();
+        if (!this->activePiece->canSpawn()) {
+            this->triggerGameOver();
         }
     }
 
     void lockPiece() {
-        if (!activePiece) return;
+        if (!this->activePiece) return;
 
         // Place piece on board
-        activePiece->placeOnBoard();
+        this->activePiece->placeOnBoard();
 
         // Remove active piece
-        this->removeEntity(activePiece);
-        activePiece = nullptr;
+        this->removeEntity(this->activePiece);
+        this->activePiece = nullptr;
 
         // Clear completed lines
-        int linesCleared = board->clearLines();
+        int linesCleared = this->board->clearLines();
         if (linesCleared > 0) {
-            scoreDisplay->addLines(linesCleared);
+            this->scoreDisplay->addLines(linesCleared);
         }
 
         // Check for game over (top row occupied)
-        if (board->isTopRowOccupied()) {
-            triggerGameOver();
+        if (this->board->isTopRowOccupied()) {
+            this->triggerGameOver();
             return;
         }
 
         // Spawn next piece
-        spawnNewPiece();
+        this->spawnNewPiece();
     }
 
     void triggerGameOver() {
-        isGameOver = true;
+        this->isGameOver = true;
 
         // Show game over text
-        gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(250, 300), 40);
-        this->addEntity(gameOverText);
+        this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(250, 300), 40);
+        this->addEntity(this->gameOverText);
 
         auto scoreText = make_shared<MenuText>(
-            "Final Score: " + to_string(scoreDisplay->getScore()),
+            "Final Score: " + to_string(this->scoreDisplay->getScore()),
             Vector2f(250, 360), 24);
         this->addEntity(scoreText);
 
@@ -230,12 +230,12 @@ private:
         this->clearEntities();
 
         // Reset game state
-        isGameOver = false;
-        isPaused = false;
-        fallTimer = Time::Zero;
-        activePiece = nullptr;
+        this->isGameOver = false;
+        this->isPaused = false;
+        this->fallTimer = Time::Zero;
+        this->activePiece = nullptr;
 
         // Recreate everything
-        onCreate();
+        this->onCreate();
     }
 };

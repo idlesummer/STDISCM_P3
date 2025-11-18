@@ -12,61 +12,61 @@ using namespace Tetris;
 class Tetromino : public Entity {
 public:
     Tetromino(TetrominoType type, Board* board)
-        : type(type), 
-          board(board), 
-          gridX(3), 
+        : type(type),
+          board(board),
+          gridX(3),
           gridY(0) {
 
-        currentShape = getBaseShape(type);
-        color = getTetrominoColor(type);
+        this->currentShape = getBaseShape(type);
+        this->color = getTetrominoColor(type);
     }
 
     void onCreate() override {
-        boardPosition = board->getBoardPosition();
+        this->boardPosition = this->board->getBoardPosition();
 
         // Setup block rendering
-        blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-        blockShape.setFillColor(color);
-        blockShape.setOutlineThickness(1.0f);
-        blockShape.setOutlineColor(Color(50, 50, 50));
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+        this->blockShape.setFillColor(this->color);
+        this->blockShape.setOutlineThickness(1.0f);
+        this->blockShape.setOutlineColor(Color(50, 50, 50));
     }
 
     void onDraw(RenderWindow& window) override {
         // Draw each block of the tetromino
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
-                if (currentShape[y][x] == 0)
+                if (this->currentShape[y][x] == 0)
                     continue;
 
-                blockShape.setPosition(
-                    boardPosition.x + (gridX + x) * BLOCK_SIZE,
-                    boardPosition.y + (gridY + y) * BLOCK_SIZE
+                this->blockShape.setPosition(
+                    this->boardPosition.x + (this->gridX + x) * BLOCK_SIZE,
+                    this->boardPosition.y + (this->gridY + y) * BLOCK_SIZE
                 );
-                window.draw(blockShape);
+                window.draw(this->blockShape);
             }
         }
     }
 
     // Movement methods
     auto moveLeft() {
-        if (board->isValidPosition(currentShape, gridX - 1, gridY)) {
-            gridX--;
+        if (this->board->isValidPosition(this->currentShape, this->gridX - 1, this->gridY)) {
+            this->gridX--;
             return true;
         }
         return false;
     }
 
     auto moveRight() {
-        if (board->isValidPosition(currentShape, gridX + 1, gridY)) {
-            gridX++;
+        if (this->board->isValidPosition(this->currentShape, this->gridX + 1, this->gridY)) {
+            this->gridX++;
             return true;
         }
         return false;
     }
 
     auto moveDown() {
-        if (board->isValidPosition(currentShape, gridX, gridY + 1)) {
-            gridY++;
+        if (this->board->isValidPosition(this->currentShape, this->gridX, this->gridY + 1)) {
+            this->gridY++;
             return true;
         }
         return false;
@@ -74,24 +74,24 @@ public:
 
     // Rotate clockwise
     auto rotate() {
-        auto rotated = rotateShape(currentShape);
+        auto rotated = rotateShape(this->currentShape);
 
         // Try basic rotation
-        if (board->isValidPosition(rotated, gridX, gridY)) {
-            currentShape = rotated;
+        if (this->board->isValidPosition(rotated, this->gridX, this->gridY)) {
+            this->currentShape = rotated;
             return true;
         }
 
         // Try wall kicks (simple version - just try moving left or right)
-        if (board->isValidPosition(rotated, gridX - 1, gridY)) {
-            currentShape = rotated;
-            gridX--;
+        if (this->board->isValidPosition(rotated, this->gridX - 1, this->gridY)) {
+            this->currentShape = rotated;
+            this->gridX--;
             return true;
         }
 
-        if (board->isValidPosition(rotated, gridX + 1, gridY)) {
-            currentShape = rotated;
-            gridX++;
+        if (this->board->isValidPosition(rotated, this->gridX + 1, this->gridY)) {
+            this->currentShape = rotated;
+            this->gridX++;
             return true;
         }
 
@@ -105,20 +105,20 @@ public:
 
     // Place this tetromino on the board
     void placeOnBoard() {
-        this->board->placeTetromino(currentShape, gridX, gridY, type);
+        this->board->placeTetromino(this->currentShape, this->gridX, this->gridY, this->type);
     }
 
     // Check if piece can be placed at starting position
     bool canSpawn() const {
-        return board->isValidPosition(currentShape, gridX, gridY);
+        return this->board->isValidPosition(this->currentShape, this->gridX, this->gridY);
     }
 
     // Getters
-    TetrominoType getType() const { return type; }
-    ShapeMatrix getShape() const { return currentShape; }
-    Color getColor() const { return color; }
-    int getGridX() const { return gridX; }
-    int getGridY() const { return gridY; }
+    TetrominoType getType() const { return this->type; }
+    ShapeMatrix getShape() const { return this->currentShape; }
+    Color getColor() const { return this->color; }
+    int getGridX() const { return this->gridX; }
+    int getGridY() const { return this->gridY; }
 
 private:
     TetrominoType type;

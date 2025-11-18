@@ -10,13 +10,13 @@ using namespace Tetris;
 
 class Board : public Entity {
 public:
-    Board() 
+    Board()
         : blockShape(),
           borderShape(),
           boardPosition(),
           linesCleared(0) {
 
-        for (auto& row : grid)  
+        for (auto& row : this->grid)
             row.fill(0);
     }
 
@@ -25,16 +25,16 @@ public:
         this->boardPosition = Vector2f(50.0f, 50.0f);
 
         // Setup block shape template
-        blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-        blockShape.setOutlineThickness(1.0f);
-        blockShape.setOutlineColor(Color(50, 50, 50));
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+        this->blockShape.setOutlineThickness(1.0f);
+        this->blockShape.setOutlineColor(Color(50, 50, 50));
 
         // Setup border
-        borderShape.setSize(Vector2f(BOARD_WIDTH * BLOCK_SIZE, BOARD_HEIGHT * BLOCK_SIZE));
-        borderShape.setPosition(this->boardPosition);
-        borderShape.setFillColor(Color::Transparent);
-        borderShape.setOutlineThickness(2.0f);
-        borderShape.setOutlineColor(Color::White);
+        this->borderShape.setSize(Vector2f(BOARD_WIDTH * BLOCK_SIZE, BOARD_HEIGHT * BLOCK_SIZE));
+        this->borderShape.setPosition(this->boardPosition);
+        this->borderShape.setFillColor(Color::Transparent);
+        this->borderShape.setOutlineThickness(2.0f);
+        this->borderShape.setOutlineColor(Color::White);
     }
 
     void onDraw(RenderWindow& window) override {
@@ -54,9 +54,9 @@ public:
 
         // Horizontal lines
         for (auto y = 0; y <= BOARD_HEIGHT; y++) {
-            auto yPos = boardPosition.y + y * BLOCK_SIZE;
-            gridLines.append(Vertex(Vector2f(boardPosition.x, yPos), gridColor));
-            gridLines.append(Vertex(Vector2f(boardPosition.x + BOARD_WIDTH * BLOCK_SIZE, yPos), gridColor));
+            auto yPos = this->boardPosition.y + y * BLOCK_SIZE;
+            gridLines.append(Vertex(Vector2f(this->boardPosition.x, yPos), gridColor));
+            gridLines.append(Vertex(Vector2f(this->boardPosition.x + BOARD_WIDTH * BLOCK_SIZE, yPos), gridColor));
         }
 
         window.draw(gridLines);
@@ -64,13 +64,13 @@ public:
         // Draw placed blocks
         for (auto y = 0; y < BOARD_HEIGHT; y++) {
             for (auto x = 0; x < BOARD_WIDTH; x++) {
-                if (grid[y][x] == 0)
+                if (this->grid[y][x] == 0)
                     continue;
                 auto posX = this->boardPosition.x + x * BLOCK_SIZE;
                 auto posY = this->boardPosition.y + y * BLOCK_SIZE;
                 this->blockShape.setPosition(posX, posY);
-                this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
-                window.draw(blockShape);
+                this->blockShape.setFillColor(this->getColorFromIndex(this->grid[y][x]));
+                window.draw(this->blockShape);
             }
         }
     }
@@ -85,10 +85,10 @@ public:
                 auto boardX = gridX + x;
                 auto boardY = gridY + y;
 
-                if (!(boardX >= 0 && boardX < BOARD_WIDTH && boardY > 0 && boardY < BOARD_HEIGHT)) 
+                if (!(boardX >= 0 && boardX < BOARD_WIDTH && boardY > 0 && boardY < BOARD_HEIGHT))
                     return false;
 
-                if (grid[boardY][boardX] != 0) 
+                if (this->grid[boardY][boardX] != 0)
                     return false;
             }
         }
@@ -107,7 +107,7 @@ public:
                 auto boardX = gridX + x;
                 auto boardY = gridY + y;
                 if (boardX >= 0 && boardX < BOARD_WIDTH && boardY >= 0 && boardY < BOARD_HEIGHT)
-                    grid[boardY][boardX] = colorIndex;
+                    this->grid[boardY][boardX] = colorIndex;
             }
         }
     }
@@ -120,7 +120,7 @@ public:
             auto isComplete = true;
 
             for (auto x = 0; x < BOARD_WIDTH; x++) {
-                if (grid[y][x] != 0) continue;
+                if (this->grid[y][x] != 0) continue;
                 isComplete = false;
                 break;
             }
@@ -129,16 +129,16 @@ public:
                 continue;
 
             cleared++;
-            linesCleared++;
+            this->linesCleared++;
 
             // Shift all rows above down
             for (auto shiftY = y; shiftY > 0; shiftY--)
                 for (auto x = 0; x < BOARD_WIDTH; x++)
-                    grid[shiftY][x] = grid[shiftY - 1][x];
+                    this->grid[shiftY][x] = this->grid[shiftY - 1][x];
 
             // Clear top row
             for (auto x = 0; x < BOARD_WIDTH; x++)
-                grid[0][x] = 0;
+                this->grid[0][x] = 0;
 
             // Check same row again since we shifted
             y++;
@@ -155,13 +155,13 @@ public:
     }
     
     void reset() {
-        for (auto& row : grid)
+        for (auto& row : this->grid)
             row.fill(0);
-        linesCleared = 0;
+        this->linesCleared = 0;
     }
-    
-    auto getBoardPosition() const { return boardPosition; }
-    auto getTotalLinesCleared() const { return linesCleared; }
+
+    auto getBoardPosition() const { return this->boardPosition; }
+    auto getTotalLinesCleared() const { return this->linesCleared; }
 
 private:
     auto getColorFromIndex(int index) const -> Color {
