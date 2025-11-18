@@ -3,13 +3,15 @@
 #include <array>
 #include <algorithm>
 
+using namespace std;
+
 // Pure Tetris board logic - no rendering or external dependencies
 // Can be used in any project
 
 class TetrisBoard {
 private:
     // Board grid: 0 = empty, 1-7 = color index for each piece type
-    std::array<std::array<int, TETRIS_BOARD_WIDTH>, TETRIS_BOARD_HEIGHT> grid;
+    array<array<int, TETRIS_BOARD_WIDTH>, TETRIS_BOARD_HEIGHT> grid;
     int totalLinesCleared;
 
 public:
@@ -111,7 +113,7 @@ public:
 
     // Check if the top row has any blocks (game over condition)
     bool isTopRowOccupied() const {
-        return std::any_of(this->grid[0].begin(), this->grid[0].end(),
+        return any_of(this->grid[0].begin(), this->grid[0].end(),
                           [](int cell) { return cell != 0; });
     }
 
