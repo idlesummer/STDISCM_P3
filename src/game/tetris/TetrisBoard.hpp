@@ -46,8 +46,9 @@ public:
                 }
 
                 // Check if cell is occupied
-                if (this->grid[boardY][boardX] != 0)
+                if (this->isOccupied(boardX, boardY)) {
                     return false;
+                }
             }
         }
         return true;
@@ -80,7 +81,7 @@ public:
             bool isComplete = true;
 
             for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) {
-                if (this->grid[y][x] == 0) {
+                if (!this->isOccupied(x, y)) {
                     isComplete = false;
                     break;
                 }
@@ -145,5 +146,10 @@ private:
     bool isInBounds(int x, int y) const {
         return x >= 0 && x < TETRIS_BOARD_WIDTH &&
                y >= 0 && y < TETRIS_BOARD_HEIGHT;
+    }
+
+    // Helper: Check if a cell is occupied (non-zero value)
+    bool isOccupied(int x, int y) const {
+        return this->isInBounds(x, y) && this->grid[y][x] != 0;
     }
 };
