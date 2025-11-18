@@ -118,37 +118,72 @@ const auto TETRIS_SHAPE_L = TetrisShape{{
 
 // Tetromino definitions - complete data for each piece type
 const TetrominoData I_PIECE = {
-    .shape = TETRIS_SHAPE_I,
+    .shape = {{
+        {0, 0, 0, 0},
+        {1, 1, 1, 1},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 1}}
 };
 
 const TetrominoData O_PIECE = {
-    .shape = TETRIS_SHAPE_O,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 1, 1, 0},
+        {0, 1, 1, 0},
+        {0, 0, 0, 0}
+    }},
     .pivot = nullopt
 };
 
 const TetrominoData T_PIECE = {
-    .shape = TETRIS_SHAPE_T,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 1, 1, 1},
+        {0, 0, 1, 0},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 1}}
 };
 
 const TetrominoData S_PIECE = {
-    .shape = TETRIS_SHAPE_S,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 0, 1, 1},
+        {0, 1, 1, 0},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 2}}
 };
 
 const TetrominoData Z_PIECE = {
-    .shape = TETRIS_SHAPE_Z,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 1, 1, 0},
+        {0, 0, 1, 1},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 2}}
 };
 
 const TetrominoData J_PIECE = {
-    .shape = TETRIS_SHAPE_J,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 1, 1, 1},
+        {0, 0, 0, 1},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 1}}
 };
 
 const TetrominoData L_PIECE = {
-    .shape = TETRIS_SHAPE_L,
+    .shape = {{
+        {0, 0, 0, 0},
+        {0, 1, 1, 1},
+        {0, 1, 0, 0},
+        {0, 0, 0, 0}
+    }},
     .pivot = {{2, 1}}
 };
 
