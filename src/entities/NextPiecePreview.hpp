@@ -21,15 +21,14 @@ private:
 public:
     // --- Constructor ---
     NextPiecePreview(Vector2f position)
-        : nextType(TetrominoType::NONE),
+        : Entity("NextPiecePreview", position),
+          nextType(TetrominoType::NONE),
           nextShape(),
           nextColor(),
           blockShape(),
           border(),
           label(),
           font() {
-
-        this->position = position;
     }
 
     // --- Methods ---

@@ -20,11 +20,14 @@ private:
 public:
     // --- Constructor ---
     TetrisScoreText(Vector2f position)
-        : score(0),
+        : Entity("TetrisScoreText", position),
+          scoreText(),
+          linesText(),
+          levelText(),
+          score(0),
           lines(0),
-          level(1) {
-
-        this->position = position;
+          level(1),
+          font() {
     }
 
     // --- Methods ---

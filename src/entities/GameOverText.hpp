@@ -14,18 +14,16 @@ private:
     Font font;
     Text text;
     string content;
-    Vector2f position;
     int size;
     Color color;
 
 public:
     // --- Constructor ---
     GameOverText(const string& content, Vector2f position, int size, Color color)
-        : Entity("GameOverText"),
+        : Entity("GameOverText", position),
           font(),
           text(),
           content(content),
-          position(position),
           size(size),
           color(color) {}
 

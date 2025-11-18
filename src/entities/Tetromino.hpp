@@ -26,10 +26,11 @@ public:
         : type(type),
           board(board),
           gridX(3),
-          gridY(0) {
-
-        this->currentShape = getBaseShape(type);
-        this->color = getTetrominoColor(type);
+          gridY(0),
+          currentShape(getBaseShape(type)),
+          color(getTetrominoColor(type)),
+          blockShape(),
+          boardPosition() {
     }
 
     // --- Methods ---

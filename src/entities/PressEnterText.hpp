@@ -12,14 +12,17 @@ private:
     // --- Fields ---
     Font font;
     Text text;
-    Vector2f position;
     float alpha;
     int fadeDirection;
 
 public:
     // --- Constructor ---
     PressEnterText(Vector2f position)
-        : Entity("PressEnterText"), position(position), alpha(255), fadeDirection(-1) {}
+        : Entity("PressEnterText", position),
+          font(),
+          text(),
+          alpha(255),
+          fadeDirection(-1) {}
 
     // --- Methods ---
     void onCreate() override {

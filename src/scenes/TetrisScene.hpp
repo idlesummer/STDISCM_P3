@@ -45,11 +45,22 @@ private:
 
 public:
     // --- Constructor ---
-    TetrisScene() : isGameOver(false), isPaused(false),
-        fallTimer(Time::Zero), moveTimer(Time::Zero),
-        rng(random_device{}()), pieceDistribution(0, 6) {
-
-        this->fallInterval = seconds(1.0f); // Start at 1 second per fall
+    TetrisScene()
+        : board(),
+          activePiece(),
+          scoreDisplay(),
+          nextPreview(),
+          titleText(),
+          gameOverText(),
+          controlsText(),
+          isGameOver(false),
+          isPaused(false),
+          fallTimer(Time::Zero),
+          fallInterval(seconds(1.0f)),
+          moveTimer(Time::Zero),
+          rng(random_device{}()),
+          pieceDistribution(0, 6),
+          nextPieceType() {
     }
 
     // --- Methods ---

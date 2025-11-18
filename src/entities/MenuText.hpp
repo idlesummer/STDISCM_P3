@@ -16,7 +16,7 @@ private:
 public:
     // --- Constructor ---
     MenuText(const string& content, Vector2f position, int size = 48)
-        : Entity("MenuText"),
+        : Entity("MenuText", position),
           font(),
           text() {
 
