@@ -7,17 +7,17 @@ using namespace std;
 
 class IETThread {
 public:
-  IETThread() = default;
-  virtual ~IETThread() = default;
+    IETThread() = default;
+    virtual ~IETThread() = default;
 
-  void start() {
-    thread(&IETThread::run, this).detach();
-  }
+    void start() {
+        thread(&IETThread::run, this).detach();
+    }
 
-  static void sleep(int ms) {
-    this_thread::sleep_for(chrono::milliseconds(ms));
-  }
+    static void sleep(int ms) {
+        this_thread::sleep_for(chrono::milliseconds(ms));
+    }
 
 protected:
-  virtual void run() = 0;
+    virtual void run() = 0;
 };
