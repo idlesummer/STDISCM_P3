@@ -9,23 +9,16 @@ using namespace std;
 constexpr auto TETRIS_BOARD_WIDTH = 10;
 constexpr auto TETRIS_BOARD_HEIGHT = 20;
 
-// Each shape is represented as a 4x4 grid
-// 1 = filled, 0 = empty
 using TetrisShape = array<array<int, 4>, 4>;
-
-// Pivot point - optional to support different grid sizes
-// nullopt = 3x3 shape (center pivot implied)
-// {x, y} = integer pivot point in 4×4 grid
 using Pivot = optional<pair<int, int>>;
 
-// Tetromino data - groups shape with its rotation behavior
 struct TetrominoData {
     char type;
     Pivot pivot;
     TetrisShape shape;
 
     // Check if coordinates are within the 4x4 shape bounds
-    static constexpr auto isInBounds(int x, int y) -> bool {
+    auto isInBounds(int x, int y) const -> bool {
         return x >= 0 && x < 4 && y >= 0 && y < 4;
     }
 
@@ -62,9 +55,8 @@ struct TetrominoData {
                 auto newY = ry + py;
 
                 // Bounds check
-                if (isInBounds(newX, newY)) {
+                if (this->isInBounds(newX, newY))
                     rotated[newY][newX] = shape[y][x];
-                }
             }
         }
 
@@ -73,7 +65,7 @@ struct TetrominoData {
 };
 
 // Tetromino definitions - complete data for each piece type
-const TetrominoData I_PIECE = {
+const auto I_PIECE = TetrominoData{
     .type = 'I',
     .pivot = nullopt,
     .shape = {{
@@ -84,7 +76,7 @@ const TetrominoData I_PIECE = {
     }}
 };
 
-const TetrominoData O_PIECE = {
+const auto O_PIECE = TetrominoData{
     .type = 'O',
     .pivot = nullopt,
     .shape = {{
@@ -95,7 +87,7 @@ const TetrominoData O_PIECE = {
     }}
 };
 
-const TetrominoData T_PIECE = {
+const auto T_PIECE = TetrominoData{
     .type = 'T',
     .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
@@ -106,7 +98,7 @@ const TetrominoData T_PIECE = {
     }}
 };
 
-const TetrominoData S_PIECE = {
+const auto S_PIECE = TetrominoData{
     .type = 'S',
     .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
@@ -117,7 +109,7 @@ const TetrominoData S_PIECE = {
     }}
 };
 
-const TetrominoData Z_PIECE = {
+const auto Z_PIECE = TetrominoData{
     .type = 'Z',
     .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
@@ -128,7 +120,7 @@ const TetrominoData Z_PIECE = {
     }}
 };
 
-const TetrominoData J_PIECE = {
+const auto J_PIECE = TetrominoData{
     .type = 'J',
     .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
@@ -139,7 +131,7 @@ const TetrominoData J_PIECE = {
     }}
 };
 
-const TetrominoData L_PIECE = {
+const auto L_PIECE = TetrominoData{
     .type = 'L',
     .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
     .shape = {{
@@ -151,7 +143,7 @@ const TetrominoData L_PIECE = {
 };
 
 // Get tetromino data for a piece type
-inline TetrominoData getTetromino(char type) {
+auto getTetromino(char type) -> TetrominoData {
     switch (type) {
         case 'I': return I_PIECE;
         case 'O': return O_PIECE;
