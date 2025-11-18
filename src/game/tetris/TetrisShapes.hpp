@@ -21,22 +21,15 @@ using Pivot = optional<pair<int, int>>;
 // Tetromino data - groups shape with its rotation behavior
 struct TetrominoData {
     char type;
-    TetrisShape shape;
     Pivot pivot;
+    TetrisShape shape;
 
     // Rotate this tetromino 90 degrees clockwise
     TetrisShape rotate() const {
-        // For 3x3 shapes (pivot is nullopt), rotation would be handled differently
-        // Currently all standard tetrominos are 4x4
-        if (!pivot.has_value()) {
-            return shape;  // Placeholder for 3x3 rotation logic
-        }
-
         auto rotated = TetrisShape{};
-        auto [px, py] = pivot.value();
 
-        // Special case: pivot {-1, -1} means rotate entire 4x4 matrix
-        if (px == -1 && py == -1) {
+        // nullopt pivot means rotate entire 4x4 matrix (for 3x3 shapes centered at 1,1)
+        if (!pivot.has_value()) {
             for (int y = 0; y < 4; y++) {
                 for (int x = 0; x < 4; x++) {
                     // Rotate entire 4x4 matrix: (x, y) -> (3-y, x)
@@ -46,7 +39,8 @@ struct TetrominoData {
             return rotated;
         }
 
-        // Standard pivot-based rotation
+        // Standard pivot-based rotation for I and O pieces
+        auto [px, py] = pivot.value();
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
@@ -79,79 +73,79 @@ struct TetrominoData {
 // Tetromino definitions - complete data for each piece type
 const TetrominoData I_PIECE = {
     .type = 'I',
+    .pivot = {{2, 1}},
     .shape = {{
         {0, 0, 0, 0},
         {1, 1, 1, 1},
         {0, 0, 0, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 1}}
+    }}
 };
 
 const TetrominoData O_PIECE = {
     .type = 'O',
+    .pivot = {{1, 1}},  // Rotating O doesn't change it, so pivot doesn't matter
     .shape = {{
         {0, 0, 0, 0},
         {0, 1, 1, 0},
         {0, 1, 1, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{1, 1}}  // Rotating O doesn't change it, so pivot doesn't matter
+    }}
 };
 
 const TetrominoData T_PIECE = {
     .type = 'T',
+    .pivot = nullopt,  // 3x3 shape centered at (1,1)
     .shape = {{
+        {0, 1, 0, 0},
+        {1, 1, 1, 0},
         {0, 0, 0, 0},
-        {0, 1, 1, 1},
-        {0, 0, 1, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 1}}
+    }}
 };
 
 const TetrominoData S_PIECE = {
     .type = 'S',
+    .pivot = nullopt,  // 3x3 shape centered at (1,1)
     .shape = {{
-        {0, 0, 0, 0},
-        {0, 0, 1, 1},
         {0, 1, 1, 0},
+        {1, 1, 0, 0},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 2}}
+    }}
 };
 
 const TetrominoData Z_PIECE = {
     .type = 'Z',
+    .pivot = nullopt,  // 3x3 shape centered at (1,1)
     .shape = {{
-        {0, 0, 0, 0},
+        {1, 1, 0, 0},
         {0, 1, 1, 0},
-        {0, 0, 1, 1},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 2}}
+    }}
 };
 
 const TetrominoData J_PIECE = {
     .type = 'J',
+    .pivot = nullopt,  // 3x3 shape centered at (1,1)
     .shape = {{
+        {0, 0, 1, 0},
+        {1, 1, 1, 0},
         {0, 0, 0, 0},
-        {0, 1, 1, 1},
-        {0, 0, 0, 1},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 1}}
+    }}
 };
 
 const TetrominoData L_PIECE = {
     .type = 'L',
+    .pivot = nullopt,  // 3x3 shape centered at (1,1)
     .shape = {{
+        {1, 0, 0, 0},
+        {1, 1, 1, 0},
         {0, 0, 0, 0},
-        {0, 1, 1, 1},
-        {0, 1, 0, 0},
         {0, 0, 0, 0}
-    }},
-    .pivot = {{2, 1}}
+    }}
 };
 
 // Get tetromino data for a piece type
@@ -164,6 +158,6 @@ inline TetrominoData getTetromino(char type) {
         case 'Z': return Z_PIECE;
         case 'J': return J_PIECE;
         case 'L': return L_PIECE;
-        default: return {'\0', TetrisShape{}, nullopt};
+        default: return {'\0', nullopt, TetrisShape{}};
     }
 }
