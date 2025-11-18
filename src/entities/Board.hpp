@@ -86,10 +86,6 @@ public:
         return this->tetrisBoard.isValidPosition(shape, gridX, gridY);
     }
 
-    void placeTetromino(const ShapeMatrix& shape, int gridX, int gridY, char type) {
-        this->tetrisBoard.placePiece(shape, gridX, gridY, type);
-    }
-
     auto clearLines() {
         return this->tetrisBoard.clearLines();
     }
@@ -103,10 +99,8 @@ public:
     }
 
     auto getBoardPosition() const { return this->boardPosition; }
-    auto getTotalLinesCleared() const { return this->tetrisBoard.getTotalLinesCleared(); }
 
     // Access to underlying game logic (if needed)
-    TetrisBoard& getTetrisBoard() { return this->tetrisBoard; }
     const TetrisBoard& getTetrisBoard() const { return this->tetrisBoard; }
 
 private:

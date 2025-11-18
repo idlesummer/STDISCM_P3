@@ -52,7 +52,6 @@ public:
     }
 
     auto getCurrentScene() const { return this->currentScene; }
-    auto& getWindow() { return this->window; }
 
 private:
     void handleInputs(Time TICK) {

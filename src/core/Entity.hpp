@@ -32,9 +32,7 @@ public:
     // Entity management
     auto getName() const { return this->entityName; }
     auto isActive() const { return this->active; }
-    void setActive(bool isActive) { this->active = isActive; }
 
     // Position management
-    auto getPosition() const { return this->position; }
     void setPosition(Vector2f newPosition) { this->position = newPosition; }
 };

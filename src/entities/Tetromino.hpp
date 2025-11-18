@@ -113,12 +113,6 @@ public:
 
     // Getters
     char getType() const { return this->tetrisPiece.getType(); }
-    ShapeMatrix getShape() const { return this->tetrisPiece.getShape(); }
-    Color getColor() const { return this->color; }
     int getGridX() const { return this->tetrisPiece.getX(); }
     int getGridY() const { return this->tetrisPiece.getY(); }
-
-    // Access to underlying game logic (if needed)
-    TetrisPiece& getTetrisPiece() { return this->tetrisPiece; }
-    const TetrisPiece& getTetrisPiece() const { return this->tetrisPiece; }
 };

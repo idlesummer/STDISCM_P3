@@ -133,14 +133,6 @@ public:
         return this->totalLinesCleared;
     }
 
-    auto getWidth() const {
-        return TETRIS_BOARD_WIDTH;
-    }
-
-    auto getHeight() const {
-        return TETRIS_BOARD_HEIGHT;
-    }
-
     // Bounds checking helpers (public for external use)
     auto isInBounds(int x, int y) const -> bool {
         return x >= 0 && x < TETRIS_BOARD_WIDTH &&

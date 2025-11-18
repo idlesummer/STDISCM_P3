@@ -55,7 +55,6 @@ public:
 
     // Access to game instance (for scene transitions)
     void setGame(Game* gameInstance) { this->game = gameInstance; }
-    auto* getGame() const { return this->game; }
     auto getName() const { return this->sceneName; }
 
 protected:

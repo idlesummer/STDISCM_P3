@@ -48,10 +48,6 @@ public:
 
     int getLines() const { return this->tetrisScoring.getLines(); }
 
-    // Access to underlying game logic (if needed)
-    TetrisScoring& getTetrisScoring() { return this->tetrisScoring; }
-    const TetrisScoring& getTetrisScoring() const { return this->tetrisScoring; }
-
 private:
     void updateDisplay() {
         this->linesText.setString("Lines: " + to_string(this->tetrisScoring.getLines()));
