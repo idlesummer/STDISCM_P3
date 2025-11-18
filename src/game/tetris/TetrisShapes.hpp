@@ -116,16 +116,52 @@ const auto TETRIS_SHAPE_L = TetrisShape{{
     {0, 0, 0, 0}
 }};
 
+// Tetromino definitions - complete data for each piece type
+const TetrominoData I_PIECE = {
+    .shape = TETRIS_SHAPE_I,
+    .pivot = {{2, 1}}
+};
+
+const TetrominoData O_PIECE = {
+    .shape = TETRIS_SHAPE_O,
+    .pivot = nullopt
+};
+
+const TetrominoData T_PIECE = {
+    .shape = TETRIS_SHAPE_T,
+    .pivot = {{2, 1}}
+};
+
+const TetrominoData S_PIECE = {
+    .shape = TETRIS_SHAPE_S,
+    .pivot = {{2, 2}}
+};
+
+const TetrominoData Z_PIECE = {
+    .shape = TETRIS_SHAPE_Z,
+    .pivot = {{2, 2}}
+};
+
+const TetrominoData J_PIECE = {
+    .shape = TETRIS_SHAPE_J,
+    .pivot = {{2, 1}}
+};
+
+const TetrominoData L_PIECE = {
+    .shape = TETRIS_SHAPE_L,
+    .pivot = {{2, 1}}
+};
+
 // Get tetromino data (shape + pivot) for a tetromino type
 inline TetrominoData getTetromino(TetrominoType type) {
     switch (type) {
-        case TetrominoType::I: return {TETRIS_SHAPE_I, {{2, 1}}};
-        case TetrominoType::O: return {TETRIS_SHAPE_O, nullopt};
-        case TetrominoType::T: return {TETRIS_SHAPE_T, {{2, 1}}};
-        case TetrominoType::S: return {TETRIS_SHAPE_S, {{2, 2}}};
-        case TetrominoType::Z: return {TETRIS_SHAPE_Z, {{2, 2}}};
-        case TetrominoType::J: return {TETRIS_SHAPE_J, {{2, 1}}};
-        case TetrominoType::L: return {TETRIS_SHAPE_L, {{2, 1}}};
+        case TetrominoType::I: return I_PIECE;
+        case TetrominoType::O: return O_PIECE;
+        case TetrominoType::T: return T_PIECE;
+        case TetrominoType::S: return S_PIECE;
+        case TetrominoType::Z: return Z_PIECE;
+        case TetrominoType::J: return J_PIECE;
+        case TetrominoType::L: return L_PIECE;
         default: return {TetrisShape{}, nullopt};
     }
 }
