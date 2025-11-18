@@ -68,7 +68,7 @@ public:
     }
 
     // Check and clear completed lines, return number of lines cleared
-    int clearLines() {
+    auto clearLines() {
         auto cleared = 0;
 
         for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0; y--) {
@@ -109,7 +109,7 @@ public:
     }
 
     // Get cell value at position
-    int getCell(int x, int y) const {
+    auto getCell(int x, int y) const {
         return this->isInBounds(x, y) ? this->grid[y][x] : -1;
     }
 
@@ -118,27 +118,27 @@ public:
         return this->grid;
     }
 
-    int getTotalLinesCleared() const {
+    auto getTotalLinesCleared() const {
         return this->totalLinesCleared;
     }
 
-    int getWidth() const {
+    auto getWidth() const {
         return TETRIS_BOARD_WIDTH;
     }
 
-    int getHeight() const {
+    auto getHeight() const {
         return TETRIS_BOARD_HEIGHT;
     }
 
 private:
     // Helper: Check if coordinates are within board bounds
-    bool isInBounds(int x, int y) const {
+    auto isInBounds(int x, int y) const -> bool {
         return x >= 0 && x < TETRIS_BOARD_WIDTH &&
                y >= 0 && y < TETRIS_BOARD_HEIGHT;
     }
 
     // Helper: Check if a cell is occupied (non-zero value)
-    bool isOccupied(int x, int y) const {
+    auto isOccupied(int x, int y) const -> bool {
         return this->isInBounds(x, y) && this->grid[y][x] != 0;
     }
 };
