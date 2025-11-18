@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <optional>
 
 using namespace std;
 
@@ -17,12 +18,10 @@ constexpr auto TETRIS_BOARD_HEIGHT = 20;
 // 1 = filled, 0 = empty
 using TetrisShape = array<array<int, 4>, 4>;
 
-// Rotation center for each piece (x, y coordinates in the 4x4 grid)
-// These define the pivot point around which the piece rotates
-struct RotationCenter {
-    float x;
-    float y;
-};
+// Rotation center - optional to support "no rotation" pieces
+// nullopt = no rotation (O-piece)
+// {x, y} = integer pivot point in 4×4 grid
+using RotationCenter = optional<pair<int, int>>;
 
 // Shape data for each tetromino type (rotation 0)
 const auto TETRIS_SHAPE_I = TetrisShape{{
@@ -89,40 +88,48 @@ auto getTetrisBaseShape(TetrominoType type) -> TetrisShape {
 }
 
 // Get rotation center for each piece type
-// Based on Super Rotation System (SRS) used in modern Tetris
+// Uses integer pivot points for cleaner rotation
+// Based on Tetris rotation conventions
 inline RotationCenter getTetrisRotationCenter(TetrominoType type) {
     switch (type) {
-        case TetrominoType::I: return {1.5f, 1.5f}; // Between blocks
-        case TetrominoType::O: return {1.5f, 1.5f}; // Center (doesn't rotate visibly)
-        case TetrominoType::T: return {1.0f, 1.0f}; // Center block
-        case TetrominoType::S: return {1.0f, 1.0f}; // Center of mass
-        case TetrominoType::Z: return {1.0f, 1.0f}; // Center of mass
-        case TetrominoType::J: return {1.0f, 1.0f}; // Corner of L
-        case TetrominoType::L: return {1.0f, 1.0f}; // Corner of L
-        default: return {1.5f, 1.5f};
+        case TetrominoType::I: return {{2, 1}}; // Approximate center of I-piece
+        case TetrominoType::O: return nullopt;   // O-piece doesn't rotate
+        case TetrominoType::T: return {{2, 1}}; // Center top block of T
+        case TetrominoType::S: return {{2, 2}}; // Center of mass
+        case TetrominoType::Z: return {{2, 2}}; // Center of mass
+        case TetrominoType::J: return {{2, 1}}; // Corner where J bends
+        case TetrominoType::L: return {{2, 1}}; // Corner where L bends
+        default: return nullopt;
     }
 }
 
 // Rotate a shape matrix 90 degrees clockwise around its rotation center
+// Returns the original shape if center is nullopt (no rotation)
 auto rotateTetrisShape(const TetrisShape& shape, const RotationCenter& center) {
+    // No rotation for pieces without a center (O-piece)
+    if (!center.has_value()) {
+        return shape;
+    }
+
     auto rotated = TetrisShape{};
+    auto [px, py] = center.value();
 
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
             if (shape[y][x] == 0)
                 continue;
 
-            // Translate to center
-            float px = x - center.x;
-            float py = y - center.y;
+            // Translate to pivot
+            int dx = x - px;
+            int dy = y - py;
 
             // Rotate 90 degrees clockwise: (x, y) -> (y, -x)
-            float rx = py;
-            float ry = -px;
+            int rx = dy;
+            int ry = -dx;
 
             // Translate back
-            int newX = static_cast<int>(rx + center.x + 0.5f);
-            int newY = static_cast<int>(ry + center.y + 0.5f);
+            int newX = rx + px;
+            int newY = ry + py;
 
             // Bounds check
             if (newX >= 0 && newX < 4 && newY >= 0 && newY < 4) {
