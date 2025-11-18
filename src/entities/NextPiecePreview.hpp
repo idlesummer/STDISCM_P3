@@ -58,17 +58,42 @@ public:
         if (this->nextType == TetrominoType::NONE)
             return;
 
-        // Calculate center offset for preview
-        auto previewPos = Vector2f(this->position.x + 30, this->position.y + 60);
+        // Calculate bounding box of the piece
+        int minX = 4, maxX = -1;
+        int minY = 4, maxY = -1;
 
-        // Draw the next piece
-        for (auto y = 0; y < 4; y++) {
-            for (auto x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                if (this->nextShape[y][x] != 0) {
+                    minX = min(minX, x);
+                    maxX = max(maxX, x);
+                    minY = min(minY, y);
+                    maxY = max(maxY, y);
+                }
+            }
+        }
+
+        // Calculate piece dimensions
+        int pieceWidth = (maxX - minX + 1) * BLOCK_SIZE;
+        int pieceHeight = (maxY - minY + 1) * BLOCK_SIZE;
+
+        // Calculate center offset for preview (120x120 border)
+        float borderX = this->position.x;
+        float borderY = this->position.y + 30;
+        float borderWidth = 120;
+        float borderHeight = 120;
+
+        float offsetX = borderX + (borderWidth - pieceWidth) / 2.0f - minX * BLOCK_SIZE;
+        float offsetY = borderY + (borderHeight - pieceHeight) / 2.0f - minY * BLOCK_SIZE;
+
+        // Draw the next piece centered
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
                 if (this->nextShape[y][x] == 0)
                     continue;
 
-                auto posX = previewPos.x + x * BLOCK_SIZE;
-                auto posY = previewPos.y + y * BLOCK_SIZE;
+                float posX = offsetX + x * BLOCK_SIZE;
+                float posY = offsetY + y * BLOCK_SIZE;
                 this->blockShape.setPosition(posX, posY);
                 this->blockShape.setFillColor(this->nextColor);
                 window.draw(this->blockShape);
