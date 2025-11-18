@@ -126,7 +126,8 @@ public:
     }
 
     void onUpdate(Time dt) override {
-        Scene::onUpdate(dt);
+        // Update all entities (animations, etc.)
+        this->updateEntities(dt);
 
         if (isGameOver || !activePiece) return;
 
@@ -145,6 +146,11 @@ public:
                 lockPiece();
             }
         }
+    }
+
+    void onDraw(RenderWindow& window) override {
+        // Draw all entities (board, pieces, UI)
+        this->drawEntities(window);
     }
 
 private:
