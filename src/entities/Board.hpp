@@ -86,7 +86,7 @@ public:
         return this->tetrisBoard.isValidPosition(shape, gridX, gridY);
     }
 
-    void placeTetromino(const ShapeMatrix& shape, int gridX, int gridY, TetrominoType type) {
+    void placeTetromino(const ShapeMatrix& shape, int gridX, int gridY, char type) {
         this->tetrisBoard.placePiece(shape, gridX, gridY, type);
     }
 

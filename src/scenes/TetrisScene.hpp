@@ -40,7 +40,7 @@ private:
     mt19937 rng;
     uniform_int_distribution<int> pieceDistribution;
 
-    TetrominoType nextPieceType;
+    char nextPieceType;
 
 public:
     TetrisScene()
@@ -58,7 +58,7 @@ public:
           moveTimer(Time::Zero),
           rng(random_device{}()),
           pieceDistribution(0, 6),
-          nextPieceType() {
+          nextPieceType('\0') {
     }
 
     void onCreate() override {
@@ -169,14 +169,15 @@ public:
     }
 
 private:
-    TetrominoType getRandomPieceType() {
+    char getRandomPieceType() {
+        const char pieces[] = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
         int random = this->pieceDistribution(this->rng);
-        return static_cast<TetrominoType>(random);
+        return pieces[random];
     }
 
     void spawnNewPiece() {
         // Use the next piece
-        TetrominoType typeToSpawn = this->nextPieceType;
+        char typeToSpawn = this->nextPieceType;
 
         // Generate new next piece
         this->nextPieceType = this->getRandomPieceType();
