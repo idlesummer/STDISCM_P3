@@ -102,13 +102,9 @@ public:
     }
 
     void onInput(Event& event) override {
-        Scene::onInput(event);
-
-        if (this->isGameOver) {
-            // Restart on Enter
-            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
+        if (this->isGameOver) { // Restart on Enter
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
                 this->restartGame();
-            }
             return;
         }
 
@@ -116,24 +112,22 @@ public:
             if (!this->activePiece) return;
 
             switch (event.key.code) {
+                default: break;
+
                 case Keyboard::Left:
-                case Keyboard::A:
                     this->activePiece->moveLeft();
                     break;
 
                 case Keyboard::Right:
-                case Keyboard::D:
                     this->activePiece->moveRight();
                     break;
 
                 case Keyboard::Down:
-                case Keyboard::S:
                     this->activePiece->moveDown();
                     this->fallTimer = Time::Zero; // Reset fall timer
                     break;
 
                 case Keyboard::Up:
-                case Keyboard::W:
                     this->activePiece->rotate();
                     break;
 
@@ -143,15 +137,10 @@ public:
                     break;
 
                 case Keyboard::LShift:
-                case Keyboard::RShift:
                     this->holdPiece();
                     break;
 
-                case Keyboard::Escape:
-                    // Could add pause or quit functionality
-                    break;
-
-                default:
+                case Keyboard::Escape:  // TODO: Add pause or quit functionality
                     break;
             }
         }
@@ -161,14 +150,15 @@ public:
         // Update all entities (animations, etc.)
         this->updateEntities(dt);
 
-        if (this->isGameOver || !this->activePiece) return;
+        if (this->isGameOver || !this->activePiece) 
+            return;
 
         // Update fall timer
         this->fallTimer += dt;
 
         // Adjust fall speed based on lines (level = 1 + lines/10)
-        int level = 1 + (this->scoreDisplay->getLines() / 10);
-        Time currentFallInterval = seconds(max(0.1f, 1.0f - (level - 1) * 0.1f));
+        auto level = 1 + (this->scoreDisplay->getLines() / 10);
+        auto currentFallInterval = seconds(max(0.1f, 1.0f - (level - 1) * 0.1f));
 
         if (this->fallTimer >= currentFallInterval) {
             this->fallTimer = Time::Zero;
