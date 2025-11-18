@@ -73,18 +73,21 @@ public:
             }
         }
 
-        // Calculate piece dimensions
-        int pieceWidth = (maxX - minX + 1) * BLOCK_SIZE;
-        int pieceHeight = (maxY - minY + 1) * BLOCK_SIZE;
-
-        // Calculate center offset for preview (120x120 border)
+        // Calculate the center of the preview box
         float borderX = this->position.x;
         float borderY = this->position.y + 30;
         float borderWidth = 120;
         float borderHeight = 120;
+        float centerX = borderX + borderWidth / 2.0f;
+        float centerY = borderY + borderHeight / 2.0f;
 
-        float offsetX = borderX + (borderWidth - pieceWidth) / 2.0f - minX * BLOCK_SIZE;
-        float offsetY = borderY + (borderHeight - pieceHeight) / 2.0f - minY * BLOCK_SIZE;
+        // Calculate the center of the piece in grid coordinates
+        float pieceCenterX = (minX + maxX + 1) / 2.0f;
+        float pieceCenterY = (minY + maxY + 1) / 2.0f;
+
+        // Calculate offset to center the piece in the preview box
+        float offsetX = centerX - pieceCenterX * BLOCK_SIZE;
+        float offsetY = centerY - pieceCenterY * BLOCK_SIZE;
 
         // Draw the next piece centered
         for (int y = 0; y < 4; y++) {
