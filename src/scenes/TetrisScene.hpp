@@ -149,8 +149,9 @@ public:
         // Update fall timer
         this->fallTimer += dt;
 
-        // Adjust fall speed based on level
-        Time currentFallInterval = seconds(max(0.1f, 1.0f - (this->scoreDisplay->getLevel() - 1) * 0.1f));
+        // Adjust fall speed based on lines (level = 1 + lines/10)
+        int level = 1 + (this->scoreDisplay->getLines() / 10);
+        Time currentFallInterval = seconds(max(0.1f, 1.0f - (level - 1) * 0.1f));
 
         if (this->fallTimer >= currentFallInterval) {
             this->fallTimer = Time::Zero;
@@ -227,7 +228,7 @@ private:
         this->addEntity(this->gameOverText);
 
         auto scoreText = make_shared<MenuText>(
-            "Final Score: " + to_string(this->scoreDisplay->getScore()),
+            "Final Lines: " + to_string(this->scoreDisplay->getLines()),
             Vector2f(250, 360), 24);
         this->addEntity(scoreText);
 

@@ -30,7 +30,7 @@ private:
     uniform_int_distribution<int> pieceDistribution;
 
     // Callback for game over event (optional)
-    function<void(int finalScore, int finalLines)> onGameOverCallback;
+    function<void(int finalLines)> onGameOverCallback;
 
 public:
     TetrisGame()
@@ -209,6 +209,6 @@ private:
 
         // Call game over callback if set
         if (this->onGameOverCallback)
-            this->onGameOverCallback(this->scoring.getScore(), this->scoring.getLines());
+            this->onGameOverCallback(this->scoring.getLines());
     }
 };
