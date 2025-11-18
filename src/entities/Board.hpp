@@ -126,7 +126,7 @@ public:
             }
 
             if (!isComplete)
-                break;
+                continue;
 
             cleared++;
             linesCleared++;
