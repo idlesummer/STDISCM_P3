@@ -13,18 +13,27 @@ constexpr auto TETRIS_BOARD_HEIGHT = 20;
 // 1 = filled, 0 = empty
 using TetrisShape = array<array<int, 4>, 4>;
 
+// Pivot point - optional to support different grid sizes
+// nullopt = 3x3 shape (center pivot implied)
+// {x, y} = integer pivot point in 4×4 grid
+using Pivot = optional<pair<int, int>>;
+
 // Tetromino data - groups shape with its rotation behavior
 struct TetrominoData {
     char type;
     TetrisShape shape;
-    bool is4x4;  // true = 4x4 grid, false = 3x3 grid
+    Pivot pivot;
 
     // Rotate this tetromino 90 degrees clockwise
-    // All rotations use fixed pivot at {1, 1}
     TetrisShape rotate() const {
+        // For 3x3 shapes (pivot is nullopt), rotation would be handled differently
+        // Currently all standard tetrominos are 4x4
+        if (!pivot.has_value()) {
+            return shape;  // Placeholder for 3x3 rotation logic
+        }
+
         auto rotated = TetrisShape{};
-        constexpr int px = 1;
-        constexpr int py = 1;
+        auto [px, py] = pivot.value();
 
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
@@ -63,7 +72,7 @@ const TetrominoData I_PIECE = {
         {0, 0, 0, 0},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 1}}
 };
 
 const TetrominoData O_PIECE = {
@@ -74,7 +83,7 @@ const TetrominoData O_PIECE = {
         {0, 1, 1, 0},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{1, 1}}  // Rotating O doesn't change it, so pivot doesn't matter
 };
 
 const TetrominoData T_PIECE = {
@@ -85,7 +94,7 @@ const TetrominoData T_PIECE = {
         {0, 0, 1, 0},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 1}}
 };
 
 const TetrominoData S_PIECE = {
@@ -96,7 +105,7 @@ const TetrominoData S_PIECE = {
         {0, 1, 1, 0},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 2}}
 };
 
 const TetrominoData Z_PIECE = {
@@ -107,7 +116,7 @@ const TetrominoData Z_PIECE = {
         {0, 0, 1, 1},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 2}}
 };
 
 const TetrominoData J_PIECE = {
@@ -118,7 +127,7 @@ const TetrominoData J_PIECE = {
         {0, 0, 0, 1},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 1}}
 };
 
 const TetrominoData L_PIECE = {
@@ -129,7 +138,7 @@ const TetrominoData L_PIECE = {
         {0, 1, 0, 0},
         {0, 0, 0, 0}
     }},
-    .is4x4 = true
+    .pivot = {{2, 1}}
 };
 
 // Get tetromino data for a piece type
@@ -142,6 +151,6 @@ inline TetrominoData getTetromino(char type) {
         case 'Z': return Z_PIECE;
         case 'J': return J_PIECE;
         case 'L': return L_PIECE;
-        default: return {'\0', TetrisShape{}, true};
+        default: return {'\0', TetrisShape{}, nullopt};
     }
 }

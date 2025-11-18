@@ -9,6 +9,7 @@ namespace Tetris {
 
 // Import pure game logic types (project-agnostic)
 using TetrisShape = ::TetrisShape;
+using ::Pivot;
 using ::TetrominoData;
 
 // SFML-specific rendering constants
