@@ -77,6 +77,18 @@ public:
         return false;
     }
 
+    // Calculate ghost piece Y position (where piece would land if hard dropped)
+    auto calculateGhostY() const {
+        if (!this->board)
+            return this->gridY;
+
+        int ghostY = this->gridY;
+        while (this->board->isValidPosition(this->currentShape, this->gridX, ghostY + 1)) {
+            ghostY++;
+        }
+        return ghostY;
+    }
+
     // Hard drop - move down until collision, return number of rows dropped
     auto hardDrop() {
         int rowsDropped = 0;

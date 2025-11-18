@@ -38,11 +38,36 @@ public:
     }
 
     void onDraw(RenderWindow& window) override {
-        // Draw each block of the tetromino
         const auto& shape = this->tetrisPiece.getShape();
         int gridX = this->tetrisPiece.getX();
         int gridY = this->tetrisPiece.getY();
 
+        // Draw ghost piece (shadow) first
+        int ghostY = this->tetrisPiece.calculateGhostY();
+        if (ghostY != gridY) {  // Only draw if ghost is below current position
+            Color ghostColor(100, 100, 100, 100);  // Semi-transparent grey
+            this->blockShape.setFillColor(ghostColor);
+            this->blockShape.setOutlineColor(Color(80, 80, 80, 100));
+
+            for (auto y = 0; y < 4; y++) {
+                for (auto x = 0; x < 4; x++) {
+                    if (shape[y][x] == 0)
+                        continue;
+
+                    this->blockShape.setPosition(
+                        this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
+                        this->boardPosition.y + (ghostY + y) * BLOCK_SIZE
+                    );
+                    window.draw(this->blockShape);
+                }
+            }
+
+            // Restore original colors for actual piece
+            this->blockShape.setFillColor(this->color);
+            this->blockShape.setOutlineColor(Color(50, 50, 50));
+        }
+
+        // Draw actual tetromino piece
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)

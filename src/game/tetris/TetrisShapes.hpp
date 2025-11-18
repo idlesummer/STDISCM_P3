@@ -35,6 +35,18 @@ struct TetrominoData {
         auto rotated = TetrisShape{};
         auto [px, py] = pivot.value();
 
+        // Special case: pivot {-1, -1} means rotate entire 4x4 matrix
+        if (px == -1 && py == -1) {
+            for (int y = 0; y < 4; y++) {
+                for (int x = 0; x < 4; x++) {
+                    // Rotate entire 4x4 matrix: (x, y) -> (3-y, x)
+                    rotated[x][3 - y] = shape[y][x];
+                }
+            }
+            return rotated;
+        }
+
+        // Standard pivot-based rotation
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
