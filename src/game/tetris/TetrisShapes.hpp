@@ -44,9 +44,10 @@ struct TetrominoData {
                 int dx = x - px;
                 int dy = y - py;
 
-                // Rotate 90 degrees clockwise: (x, y) -> (y, -x)
-                int rx = dy;
-                int ry = -dx;
+                // Rotate 90 degrees clockwise: (x, y) -> (-y, x)
+                // (In screen coordinates where y increases downward)
+                int rx = -dy;
+                int ry = dx;
 
                 // Translate back
                 int newX = rx + px;
