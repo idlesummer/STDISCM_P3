@@ -17,10 +17,10 @@ private:
 public:
     PressEnterText(Vector2f position)
         : Entity("PressEnterText", position),
-            font(),
-            text(),
-            alpha(255),
-            fadeDirection(-1) {}
+          font(),
+          text(),
+          alpha(255),
+          fadeDirection(-1) {}
 
     void onCreate() override {
         this->font.loadFromFile("assets/fonts/sansation.ttf");

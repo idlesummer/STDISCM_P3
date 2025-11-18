@@ -22,9 +22,9 @@ private:
 public:
     AssetManager(size_t nthreads = 0)
         : pool(nthreads == 0 ? thread::hardware_concurrency() : nthreads),
-            fonts(),
-            fontsMutex(),
-            loadingCount(0) {
+          fonts(),
+          fontsMutex(),
+          loadingCount(0) {
 
         cout << "[AssetManager] Initialized with " << this->pool.getThreadCount() << " worker threads" << endl;
     }

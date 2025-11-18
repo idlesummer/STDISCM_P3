@@ -22,13 +22,13 @@ private:
 public:
     Tetromino(TetrominoType type, Board* board)
         : type(type),
-            board(board),
-            gridX(3),
-            gridY(0),
-            currentShape(getBaseShape(type)),
-            color(getTetrominoColor(type)),
-            blockShape(),
-            boardPosition() {
+          board(board),
+          gridX(3),
+          gridY(0),
+          currentShape(getBaseShape(type)),
+          color(getTetrominoColor(type)),
+          blockShape(),
+          boardPosition() {
     }
 
     void onCreate() override {

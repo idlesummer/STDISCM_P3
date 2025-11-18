@@ -20,9 +20,9 @@ private:
 public:
     Board()
         : blockShape(),
-            borderShape(),
-            boardPosition(),
-            linesCleared(0) {
+          borderShape(),
+          boardPosition(),
+          linesCleared(0) {
 
         for (auto& row : this->grid)
             row.fill(0);

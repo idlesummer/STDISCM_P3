@@ -15,8 +15,8 @@ private:
 public:
     MenuText(const string& content, Vector2f position, int size = 48)
         : Entity("MenuText", position),
-            font(),
-            text() {
+          font(),
+          text() {
 
         this->text.setString(content);
         this->text.setCharacterSize(size);

@@ -18,9 +18,9 @@ private:
 public:
     TaskQueue()
         : queue_(),
-            mutex_(),
-            cv_(),
-            shutdown_(false) {}
+          mutex_(),
+          cv_(),
+          shutdown_(false) {}
 
     ~TaskQueue() = default;
     TaskQueue(const TaskQueue&) = delete;

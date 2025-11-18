@@ -19,11 +19,11 @@ private:
 public:
     GameOverText(const string& content, Vector2f position, int size, Color color)
         : Entity("GameOverText", position),
-            font(),
-            text(),
-            content(content),
-            size(size),
-            color(color) {}
+          font(),
+          text(),
+          content(content),
+          size(size),
+          color(color) {}
 
     void onCreate() override {
         this->font.loadFromFile("assets/fonts/sansation.ttf");

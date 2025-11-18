@@ -17,8 +17,8 @@ protected:
 public:
     Entity(const string& name = "Entity", Vector2f initialPosition = Vector2f(0, 0))
         : entityName(name),
-            active(true),
-            position(initialPosition) {}
+          active(true),
+          position(initialPosition) {}
 
     virtual ~Entity() = default;
 

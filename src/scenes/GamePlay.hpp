@@ -28,12 +28,12 @@ private:
 public:
     GamePlay()
         : Scene("GamePlay"),
-            player(),
-            enemies(),
-            scoreDisplay(),
-            elapsedTime(0.0f),
-            instructionFont(),
-            instructionText() {}
+          player(),
+          enemies(),
+          scoreDisplay(),
+          elapsedTime(0.0f),
+          instructionFont(),
+          instructionText() {}
 
     void onCreate() override {
         cout << "=== Game Started ===" << endl;

@@ -19,13 +19,13 @@ private:
 public:
     TetrisScoreText(Vector2f position)
         : Entity("TetrisScoreText", position),
-            scoreText(),
-            linesText(),
-            levelText(),
-            score(0),
-            lines(0),
-            level(1),
-            font() {
+          scoreText(),
+          linesText(),
+          levelText(),
+          score(0),
+          lines(0),
+          level(1),
+          font() {
     }
 
     void onCreate() override {

@@ -19,9 +19,9 @@ private:
 public:
     ThreadPool(size_t nthreads)
         : nthreads(nthreads),
-            workers(),
-            taskQueue(),
-            activeTasks(0) {
+          workers(),
+          taskQueue(),
+          activeTasks(0) {
 
         for (auto i = size_t(0); i < nthreads; i++)
             this->workers.emplace_back([this] { this->workerLoop(); });

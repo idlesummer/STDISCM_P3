@@ -20,13 +20,13 @@ private:
 public:
     NextPiecePreview(Vector2f position)
         : Entity("NextPiecePreview", position),
-            nextType(TetrominoType::NONE),
-            nextShape(),
-            nextColor(),
-            blockShape(),
-            border(),
-            label(),
-            font() {
+          nextType(TetrominoType::NONE),
+          nextShape(),
+          nextColor(),
+          blockShape(),
+          border(),
+          label(),
+          font() {
     }
 
     void onCreate() override {

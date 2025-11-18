@@ -45,20 +45,20 @@ private:
 public:
     TetrisScene()
         : board(),
-            activePiece(),
-            scoreDisplay(),
-            nextPreview(),
-            titleText(),
-            gameOverText(),
-            controlsText(),
-            isGameOver(false),
-            isPaused(false),
-            fallTimer(Time::Zero),
-            fallInterval(seconds(1.0f)),
-            moveTimer(Time::Zero),
-            rng(random_device{}()),
-            pieceDistribution(0, 6),
-            nextPieceType() {
+          activePiece(),
+          scoreDisplay(),
+          nextPreview(),
+          titleText(),
+          gameOverText(),
+          controlsText(),
+          isGameOver(false),
+          isPaused(false),
+          fallTimer(Time::Zero),
+          fallInterval(seconds(1.0f)),
+          moveTimer(Time::Zero),
+          rng(random_device{}()),
+          pieceDistribution(0, 6),
+          nextPieceType() {
     }
 
     void onCreate() override {
