@@ -10,7 +10,7 @@ namespace Tetris {
 // Import pure game logic types (project-agnostic)
 using ::TetrominoType;
 using TetrisShape = ::TetrisShape;
-using ::RotationCenter;
+using ::Pivot;
 
 // SFML-specific rendering constants
 constexpr int BOARD_WIDTH = TETRIS_BOARD_WIDTH;
@@ -52,7 +52,7 @@ inline TetrisShape rotateShape(const TetrisShape& shape, TetrominoType type) {
     return rotateTetrisShape(shape, type);
 }
 
-inline RotationCenter getRotationCenter(TetrominoType type) {
+inline Pivot getRotationCenter(TetrominoType type) {
     return getTetrisRotationCenter(type);
 }
 
