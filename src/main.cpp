@@ -6,22 +6,23 @@
 #include "scenes/MainMenu.hpp"
 #include "scenes/GamePlay.hpp"
 #include "scenes/GameOver.hpp"
+#include "scenes/TetrisScene.hpp"
 
 using namespace std;
 
 
 int main() {
     cout << "============================================" << endl;
-    cout << "  Simple 2D Game Engine" << endl;
+    cout << "  TETRIS - Minimal Implementation" << endl;
     cout << "  React-Style Lifecycle + Scene Management" << endl;
     cout << "============================================" << endl;
     cout << endl;
 
     // Create game instance
-    auto game = Game(800, 600, "Simple 2D Game - Scene System Demo");
+    auto game = Game(800, 700, "Tetris");
 
-    // Start with main menu scene (like initial route in React Router!)
-    game.changeScene(make_shared<MainMenu>());
+    // Start with Tetris scene
+    game.changeScene(make_shared<TetrisScene>());
 
     // Run the game loop
     game.run();
