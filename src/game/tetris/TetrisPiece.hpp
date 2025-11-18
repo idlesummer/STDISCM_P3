@@ -50,7 +50,7 @@ public:
     // Rotate clockwise with wall kick support
     auto rotate() {
         auto pieceData = getTetromino(this->type);
-        TetrisShape rotated = TetrominoData{this->type, this->currentShape, pieceData.pivot}.rotate();
+        TetrisShape rotated = TetrominoData{this->type, this->currentShape, pieceData.is4x4}.rotate();
 
         if (!this->board)
             return false;
