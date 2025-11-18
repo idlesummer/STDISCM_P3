@@ -47,8 +47,12 @@ inline TetrisShape getBaseShape(TetrominoType type) {
     return getTetrisBaseShape(type);
 }
 
-inline TetrisShape rotateShape(const TetrisShape& shape) {
-    return rotateTetrisShape(shape);
+inline TetrisShape rotateShape(const TetrisShape& shape, TetrominoType type) {
+    return rotateTetrisShape(shape, type);
+}
+
+inline RotationCenter getRotationCenter(TetrominoType type) {
+    return getTetrisRotationCenter(type);
 }
 
 } // namespace Tetris

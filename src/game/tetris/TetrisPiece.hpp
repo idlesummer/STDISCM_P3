@@ -49,7 +49,7 @@ public:
 
     // Rotate clockwise with wall kick support
     auto rotate() {
-        TetrisShape rotated = rotateTetrisShape(this->currentShape);
+        TetrisShape rotated = rotateTetrisShape(this->currentShape, this->type);
 
         if (!this->board)
             return false;
