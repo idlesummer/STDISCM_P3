@@ -67,7 +67,10 @@ public:
 
         // Update fall timer
         this->fallTimer += deltaTime;
-        float fallInterval = this->scoring.getFallInterval();
+
+        // Calculate fall interval based on lines (level = 1 + lines/10)
+        int level = 1 + (this->scoring.getLines() / 10);
+        float fallInterval = max(0.1f, 1.0f - (level - 1) * 0.1f);
 
         if (this->fallTimer < fallInterval)
             return;
