@@ -169,7 +169,6 @@ private:
             cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
             return {};
         }
-
         return buffer;
     }
 
