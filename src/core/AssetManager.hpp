@@ -14,6 +14,7 @@
 using namespace std;
 using namespace sf;
 
+
 /**
  * AssetManager - Singleton texture/icon loading and caching system (header-only)
  *
