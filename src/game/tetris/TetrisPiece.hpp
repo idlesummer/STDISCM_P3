@@ -79,7 +79,7 @@ public:
         if (!this->board)
             return this->gridY;
 
-        int ghostY = this->gridY;
+        auto ghostY = this->gridY;
         while (this->board->isValidPosition(this->shape, this->gridX, ghostY + 1))
             ghostY++;
         return ghostY;
@@ -101,9 +101,9 @@ public:
 
     // Check if piece can be placed at current position (spawn check)
     auto canSpawn() const {
-        if (!this->board)
-            return false;
-        return this->board->isValidPosition(this->shape, this->gridX, this->gridY);
+        return this->board 
+            ? this->board->isValidPosition(this->shape, this->gridX, this->gridY)
+            : false;
     }
 
     // Getters
