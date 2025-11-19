@@ -10,6 +10,7 @@
 #include "../entities/MenuText.hpp"
 #include "../entities/LoadingProgressBar.hpp"
 #include "../entities/IconScrollDisplay.hpp"
+#include "../entities/FPSCounter.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -32,6 +33,7 @@ private:
     shared_ptr<MenuText> controlsText;
     shared_ptr<LoadingProgressBar> loadingProgressBar;
     shared_ptr<IconScrollDisplay> iconScrollDisplay;
+    shared_ptr<FPSCounter> fpsCounter;
 
     // SFML-specific state (not game logic)
     Time fallTimer;
@@ -51,6 +53,7 @@ public:
           controlsText(),
           loadingProgressBar(),
           iconScrollDisplay(),
+          fpsCounter(),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)),
           showingIcons(false) {
@@ -86,6 +89,10 @@ public:
         // Create icon scroll display (aligned with board)
         this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
         this->addEntity(this->iconScrollDisplay);
+
+        // Create FPS counter (bottom right)
+        this->fpsCounter = make_shared<FPSCounter>(Vector2f(720, 675));
+        this->addEntity(this->fpsCounter);
 
         // Sync UI with engine state
         this->syncVisualState();
@@ -263,6 +270,7 @@ private:
         if (this->controlsText) this->controlsText->setVisible(false);
         if (this->loadingProgressBar) this->loadingProgressBar->setVisible(false);
         if (this->iconScrollDisplay) this->iconScrollDisplay->setVisible(false);
+        if (this->fpsCounter) this->fpsCounter->setVisible(false);
 
         // Show game over text (centered)
         this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(400, 300), 40, true);
