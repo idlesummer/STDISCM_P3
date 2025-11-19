@@ -29,7 +29,7 @@
 class AssetManager {
 private:
     // Singleton - Private constructor
-    AssetManager() : loadingPool(4) {
+    AssetManager() : loadingPool(4), totalTextureCount(0), totalFontCount(0) {
         // Initialize thread pool with 4 worker threads for background loading
     }
 
@@ -44,6 +44,10 @@ private:
     std::vector<std::string> textureOrder;
     std::vector<std::string> fontOrder;
 
+    // Total asset counts (for progress tracking)
+    size_t totalTextureCount;
+    size_t totalFontCount;
+
     // Staging area for background-loaded file data
     struct PendingAsset {
         std::string key;           // Asset identifier (filename)
@@ -55,6 +59,8 @@ private:
 
     // Internal helper methods
     void loadTextureAsync(const std::string& filename) {
+        totalTextureCount++;  // Track total assets queued
+
         // Enqueue background task to load texture file data
         loadingPool.enqueue([this, filename]() {
             std::string fullPath = "assets/images/icons/" + filename;
@@ -86,6 +92,8 @@ private:
     }
 
     void loadFontAsync(const std::string& filename) {
+        totalFontCount++;  // Track total assets queued
+
         // Enqueue background task to load font file data
         loadingPool.enqueue([this, filename]() {
             std::string fullPath = "assets/fonts/" + filename;
@@ -250,6 +258,42 @@ public:
     size_t getPendingAssetCount() const {
         std::lock_guard<std::mutex> lock(const_cast<std::mutex&>(pendingMutex));
         return pendingAssets.size();
+    }
+
+    /**
+     * Get total asset counts (how many assets were queued for loading)
+     */
+    size_t getTotalTextureCount() const { return totalTextureCount; }
+    size_t getTotalFontCount() const { return totalFontCount; }
+    size_t getTotalAssetCount() const { return totalTextureCount + totalFontCount; }
+
+    /**
+     * Get loaded asset counts
+     */
+    size_t getLoadedAssetCount() const { return textureCache.size() + fontCache.size(); }
+
+    /**
+     * Check if all assets have finished loading
+     */
+    bool isLoadingComplete() const {
+        return getLoadedAssetCount() == getTotalAssetCount();
+    }
+
+    /**
+     * Get loading progress as a percentage (0.0 to 1.0)
+     * Returns 1.0 if no assets were queued
+     */
+    float getLoadingProgress() const {
+        size_t total = getTotalAssetCount();
+        if (total == 0) return 1.0f;
+        return static_cast<float>(getLoadedAssetCount()) / static_cast<float>(total);
+    }
+
+    /**
+     * Get loading progress as a percentage (0 to 100)
+     */
+    int getLoadingProgressPercent() const {
+        return static_cast<int>(getLoadingProgress() * 100.0f);
     }
 };
 
