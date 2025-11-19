@@ -29,12 +29,35 @@ using namespace sf;
  *   auto texture = AssetManager::getInstance().getTexture("tile.png");
  */
 class AssetManager {
-public:
-    // --- Public Methods ---
+    // Thread pool for background file loading
+    ThreadPool loadingPool;
 
-    /**
-     * Singleton access
-     */
+    // Fast O(1) lookup caches
+    unordered_map<string, shared_ptr<Texture>> textureCache;
+    unordered_map<string, shared_ptr<Font>> fontCache;
+
+    // Insertion order preservation (for iteration)
+    vector<string> textureOrder;
+    vector<string> fontOrder;
+
+    // Total asset counts (for progress tracking)
+    size_t totalTextureCount;
+    size_t totalFontCount;
+
+    // Staging area for background-loaded file data
+    struct PendingAsset {
+        string key;           // Asset identifier (filename)
+        vector<char> fileData; // Raw file bytes loaded in background
+        enum Type { TEXTURE, FONT } type;
+    };
+    queue<PendingAsset> pendingAssets;
+    mutex pendingMutex;  // Protects pendingAssets queue
+
+    AssetManager() : loadingPool(thread::hardware_concurrency()), totalTextureCount(0), totalFontCount(0) {
+    }
+
+
+public:
     static auto getInstance() -> AssetManager& {
         static auto instance = AssetManager();
         return instance;
@@ -79,10 +102,9 @@ public:
      */
     auto getTexture(const string& name) -> shared_ptr<Texture> {
         auto it = this->textureCache.find(name);
-        if (it != this->textureCache.end()) {
-            return it->second;
-        }
-        return nullptr;  // Not loaded yet
+        return it != this->textureCache.end()
+            ? it->second
+            : nullptr;
     }
 
     /**
@@ -92,41 +114,27 @@ public:
      */
     auto getFont(const string& name) -> shared_ptr<Font> {
         auto it = this->fontCache.find(name);
-        if (it != this->fontCache.end()) {
-            return it->second;
-        }
-        return nullptr;  // Not loaded yet
+        return it != this->fontCache.end()
+            ? it->second
+            : nullptr;
     }
 
-    /**
-     * Check if a texture is loaded and ready
-     */
     auto isTextureLoaded(const string& name) const -> bool {
         return this->textureCache.find(name) != this->textureCache.end();
     }
 
-    /**
-     * Check if a font is loaded and ready
-     */
     auto isFontLoaded(const string& name) const -> bool {
         return this->fontCache.find(name) != this->fontCache.end();
     }
 
-    /**
-     * Get all texture names in insertion order
-     * Useful for iterating through loaded textures
-     */
-    auto getTextureNames() const -> const vector<string>& { return this->textureOrder; }
+    auto getTextureNames() const -> const vector<string>& { 
+        return this->textureOrder; 
+    }
 
-    /**
-     * Get all font names in insertion order
-     * Useful for iterating through loaded fonts
-     */
-    auto getFontNames() const -> const vector<string>& { return this->fontOrder; }
+    auto getFontNames() const -> const vector<string>& { 
+        return this->fontOrder; 
+    }
 
-    /**
-     * Get loading statistics
-     */
     auto getLoadedTextureCount() const -> size_t { return this->textureCache.size(); }
     auto getLoadedFontCount() const -> size_t { return this->fontCache.size(); }
     auto getPendingAssetCount() const -> size_t {
@@ -134,78 +142,26 @@ public:
         return this->pendingAssets.size();
     }
 
-    /**
-     * Get total asset counts (how many assets were queued for loading)
-     */
     auto getTotalTextureCount() const -> size_t { return this->totalTextureCount; }
     auto getTotalFontCount() const -> size_t { return this->totalFontCount; }
     auto getTotalAssetCount() const -> size_t { return this->totalTextureCount + this->totalFontCount; }
-
-    /**
-     * Get loaded asset counts
-     */
     auto getLoadedAssetCount() const -> size_t { return this->textureCache.size() + this->fontCache.size(); }
 
-    /**
-     * Check if all assets have finished loading
-     */
     auto isLoadingComplete() const -> bool {
         return this->getLoadedAssetCount() == this->getTotalAssetCount();
     }
 
-    /**
-     * Get loading progress as a percentage (0.0 to 1.0)
-     * Returns 1.0 if no assets were queued
-     */
     auto getLoadingProgress() const -> float {
         auto total = this->getTotalAssetCount();
         if (total == 0) return 1.0f;
         return static_cast<float>(this->getLoadedAssetCount()) / static_cast<float>(total);
     }
 
-    /**
-     * Get loading progress as a percentage (0 to 100)
-     */
     auto getLoadingProgressPercent() const -> int {
         return static_cast<int>(this->getLoadingProgress() * 100.0f);
     }
 
 private:
-    // --- Constructors & Destructor ---
-
-    // Singleton - Private constructor
-    AssetManager() : loadingPool(thread::hardware_concurrency()), totalTextureCount(0), totalFontCount(0) {
-        // Initialize thread pool with max available threads for background loading
-    }
-
-    // --- Private Fields ---
-
-    // Thread pool for background file loading
-    ThreadPool loadingPool;
-
-    // Fast O(1) lookup caches
-    unordered_map<string, shared_ptr<Texture>> textureCache;
-    unordered_map<string, shared_ptr<Font>> fontCache;
-
-    // Insertion order preservation (for iteration)
-    vector<string> textureOrder;
-    vector<string> fontOrder;
-
-    // Total asset counts (for progress tracking)
-    size_t totalTextureCount;
-    size_t totalFontCount;
-
-    // Staging area for background-loaded file data
-    struct PendingAsset {
-        string key;           // Asset identifier (filename)
-        vector<char> fileData; // Raw file bytes loaded in background
-        enum Type { TEXTURE, FONT } type;
-    };
-    queue<PendingAsset> pendingAssets;
-    mutex pendingMutex;  // Protects pendingAssets queue
-
-    // --- Private Methods ---
-
     void loadTextureAsync(const string& filename) {
         this->totalTextureCount++;  // Track total assets queued
 
