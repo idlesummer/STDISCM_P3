@@ -33,6 +33,7 @@ public:
           color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
           boardPosition() {
+
         // Assign unique texture indices to each cell
         this->assignTextureIndices();
     }
