@@ -158,8 +158,8 @@ auto getTetromino(char type) -> TetrominoData {
     }
 }
 
-// Static class for tetromino registry and factory methods
-class Tetromino {
+// Static class for tetromino type registry and factory methods
+class TetrominoType {
 public:
     // Registry of all tetromino types
     static constexpr array<char, 7> ALL_TYPES = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
@@ -207,7 +207,7 @@ public:
     }
 
     // Deleted constructors (static class only)
-    Tetromino() = delete;
-    Tetromino(const Tetromino&) = delete;
-    Tetromino& operator=(const Tetromino&) = delete;
+    TetrominoType() = delete;
+    TetrominoType(const TetrominoType&) = delete;
+    TetrominoType& operator=(const TetrominoType&) = delete;
 };

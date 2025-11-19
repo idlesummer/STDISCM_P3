@@ -160,7 +160,7 @@ public:
 
 private:
     auto getRandomPieceType() {
-        return Tetromino::random();
+        return TetrominoType::random();
     }
 
     void spawnNewPiece() {
