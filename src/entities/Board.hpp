@@ -39,7 +39,8 @@ public:
 
         // Setup block background (solid color for vibrant display)
         this->blockBackground.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
-        this->blockBackground.setOutlineThickness(0.0f);
+        this->blockBackground.setOutlineThickness(1.0f);
+        this->blockBackground.setOutlineColor(Color(0, 0, 0));
 
         // Setup block shape template (transparent textured layer)
         this->blockShape.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
@@ -108,7 +109,7 @@ public:
                             // Texture is loaded - draw semi-transparent layer on top
                             this->blockShape.setPosition(posX, posY);
                             this->blockShape.setTexture(texture.get());
-                            auto transparentColor = Color(255, 255, 255, 180);
+                            auto transparentColor = Color(255, 255, 255, 100);
                             this->blockShape.setFillColor(transparentColor);
                             window.draw(this->blockShape);
                         }
