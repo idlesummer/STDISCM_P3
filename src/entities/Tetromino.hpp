@@ -18,6 +18,7 @@ private:
     const TetrisPiece* tetrisPiece;  // Non-owning pointer to game logic
     Color color;
     RectangleShape blockShape;
+    RectangleShape blockBackground;  // Solid color background for vibrant colors
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
 
@@ -39,11 +40,14 @@ public:
     void onCreate() override {
         this->boardPosition = this->board->getBoardPosition();
 
-        // Setup block rendering
-        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 2.0f, BLOCK_SIZE - 2.0f));
+        // Setup block background (solid color for vibrant display)
+        this->blockBackground.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+        this->blockBackground.setOutlineThickness(0.0f);
+
+        // Setup block rendering (transparent textured layer)
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
         this->blockShape.setFillColor(this->color);
-        this->blockShape.setOutlineThickness(2.0f);
-        this->blockShape.setOutlineColor(Color(0, 0, 0));
+        this->blockShape.setOutlineThickness(0.0f);
     }
 
     void onDraw(RenderWindow& window) override {
@@ -59,26 +63,21 @@ public:
         // Draw ghost piece (shadow) first - without texture
         int ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
-            this->blockShape.setTexture(nullptr);
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
-            this->blockShape.setFillColor(ghostColor);
-            this->blockShape.setOutlineColor(Color(80, 80, 80, 100));
 
             for (auto y = 0; y < 4; y++) {
                 for (auto x = 0; x < 4; x++) {
                     if (shape[y][x] == 0)
                         continue;
 
-                    this->blockShape.setPosition(
+                    this->blockBackground.setPosition(
                         this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
                         this->boardPosition.y + (ghostY + y) * BLOCK_SIZE
                     );
-                    window.draw(this->blockShape);
+                    this->blockBackground.setFillColor(ghostColor);
+                    window.draw(this->blockBackground);
                 }
             }
-
-            // Restore colors for actual piece
-            this->blockShape.setOutlineColor(Color(50, 50, 50));
         }
 
         // Draw actual tetromino piece with progressive texture loading
@@ -88,10 +87,13 @@ public:
                 if (shape[y][x] == 0)
                     continue;
 
-                this->blockShape.setPosition(
-                    this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
-                    this->boardPosition.y + (gridY + y) * BLOCK_SIZE
-                );
+                auto posX = this->boardPosition.x + (gridX + x) * BLOCK_SIZE;
+                auto posY = this->boardPosition.y + (gridY + y) * BLOCK_SIZE;
+
+                // Draw solid color background first for vibrant colors
+                this->blockBackground.setPosition(posX, posY);
+                this->blockBackground.setFillColor(this->color);
+                window.draw(this->blockBackground);
 
                 // Use assigned texture index for this cell
                 auto textureIdx = this->cellTextureIndices[y][x];
@@ -100,22 +102,14 @@ public:
                     auto texture = assetManager.getTexture(textureName);
 
                     if (texture) {
-                        // Texture is loaded - use it with semi-transparent color tint
+                        // Texture is loaded - draw semi-transparent layer on top
+                        this->blockShape.setPosition(posX, posY);
                         this->blockShape.setTexture(texture.get());
-                        auto transparentColor = Color(this->color.r, this->color.g, this->color.b, 180);
+                        auto transparentColor = Color(255, 255, 255, 180);
                         this->blockShape.setFillColor(transparentColor);
-                    } else {
-                        // Texture not loaded yet - use solid color fallback
-                        this->blockShape.setTexture(nullptr);
-                        this->blockShape.setFillColor(this->color);
+                        window.draw(this->blockShape);
                     }
-                } else {
-                    // No texture assigned - use solid color
-                    this->blockShape.setTexture(nullptr);
-                    this->blockShape.setFillColor(this->color);
                 }
-
-                window.draw(this->blockShape);
             }
         }
     }

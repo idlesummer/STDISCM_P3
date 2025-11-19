@@ -14,6 +14,7 @@ class Board : public Entity {
 private:
     TetrisBoard* tetrisBoard; // Non-owning pointer to game logic
     RectangleShape blockShape;
+    RectangleShape blockBackground;  // Solid color background for vibrant colors
     RectangleShape borderShape;
     Vector2f boardPosition;
 
@@ -36,10 +37,13 @@ public:
         // Position board in center-left of screen
         this->boardPosition = Vector2f(50.0f, 50.0f);
 
-        // Setup block shape template
-        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 2.0f, BLOCK_SIZE - 2.0f));
-        this->blockShape.setOutlineThickness(2.0f);
-        this->blockShape.setOutlineColor(Color(0, 0, 0));
+        // Setup block background (solid color for vibrant display)
+        this->blockBackground.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+        this->blockBackground.setOutlineThickness(0.0f);
+
+        // Setup block shape template (transparent textured layer)
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+        this->blockShape.setOutlineThickness(0.0f);
 
         // Setup border
         this->borderShape.setSize(Vector2f(BOARD_WIDTH * BLOCK_SIZE, BOARD_HEIGHT * BLOCK_SIZE));
@@ -86,9 +90,13 @@ public:
 
                     auto posX = this->boardPosition.x + x * BLOCK_SIZE;
                     auto posY = this->boardPosition.y + y * BLOCK_SIZE;
-                    this->blockShape.setPosition(posX, posY);
 
                     auto cellColor = this->getColorFromIndex(grid[y][x]);
+
+                    // Draw solid color background first for vibrant colors
+                    this->blockBackground.setPosition(posX, posY);
+                    this->blockBackground.setFillColor(cellColor);
+                    window.draw(this->blockBackground);
 
                     // Use stored texture index for this cell
                     if (this->textureIndices[y][x] >= 0 && !textureNames.empty()) {
@@ -97,22 +105,14 @@ public:
                         auto texture = assetManager.getTexture(textureName);
 
                         if (texture) {
-                            // Texture is loaded - use it with semi-transparent color tint
+                            // Texture is loaded - draw semi-transparent layer on top
+                            this->blockShape.setPosition(posX, posY);
                             this->blockShape.setTexture(texture.get());
-                            auto transparentColor = Color(cellColor.r, cellColor.g, cellColor.b, 180);
+                            auto transparentColor = Color(255, 255, 255, 180);
                             this->blockShape.setFillColor(transparentColor);
-                        } else {
-                            // Texture not loaded yet - use solid color fallback
-                            this->blockShape.setTexture(nullptr);
-                            this->blockShape.setFillColor(cellColor);
+                            window.draw(this->blockShape);
                         }
-                    } else {
-                        // No texture assigned - use solid color
-                        this->blockShape.setTexture(nullptr);
-                        this->blockShape.setFillColor(cellColor);
                     }
-
-                    window.draw(this->blockShape);
                 }
             }
         }
