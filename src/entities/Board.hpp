@@ -15,10 +15,12 @@ private:
     RectangleShape blockShape;
     RectangleShape borderShape;
     Vector2f boardPosition;
+    const Texture* blockTexture; // Optional texture for blocks
 
 public:
-    Board(TetrisBoard* board)
+    Board(TetrisBoard* board, const Texture* texture = nullptr)
         : tetrisBoard(board),
+          blockTexture(texture),
           blockShape(),
           borderShape(),
           boardPosition() {
@@ -30,6 +32,12 @@ public:
 
         // Setup block shape template
         this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+
+        // Apply optional texture
+        if (this->blockTexture) {
+            this->blockShape.setTexture(this->blockTexture);
+        }
+
         this->blockShape.setOutlineThickness(1.0f);
         this->blockShape.setOutlineColor(Color(50, 50, 50));
 

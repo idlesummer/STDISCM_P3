@@ -28,6 +28,10 @@ private:
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
 
+    // Optional block texture
+    Texture blockTexture;
+    bool hasTexture;
+
     // SFML-specific state (not game logic)
     Time fallTimer;
     Time fallInterval;
@@ -43,6 +47,8 @@ public:
           titleText(),
           gameOverText(),
           controlsText(),
+          blockTexture(),
+          hasTexture(false),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)) {
     }
@@ -51,8 +57,17 @@ public:
         // Initialize game engine
         this->engine.start();
 
+        // Try to load optional block texture
+        this->hasTexture = this->blockTexture.loadFromFile("assets/images/icons/tile000.png");
+        if (!this->hasTexture) {
+            // Silently fall back to solid color rendering
+        }
+
         // Create board entity (renders engine's board)
-        this->board = make_shared<Board>(&this->engine.getBoard());
+        this->board = make_shared<Board>(
+            &this->engine.getBoard(),
+            this->hasTexture ? &this->blockTexture : nullptr
+        );
         this->addEntity(this->board);
 
         // Create UI
@@ -151,10 +166,11 @@ private:
         if (this->engine.getActivePiece()) {
             
             // Create visual entity if none exists
-            if (!this->activePiece) {   
+            if (!this->activePiece) {
                 this->activePiece = make_shared<Tetromino>(
                     this->engine.getActivePiece(),
-                    this->board.get()
+                    this->board.get(),
+                    this->hasTexture ? &this->blockTexture : nullptr
                 );
                 this->addEntity(this->activePiece);
             } 

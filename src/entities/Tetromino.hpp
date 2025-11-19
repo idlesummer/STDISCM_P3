@@ -19,11 +19,13 @@ private:
     RectangleShape blockShape;
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
+    const Texture* blockTexture;     // Optional texture for blocks
 
 public:
-    Tetromino(const TetrisPiece* piece, Board* board)
+    Tetromino(const TetrisPiece* piece, Board* board, const Texture* texture = nullptr)
         : tetrisPiece(piece),
           board(board),
+          blockTexture(texture),
           color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
           boardPosition() {
@@ -34,6 +36,12 @@ public:
 
         // Setup block rendering
         this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+
+        // Apply optional texture
+        if (this->blockTexture) {
+            this->blockShape.setTexture(this->blockTexture);
+        }
+
         this->blockShape.setFillColor(this->color);
         this->blockShape.setOutlineThickness(1.0f);
         this->blockShape.setOutlineColor(Color(50, 50, 50));
