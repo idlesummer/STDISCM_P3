@@ -58,13 +58,12 @@ public:
         this->addEntity(this->board);
 
         // Create UI
+        auto text = "Arrow Keys: Move/Rotate | Space: Hard Drop | Shift: Hold";
         this->scoreDisplay = make_shared<TetrisScoreText>(Vector2f(400, 50));
         this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
         this->holdPreview = make_shared<HoldPiecePreview>(Vector2f(400, 320));
         this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
-        this->controlsText = make_shared<MenuText>(
-            "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | Shift: Hold | ESC: Quit",
-            Vector2f(50, 650), 16);
+        this->controlsText = make_shared<MenuText>(text, Vector2f(50, 660), 16);
 
         this->addEntity(this->scoreDisplay);
         this->addEntity(this->nextPreview);
@@ -151,19 +150,23 @@ private:
         this->holdPreview->setHeldPiece(this->engine.getHeldPieceType());
         this->holdPreview->setLocked(!this->engine.canHold());
 
-        // Create/update active piece rendering entity
+        // If engine has an active piece, syn visual entity
         if (this->engine.getActivePiece()) {
-            if (!this->activePiece) {
-                // Create new rendering entity
+            
+            // Create visual entity if none exists
+            if (!this->activePiece) {   
                 this->activePiece = make_shared<Tetromino>(
                     this->engine.getActivePiece(),
                     this->board.get()
                 );
                 this->addEntity(this->activePiece);
-            } else {
-                // Update existing entity
+            } 
+
+            // Otherwise, update existing entity
+            else    
                 this->activePiece->setPiece(this->engine.getActivePiece());
-            }
+
+        // Elif engine doesn't hav active piece, remove entity
         } else if (this->activePiece) {
             // Remove active piece entity
             this->removeEntity(this->activePiece);
@@ -172,7 +175,7 @@ private:
     }
 
     void lockPiece() {
-        int linesCleared = this->engine.lockCurrentPiece();
+        auto linesCleared = this->engine.lockCurrentPiece();
 
         // Update score if lines were cleared
         if (linesCleared > 0)
