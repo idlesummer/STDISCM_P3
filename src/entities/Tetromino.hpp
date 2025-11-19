@@ -58,11 +58,11 @@ public:
         auto& assetManager = AssetManager::getInstance();
         const auto& textureNames = assetManager.getTextureNames();
         const auto& shape = this->tetrisPiece->getShape();
-        int gridX = this->tetrisPiece->getX();
-        int gridY = this->tetrisPiece->getY();
+        auto gridX = this->tetrisPiece->getX();
+        auto gridY = this->tetrisPiece->getY();
 
         // Draw ghost piece (shadow) first - without texture
-        int ghostY = this->tetrisPiece->calculateGhostY();
+        auto ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
 
@@ -82,7 +82,7 @@ public:
         }
 
         // Draw actual tetromino piece with progressive texture loading
-        size_t cellIndex = 0;
+        auto cellIndex = size_t(0);
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
@@ -135,12 +135,9 @@ public:
 private:
     // Assign unique texture indices to each cell of the tetromino
     void assignTextureIndices() {
-        for (auto y = 0; y < 4; y++) {
-            for (auto x = 0; x < 4; x++) {
-                // Assign sequential texture indices for variety
+        for (auto y = 0; y < 4; y++)
+            for (auto x = 0; x < 4; x++)    // Assign sequential texture indices for variety
                 this->cellTextureIndices[y][x] = static_cast<int>(nextTextureIndex++);
-            }
-        }
     }
 };
 
