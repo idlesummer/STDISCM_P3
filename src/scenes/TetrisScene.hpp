@@ -31,10 +31,6 @@ private:
     shared_ptr<MenuText> controlsText;
     shared_ptr<LoadingProgressBar> loadingProgressBar;
 
-    // Optional block texture
-    Texture blockTexture;
-    bool hasTexture;
-
     // SFML-specific state (not game logic)
     Time fallTimer;
     Time fallInterval;
@@ -51,8 +47,6 @@ public:
           gameOverText(),
           controlsText(),
           loadingProgressBar(),
-          blockTexture(),
-          hasTexture(false),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)) {
     }
@@ -64,17 +58,8 @@ public:
         // Queue all existing textures for background loading
         AssetManager::getInstance().loadAllTextures();
 
-        // Try to load optional block texture
-        this->hasTexture = this->blockTexture.loadFromFile("assets/images/icons/tile000.png");
-        if (!this->hasTexture) {
-            // Silently fall back to solid color rendering
-        }
-
         // Create board entity (renders engine's board)
-        this->board = make_shared<Board>(
-            &this->engine.getBoard(),
-            this->hasTexture ? &this->blockTexture : nullptr
-        );
+        this->board = make_shared<Board>(&this->engine.getBoard());
         this->addEntity(this->board);
 
         // Create UI
@@ -178,8 +163,7 @@ private:
             if (!this->activePiece) {
                 this->activePiece = make_shared<Tetromino>(
                     this->engine.getActivePiece(),
-                    this->board.get(),
-                    this->hasTexture ? &this->blockTexture : nullptr
+                    this->board.get()
                 );
                 this->addEntity(this->activePiece);
             } 
@@ -197,6 +181,26 @@ private:
     }
 
     void lockPiece() {
+        // Transfer texture indices from active piece to board before locking
+        if (this->activePiece && this->engine.getActivePiece()) {
+            const auto* piece = this->engine.getActivePiece();
+            const auto& shape = piece->getShape();
+            int gridX = piece->getX();
+            int gridY = piece->getY();
+
+            // Transfer texture index for each filled cell
+            for (auto y = 0; y < 4; y++) {
+                for (auto x = 0; x < 4; x++) {
+                    if (shape[y][x] != 0) {
+                        int boardX = gridX + x;
+                        int boardY = gridY + y;
+                        int textureIdx = this->activePiece->getTextureIndexForCell(x, y);
+                        this->board->setTextureForCell(boardX, boardY, textureIdx);
+                    }
+                }
+            }
+        }
+
         auto linesCleared = this->engine.lockCurrentPiece();
 
         // Update score if lines were cleared
