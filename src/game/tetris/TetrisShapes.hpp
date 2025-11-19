@@ -28,28 +28,24 @@ struct TetrominoData {
     auto rotate() const {
         auto rotated = TetrisShape();
 
-        // nullopt pivot means rotate entire 4x4 matrix (for 3x3 shapes centered at 1,1)
-        if (!pivot.has_value()) {
+        if (!pivot.has_value()) {   // For 4x4 shapes
             for (auto y = 0; y < 4; y++)
                 for (auto x = 0; x < 4; x++) // Rotate entire 4x4 matrix: (x, y) to (3-y, x)
                     rotated[x][3 - y] = shape[y][x];
             return rotated;
         }
 
-        // Standard pivot-based rotation for I and O pieces
         auto [px, py] = pivot.value();
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
-                if (shape[y][x] == 0)
-                    continue;
+                if (shape[y][x] == 0) continue;
 
                 // Translate to pivot
                 auto dx = x - px;
                 auto dy = y - py;
 
                 // Rotate 90 degrees clockwise: (x, y) -> (-y, x)
-                // (In screen coordinates where y increases downward)
-                auto rx = -dy;
+                auto rx = -dy;  
                 auto ry = dx;
 
                 // Translate back
@@ -91,7 +87,7 @@ const auto O_PIECE = TetrominoData{
 
 const auto T_PIECE = TetrominoData{
     .type = 'T',
-    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},
     .shape = {{
         {0, 1, 0, 0},
         {1, 1, 1, 0},
@@ -102,7 +98,7 @@ const auto T_PIECE = TetrominoData{
 
 const auto S_PIECE = TetrominoData{
     .type = 'S',
-    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},
     .shape = {{
         {0, 1, 1, 0},
         {1, 1, 0, 0},
@@ -113,7 +109,7 @@ const auto S_PIECE = TetrominoData{
 
 const auto Z_PIECE = TetrominoData{
     .type = 'Z',
-    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},
     .shape = {{
         {1, 1, 0, 0},
         {0, 1, 1, 0},
@@ -124,7 +120,7 @@ const auto Z_PIECE = TetrominoData{
 
 const auto J_PIECE = TetrominoData{
     .type = 'J',
-    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},
     .shape = {{
         {0, 0, 1, 0},
         {1, 1, 1, 0},
@@ -135,7 +131,7 @@ const auto J_PIECE = TetrominoData{
 
 const auto L_PIECE = TetrominoData{
     .type = 'L',
-    .pivot = {{1, 1}},  // 3x3 shape centered at (1,1)
+    .pivot = {{1, 1}},
     .shape = {{
         {1, 0, 0, 0},
         {1, 1, 1, 0},
@@ -149,6 +145,11 @@ class TetrominoType {
 public:
     static constexpr auto ALL_TYPES = array<char, 7>{'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
     static constexpr auto TYPE_COUNT = 7;
+
+    // Deleted constructors (static class only)
+    TetrominoType() = delete;
+    TetrominoType(const TetrominoType&) = delete;
+    TetrominoType& operator=(const TetrominoType&) = delete;
 
     static auto getData(char type) -> TetrominoData {
         switch (type) {
@@ -187,9 +188,4 @@ public:
     static auto isValid(char type) -> bool {
         return ranges::find(ALL_TYPES, type) != ranges::end(ALL_TYPES);
     }
-
-    // Deleted constructors (static class only)
-    TetrominoType() = delete;
-    TetrominoType(const TetrominoType&) = delete;
-    TetrominoType& operator=(const TetrominoType&) = delete;
 };
