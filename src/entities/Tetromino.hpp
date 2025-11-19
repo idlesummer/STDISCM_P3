@@ -24,7 +24,7 @@ private:
 
     // Store texture index for each cell in the 4x4 shape
     array<array<int, 4>, 4> cellTextureIndices;
-    static size_t nextTextureIndex; // Global counter for assigning unique textures
+    inline static size_t nextTextureIndex = 0; // Global counter for assigning unique textures
 
 public:
     Tetromino(const TetrisPiece* piece, Board* board)
@@ -62,10 +62,13 @@ public:
         auto gridX = this->tetrisPiece->getX();
         auto gridY = this->tetrisPiece->getY();
 
-        // Draw ghost piece (shadow) first - without texture
+        // Draw ghost piece (shadow) first - without texture or borders
         auto ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
+
+            // Remove borders for ghost piece
+            this->blockBackground.setOutlineThickness(0.0f);
 
             for (auto y = 0; y < 4; y++) {
                 for (auto x = 0; x < 4; x++) {
@@ -80,6 +83,9 @@ public:
                     window.draw(this->blockBackground);
                 }
             }
+
+            // Restore borders for actual pieces
+            this->blockBackground.setOutlineThickness(1.0f);
         }
 
         // Draw actual tetromino piece with progressive texture loading
@@ -141,6 +147,3 @@ private:
                 this->cellTextureIndices[y][x] = static_cast<int>(nextTextureIndex++);
     }
 };
-
-// Initialize static member
-size_t Tetromino::nextTextureIndex = 0;
