@@ -47,7 +47,7 @@ class AssetManager {
         vector<char> fileData;  // Raw file bytes loaded in background
     };
     queue<PendingAsset> pendingAssets;
-    mutex pendingMutex;         // Protects pendingAssets queue
+    mutable mutex pendingMutex;  // Protects pendingAssets queue
 
     AssetManager()
         : loadingPool(thread::hardware_concurrency()),
@@ -127,7 +127,7 @@ public:
     }
 
     auto getPendingAssetCount() const {
-        auto lock = lock_guard<mutex>(const_cast<mutex&>(this->pendingMutex));
+        auto lock = lock_guard<mutex>(this->pendingMutex);
         return this->pendingAssets.size();
     }
 
