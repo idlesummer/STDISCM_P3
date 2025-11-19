@@ -59,20 +59,17 @@ public:
 
         // Create UI
         this->scoreDisplay = make_shared<TetrisScoreText>(Vector2f(400, 50));
-        this->addEntity(this->scoreDisplay);
-
         this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
-        this->addEntity(this->nextPreview);
-
         this->holdPreview = make_shared<HoldPiecePreview>(Vector2f(400, 320));
-        this->addEntity(this->holdPreview);
-
         this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
-        this->addEntity(this->titleText);
-
         this->controlsText = make_shared<MenuText>(
             "Arrow Keys/WASD: Move/Rotate | Space: Hard Drop | Shift: Hold | ESC: Quit",
             Vector2f(50, 650), 16);
+
+        this->addEntity(this->scoreDisplay);
+        this->addEntity(this->nextPreview);
+        this->addEntity(this->holdPreview);
+        this->addEntity(this->titleText);
         this->addEntity(this->controlsText);
 
         // Sync UI with engine state
@@ -89,23 +86,21 @@ public:
         if (event.type == Event::KeyPressed) {
             switch (event.key.code) {
                 default: break;
+                case Keyboard::Escape: break;
 
                 case Keyboard::Left:
-                    this->engine.moveLeft();
-                    break;
+                    this->engine.moveLeft(); break;
 
                 case Keyboard::Right:
-                    this->engine.moveRight();
-                    break;
+                    this->engine.moveRight(); break;
 
                 case Keyboard::Down:
-                    if (this->engine.softDrop())
-                        this->fallTimer = Time::Zero; // Reset fall timer on manual drop
+                    if (this->engine.softDrop())        // Reset fall timer on manual drop
+                        this->fallTimer = Time::Zero; 
                     break;
 
                 case Keyboard::Up:
-                    this->engine.rotate();
-                    break;
+                    this->engine.rotate(); break;
 
                 case Keyboard::Space:
                     this->engine.hardDrop();
@@ -117,10 +112,6 @@ public:
                         this->syncVisualState();
                         this->fallTimer = Time::Zero;
                     }
-                    break;
-
-                case Keyboard::Escape:
-                    // TODO: Add pause or quit functionality
                     break;
             }
         }
