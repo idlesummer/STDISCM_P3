@@ -50,26 +50,26 @@ public:
     // Rotate clockwise with wall kick support
     auto rotate() {
         auto pieceData = TetrominoType::getData(this->type);
-        TetrisShape rotated = TetrominoData{this->type, pieceData.pivot, this->currentShape}.rotate();
+        auto rotatedShape = TetrominoData{this->type, pieceData.pivot, this->currentShape}.rotate();
 
         if (!this->board)
             return false;
 
         // Try basic rotation
-        if (this->board->isValidPosition(rotated, this->gridX, this->gridY)) {
-            this->currentShape = rotated;
+        if (this->board->isValidPosition(rotatedShape, this->gridX, this->gridY)) {
+            this->currentShape = rotatedShape;
             return true;
         }
 
         // Try wall kicks (simple version - just try moving left or right)
-        if (this->board->isValidPosition(rotated, this->gridX - 1, this->gridY)) {
-            this->currentShape = rotated;
+        if (this->board->isValidPosition(rotatedShape, this->gridX - 1, this->gridY)) {
+            this->currentShape = rotatedShape;
             this->gridX--;
             return true;
         }
 
-        if (this->board->isValidPosition(rotated, this->gridX + 1, this->gridY)) {
-            this->currentShape = rotated;
+        if (this->board->isValidPosition(rotatedShape, this->gridX + 1, this->gridY)) {
+            this->currentShape = rotatedShape;
             this->gridX++;
             return true;
         }
