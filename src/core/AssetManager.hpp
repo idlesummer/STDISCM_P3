@@ -53,7 +53,16 @@ class AssetManager {
     queue<PendingAsset> pendingAssets;
     mutex pendingMutex;  // Protects pendingAssets queue
 
-    AssetManager() : loadingPool(thread::hardware_concurrency()), totalTextureCount(0), totalFontCount(0) {
+    AssetManager()
+        : loadingPool(thread::hardware_concurrency()),
+          textureCache(),
+          fontCache(),
+          textureOrder(),
+          fontOrder(),
+          totalTextureCount(0),
+          totalFontCount(0),
+          pendingAssets(),
+          pendingMutex() {
     }
 
 
