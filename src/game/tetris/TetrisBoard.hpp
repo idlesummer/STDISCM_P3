@@ -83,29 +83,12 @@ public:
         auto cleared = 0;
 
         for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0; y--) {
-            auto isComplete = true;
-
-            for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++) {
-                if (!this->isOccupied(x, y)) {
-                    isComplete = false;
-                    break;
-                }
-            }
-
-            if (!isComplete)
+            if (!this->isRowComplete(y))
                 continue;
 
             cleared++;
             this->totalLinesCleared++;
-
-            // Shift all rows above down
-            for (auto shiftY = y; shiftY > 0; shiftY--)
-                for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++)
-                    this->grid[shiftY][x] = this->grid[shiftY - 1][x];
-
-            // Clear top row
-            for (int x = 0; x < TETRIS_BOARD_WIDTH; x++) 
-                this->grid[0][x] = 0;
+            this->clearRow(y);
 
             // Check same row again since we shifted
             y++;
@@ -142,5 +125,27 @@ public:
     // Check if a cell is occupied (non-zero value)
     auto isOccupied(int x, int y) const -> bool {
         return this->isInBounds(x, y) && this->grid[y][x] != 0;
+    }
+
+private:
+    // Check if a row is completely filled
+    bool isRowComplete(int y) const {
+        for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++) {
+            if (!this->isOccupied(x, y))
+                return false;
+        }
+        return true;
+    }
+
+    // Clear a row by shifting all rows above it down
+    void clearRow(int y) {
+        // Shift all rows above down
+        for (auto shiftY = y; shiftY > 0; shiftY--)
+            for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++)
+                this->grid[shiftY][x] = this->grid[shiftY - 1][x];
+
+        // Clear top row
+        for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++)
+            this->grid[0][x] = 0;
     }
 };
