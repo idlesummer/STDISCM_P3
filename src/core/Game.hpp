@@ -20,9 +20,6 @@ public:
         : window(VideoMode(width, height), title), activeScene(nullptr) {
 
         this->window.setFramerateLimit(165);
-
-        // Start background loading of all game assets
-        AssetManager::getInstance().preloadAllAssets();
     }
 
     // Scene management (like React Router navigation)

@@ -18,15 +18,23 @@ using namespace sf;
  * AssetManager - Singleton texture/icon loading and caching system (header-only)
  *
  * Features:
- * - Background texture loading using ThreadPool (doesn't block main game loop)
+ * - On-demand background texture loading using ThreadPool (doesn't block main game loop)
  * - O(1) lookup performance with insertion order preservation
  * - Thread-safe two-phase loading (file I/O in background, SFML creation on main thread)
  * - Automatic resource caching and sharing to prevent duplicate loads
  *
  * Usage:
- *   AssetManager::getInstance().preloadAllAssets();  // Start background loading
- *   AssetManager::getInstance().update();            // Call each frame
- *   auto texture = AssetManager::getInstance().getTexture("tile.png");
+ *   // Request texture to load in background
+ *   AssetManager::getInstance().loadTexture("tile000.png");
+ *
+ *   // In game loop - process loaded textures (call each frame)
+ *   AssetManager::getInstance().update();
+ *
+ *   // Retrieve loaded texture (returns nullptr if not ready yet)
+ *   auto texture = AssetManager::getInstance().getTexture("tile000.png");
+ *   if (texture) {
+ *       sprite.setTexture(*texture);
+ *   }
  */
 class AssetManager {
     // Thread pool for background file loading
@@ -71,17 +79,46 @@ public:
     auto operator=(AssetManager&&) -> AssetManager& = delete;
 
     /**
-     * Start loading all known textures/icons in background
-     * Call this once during game initialization
+     * Request a texture to be loaded asynchronously in background
+     * Safe to call multiple times with same filename (will only load once)
+     * @param filename Texture filename relative to assets/images/icons/
      */
-    void preloadAllAssets() {
-        // Preload all known textures used by the game
-        // Textures are discovered from current codebase usage
+    void loadTexture(const string& filename) {
+        // Skip if already loaded or pending
+        if (this->isTextureLoaded(filename)) {
+            return;
+        }
 
-        // Tetris block textures
-        this->loadTextureAsync("tile000.png");
+        this->totalTextureCount++;
 
-        cout << "[AssetManager] Started background loading of textures..." << endl;
+        // Enqueue background task to load texture file data
+        this->loadingPool.enqueue([this, filename]() {
+            auto fullPath = "assets/images/icons/" + filename;
+
+            // Read file into memory (runs on background thread)
+            auto file = ifstream(fullPath, ios::binary | ios::ate);
+            if (!file.is_open()) {
+                cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
+                return;
+            }
+
+            auto size = file.tellg();
+            file.seekg(0, ios::beg);
+
+            auto buffer = vector<char>(size);
+            if (!file.read(buffer.data(), size)) {
+                cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
+                return;
+            }
+
+            // Add to pending queue (will be processed on main thread)
+            {
+                auto lock = lock_guard<mutex>(this->pendingMutex);
+                this->pendingAssets.push({filename, move(buffer)});
+            }
+
+            cout << "[AssetManager] Loaded texture data: " << filename << " (" << size << " bytes)" << endl;
+        });
     }
 
     /**
@@ -165,39 +202,6 @@ public:
     }
 
 private:
-    void loadTextureAsync(const string& filename) {
-        this->totalTextureCount++;  // Track total assets queued
-
-        // Enqueue background task to load texture file data
-        this->loadingPool.enqueue([this, filename]() {
-            auto fullPath = "assets/images/icons/" + filename;
-
-            // Read file into memory (runs on background thread)
-            auto file = ifstream(fullPath, ios::binary | ios::ate);
-            if (!file.is_open()) {
-                cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
-                return;
-            }
-
-            auto size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            auto buffer = vector<char>(size);
-            if (!file.read(buffer.data(), size)) {
-                cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
-                return;
-            }
-
-            // Add to pending queue (will be processed on main thread)
-            {
-                auto lock = lock_guard<mutex>(this->pendingMutex);
-                this->pendingAssets.push({filename, move(buffer)});
-            }
-
-            cout << "[AssetManager] Loaded texture data: " << filename << " (" << size << " bytes)" << endl;
-        });
-    }
-
     void processPendingAssets() {
         // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
