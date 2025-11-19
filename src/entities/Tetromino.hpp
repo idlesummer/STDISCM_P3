@@ -22,8 +22,8 @@ private:
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
 
-    // Store texture index for the 4x4 shape (same index for all cells of one piece)
-    array<array<int, 4>, 4> cellTextureIndices;
+    // Store single texture index for this piece (all cells share the same texture)
+    int pieceTextureIndex;
     inline static size_t nextTextureIndex = 0; // Global counter for unique texture per piece
 
 public:
@@ -32,10 +32,8 @@ public:
           board(board),
           color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
-          boardPosition() {
-
-        // Assign one unique texture for all cells of this piece
-        this->assignTextureIndices();
+          boardPosition(),
+          pieceTextureIndex(static_cast<int>(nextTextureIndex++)) {
     }
 
     void onCreate() override {
@@ -89,7 +87,6 @@ public:
         }
 
         // Draw actual tetromino piece with progressive texture loading
-        auto cellIndex = size_t(0);
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
@@ -103,10 +100,9 @@ public:
                 this->blockBackground.setFillColor(this->color);
                 window.draw(this->blockBackground);
 
-                // Use assigned texture index for this cell
-                auto textureIdx = this->cellTextureIndices[y][x];
-                if (textureIdx >= 0 && !textureNames.empty()) {
-                    auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
+                // Use piece texture index for all filled cells
+                if (this->pieceTextureIndex >= 0 && !textureNames.empty()) {
+                    auto textureName = textureNames[static_cast<size_t>(this->pieceTextureIndex) % textureNames.size()];
                     auto texture = assetManager.getTexture(textureName);
 
                     if (texture) {
@@ -127,37 +123,18 @@ public:
         this->tetrisPiece = piece;
         if (piece) {
             this->color = getTetrominoColor(piece->getType());
-            this->assignTextureIndices(); // Assign new texture for new piece
+            this->pieceTextureIndex = static_cast<int>(nextTextureIndex++); // Assign new texture for new piece
         }
     }
 
     // Get texture index for a specific cell (for transferring to board on lock)
     auto getTextureIndexForCell(int x, int y) const -> int {
-        return (x >= 0 && x < 4 && y >= 0 && y < 4)
-            ? this->cellTextureIndices[y][x]
-            : -1;
-    }
+        if (!this->tetrisPiece || x < 0 || x >= 4 || y < 0 || y >= 4)
+            return -1;
 
-private:
-    // Assign one texture index for the entire tetromino piece
-    // All cells of the same piece share the same texture
-    void assignTextureIndices() {
-        if (!this->tetrisPiece)
-            return;
-
-        // Get one texture index for this entire piece
-        auto pieceTextureIndex = static_cast<int>(nextTextureIndex++);
+        // Return piece texture index if this cell is filled in the current shape
         const auto& shape = this->tetrisPiece->getShape();
-
-        // Initialize all cells to -1 (no texture)
-        for (auto y = 0; y < 4; y++)
-            for (auto x = 0; x < 4; x++)
-                this->cellTextureIndices[y][x] = -1;
-
-        // Assign the same texture index to all filled cells of this piece
-        for (auto y = 0; y < 4; y++)
-            for (auto x = 0; x < 4; x++)
-                if (shape[y][x] != 0)
-                    this->cellTextureIndices[y][x] = pieceTextureIndex;
+        return (shape[y][x] != 0) ? this->pieceTextureIndex : -1;
     }
+
 };
