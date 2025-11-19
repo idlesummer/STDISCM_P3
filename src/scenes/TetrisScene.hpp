@@ -55,7 +55,7 @@ public:
           iconScrollDisplay(),
           fpsCounter(),
           fallTimer(Time::Zero),
-          fallInterval(seconds(1.0f)),
+          fallInterval(sf::seconds(1.0f)),
           showingIcons(false) {
     }
 
