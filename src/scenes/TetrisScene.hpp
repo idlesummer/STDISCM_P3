@@ -72,7 +72,7 @@ public:
         this->scoreDisplay = make_shared<TetrisScoreText>(Vector2f(400, 50));
         this->nextPreview = make_shared<NextPiecePreview>(Vector2f(400, 150));
         this->holdPreview = make_shared<HoldPiecePreview>(Vector2f(400, 320));
-        this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
+        this->titleText = make_shared<MenuText>("TETRIS", Vector2f(50, 10), 30);
         this->controlsText = make_shared<MenuText>(text, Vector2f(50, 660), 16);
         this->loadingProgressBar = make_shared<LoadingProgressBar>(Vector2f(400, 500), 200.f, 30.f);
 
@@ -264,18 +264,18 @@ private:
         if (this->loadingProgressBar) this->loadingProgressBar->setVisible(false);
         if (this->iconScrollDisplay) this->iconScrollDisplay->setVisible(false);
 
-        // Show game over text
-        this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(250, 300), 40);
+        // Show game over text (centered)
+        this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(400, 300), 40, true);
         this->addEntity(this->gameOverText);
 
         auto scoreText = make_shared<MenuText>(
-            "Final Lines: " + to_string(this->engine.getTotalLinesCleared()),
-            Vector2f(250, 360), 24);
+            "Total Lines: " + to_string(this->engine.getTotalLinesCleared()),
+            Vector2f(400, 360), 24, true);
         this->addEntity(scoreText);
 
         auto restartText = make_shared<MenuText>(
             "Press ENTER to restart",
-            Vector2f(230, 420), 20);
+            Vector2f(400, 420), 20, true);
         this->addEntity(restartText);
     }
 
