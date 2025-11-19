@@ -10,19 +10,21 @@ using namespace sf;
 using namespace Tetris;
 
 
+// SFML rendering entity for Tetromino pieces
+// Pure renderer - does not own game logic, just renders from TetrisPiece*
 class Tetromino : public Entity {
 private:
-    TetrisPiece tetrisPiece;    // Pure game logic
+    const TetrisPiece* tetrisPiece;  // Non-owning pointer to game logic
     Color color;
     RectangleShape blockShape;
-    Board* board;               // Reference to the game board for rendering position
+    Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
 
 public:
-    Tetromino(char type, Board* board)
-        : tetrisPiece(type, &board->getTetrisBoard()),
+    Tetromino(const TetrisPiece* piece, Board* board)
+        : tetrisPiece(piece),
           board(board),
-          color(getTetrominoColor(type)),
+          color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
           boardPosition() {
     }
@@ -38,12 +40,15 @@ public:
     }
 
     void onDraw(RenderWindow& window) override {
-        const auto& shape = this->tetrisPiece.getShape();
-        int gridX = this->tetrisPiece.getX();
-        int gridY = this->tetrisPiece.getY();
+        if (!this->tetrisPiece)
+            return;
+
+        const auto& shape = this->tetrisPiece->getShape();
+        int gridX = this->tetrisPiece->getX();
+        int gridY = this->tetrisPiece->getY();
 
         // Draw ghost piece (shadow) first
-        int ghostY = this->tetrisPiece.calculateGhostY();
+        int ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
             this->blockShape.setFillColor(ghostColor);
@@ -82,37 +87,10 @@ public:
         }
     }
 
-    // Delegate movement methods to TetrisPiece
-    auto moveLeft() {
-        return this->tetrisPiece.moveLeft();
+    // Update the piece being rendered (for when engine spawns new piece)
+    void setPiece(const TetrisPiece* piece) {
+        this->tetrisPiece = piece;
+        if (piece)
+            this->color = getTetrominoColor(piece->getType());
     }
-
-    auto moveRight() {
-        return this->tetrisPiece.moveRight();
-    }
-
-    auto moveDown() {
-        return this->tetrisPiece.moveDown();
-    }
-
-    auto rotate() {
-        return this->tetrisPiece.rotate();
-    }
-
-    void hardDrop() {
-        this->tetrisPiece.hardDrop();
-    }
-
-    void placeOnBoard() {
-        this->tetrisPiece.placeOnBoard();
-    }
-
-    auto canSpawn() const {
-        return this->tetrisPiece.canSpawn();
-    }
-
-    // Getters
-    auto getType() const { return this->tetrisPiece.getType(); }
-    auto getGridX() const { return this->tetrisPiece.getX(); }
-    auto getGridY() const { return this->tetrisPiece.getY(); }
 };

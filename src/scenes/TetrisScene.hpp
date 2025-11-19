@@ -1,21 +1,24 @@
 #pragma once
 #include "../core/Scene.hpp"
+#include "../game/tetris/TetrisEngine.hpp"
 #include "../entities/Board.hpp"
 #include "../entities/Tetromino.hpp"
 #include "../entities/TetrisScoreText.hpp"
 #include "../entities/NextPiecePreview.hpp"
 #include "../entities/HoldPiecePreview.hpp"
 #include "../entities/MenuText.hpp"
-#include "../utils/TetrominoShapes.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
 using namespace std;
 using namespace sf;
-using namespace Tetris;
 
 class TetrisScene : public Scene {
 private:
+    // Game engine (owns all game logic)
+    TetrisEngine engine;
+
+    // SFML rendering entities
     shared_ptr<Board> board;
     shared_ptr<Tetromino> activePiece;
     shared_ptr<TetrisScoreText> scoreDisplay;
@@ -25,23 +28,15 @@ private:
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
 
-    // Game state
-    bool isGameOver;
+    // SFML-specific state (not game logic)
     bool isPaused;
-
-    // Gravity timer
     Time fallTimer;
     Time fallInterval;
 
-    char nextPieceType;
-
-    // Hold system
-    char heldPieceType;
-    bool canSwapHold;
-
 public:
     TetrisScene()
-        : board(),
+        : engine(),
+          board(),
           activePiece(),
           scoreDisplay(),
           nextPreview(),
@@ -49,18 +44,17 @@ public:
           titleText(),
           gameOverText(),
           controlsText(),
-          isGameOver(false),
           isPaused(false),
           fallTimer(Time::Zero),
-          fallInterval(seconds(1.0f)),
-          nextPieceType('\0'),
-          heldPieceType('\0'),
-          canSwapHold(true) {
+          fallInterval(seconds(1.0f)) {
     }
 
     void onCreate() override {
-        // Create board
-        this->board = make_shared<Board>();
+        // Initialize game engine
+        this->engine.start();
+
+        // Create board entity (renders engine's board)
+        this->board = make_shared<Board>(&this->engine.getBoard());
         this->addEntity(this->board);
 
         // Create UI
@@ -81,54 +75,52 @@ public:
             Vector2f(50, 650), 16);
         this->addEntity(this->controlsText);
 
-        // Generate first pieces
-        this->nextPieceType = this->getRandomPieceType();
-        this->nextPreview->setNextPiece(this->nextPieceType);
-
-        // Spawn first piece
-        this->spawnNewPiece();
+        // Sync UI with engine state
+        this->syncVisualState();
     }
 
     void onInput(Event& event) override {
-        if (this->isGameOver) { // Restart on Enter
+        if (this->engine.isGameOver()) {
             if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
                 this->restartGame();
             return;
         }
 
         if (event.type == Event::KeyPressed) {
-            if (!this->activePiece) return;
-
             switch (event.key.code) {
                 default: break;
 
                 case Keyboard::Left:
-                    this->activePiece->moveLeft();
+                    this->engine.moveLeft();
                     break;
 
                 case Keyboard::Right:
-                    this->activePiece->moveRight();
+                    this->engine.moveRight();
                     break;
 
                 case Keyboard::Down:
-                    this->activePiece->moveDown();
-                    this->fallTimer = Time::Zero; // Reset fall timer
+                    if (this->engine.softDrop())
+                        this->fallTimer = Time::Zero; // Reset fall timer on manual drop
                     break;
 
                 case Keyboard::Up:
-                    this->activePiece->rotate();
+                    this->engine.rotate();
                     break;
 
                 case Keyboard::Space:
-                    this->activePiece->hardDrop();
+                    this->engine.hardDrop();
                     this->lockPiece();
                     break;
 
                 case Keyboard::LShift:
-                    this->holdPiece();
+                    if (this->engine.hold()) {
+                        this->syncVisualState();
+                        this->fallTimer = Time::Zero;
+                    }
                     break;
 
-                case Keyboard::Escape:  // TODO: Add pause or quit functionality
+                case Keyboard::Escape:
+                    // TODO: Add pause or quit functionality
                     break;
             }
         }
@@ -138,7 +130,7 @@ public:
         // Update all entities (animations, etc.)
         this->updateEntities(dt);
 
-        if (this->isGameOver || !this->activePiece) 
+        if (this->engine.isGameOver() || !this->engine.getCurrentPiece())
             return;
 
         // Update fall timer
@@ -148,8 +140,8 @@ public:
 
         this->fallTimer = Time::Zero;
 
-        // Try to move piece down
-        if (!this->activePiece->moveDown())
+        // Try to move piece down (gravity)
+        if (!this->engine.softDrop())
             this->lockPiece();  // Piece can't move down - lock it
     }
 
@@ -159,106 +151,65 @@ public:
     }
 
 private:
-    auto getRandomPieceType() -> char {
-        return TetrominoType::random();
-    }
+    // Synchronize SFML entities with engine state
+    void syncVisualState() {
+        // Update next piece preview
+        this->nextPreview->setNextPiece(this->engine.getNextPieceType());
 
-    void spawnNewPiece() {
-        // Use the next piece
-        auto typeToSpawn = this->nextPieceType;
+        // Update hold piece preview
+        this->holdPreview->setHeldPiece(this->engine.getHeldPieceType());
+        this->holdPreview->setLocked(!this->engine.canHold());
 
-        // Generate new next piece
-        this->nextPieceType = this->getRandomPieceType();
-        this->nextPreview->setNextPiece(this->nextPieceType);
-
-        // Create the new piece
-        this->activePiece = make_shared<Tetromino>(typeToSpawn, this->board.get());
-        this->addEntity(this->activePiece);
-
-        // Check if piece can spawn (game over check)
-        if (!this->activePiece->canSpawn())
-            this->triggerGameOver();
-    }
-
-    void holdPiece() {
-        // Can't hold if no active piece or hold is locked
-        if (!this->activePiece || !this->canSwapHold)
-            return;
-
-        // Get current piece type
-        auto currentType = this->activePiece->getType();
-
-        // Remove current piece from entities
-        this->removeEntity(this->activePiece);
-        this->activePiece = nullptr;
-
-        if (this->heldPieceType == '\0') {
-            // First time holding - store current, spawn next
-            this->heldPieceType = currentType;
-            this->holdPreview->setHeldPiece(this->heldPieceType);
-            this->spawnNewPiece();
-
-        } else {
-            // Swap current with held piece
-            char temp = this->heldPieceType;
-            this->heldPieceType = currentType;
-            this->holdPreview->setHeldPiece(this->heldPieceType);
-
-            // Spawn the previously held piece
-            this->activePiece = make_shared<Tetromino>(temp, this->board.get());
-            this->addEntity(this->activePiece);
-
-            // Check if piece can spawn (game over check)
-            if (!this->activePiece->canSpawn())
-                this->triggerGameOver();
+        // Create/update active piece rendering entity
+        if (this->engine.getCurrentPiece()) {
+            if (!this->activePiece) {
+                // Create new rendering entity
+                this->activePiece = make_shared<Tetromino>(
+                    this->engine.getCurrentPiece(),
+                    this->board.get()
+                );
+                this->addEntity(this->activePiece);
+            } else {
+                // Update existing entity
+                this->activePiece->setPiece(this->engine.getCurrentPiece());
+            }
+        } else if (this->activePiece) {
+            // Remove active piece entity
+            this->removeEntity(this->activePiece);
+            this->activePiece = nullptr;
         }
-
-        // Lock hold until piece is placed
-        this->canSwapHold = false;
-        this->holdPreview->setLocked(true);
-
-        // Reset fall timer
-        this->fallTimer = Time::Zero;
     }
 
     void lockPiece() {
-        if (!this->activePiece) return;
+        int linesCleared = this->engine.lockCurrentPiece();
 
-        // Place piece on board
-        this->activePiece->placeOnBoard();
-
-        // Remove active piece
-        this->removeEntity(this->activePiece);
-        this->activePiece = nullptr;
-
-        // Clear completed lines
-        int linesCleared = this->board->clearLines();
+        // Update score if lines were cleared
         if (linesCleared > 0)
             this->scoreDisplay->addLines(linesCleared);
 
-        // Check for game over (top row occupied)
-        if (this->board->isTopRowOccupied()) {
+        // Check for game over
+        if (this->engine.isGameOver()) {
             this->triggerGameOver();
             return;
         }
 
-        // Reset hold ability for next piece
-        this->canSwapHold = true;
-        this->holdPreview->setLocked(false);
-
-        // Spawn next piece
-        this->spawnNewPiece();
+        // Sync visual state with new piece
+        this->syncVisualState();
     }
 
     void triggerGameOver() {
-        this->isGameOver = true;
+        // Remove active piece entity
+        if (this->activePiece) {
+            this->removeEntity(this->activePiece);
+            this->activePiece = nullptr;
+        }
 
         // Show game over text
         this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(250, 300), 40);
         this->addEntity(this->gameOverText);
 
         auto scoreText = make_shared<MenuText>(
-            "Final Lines: " + to_string(this->scoreDisplay->getLines()),
+            "Final Lines: " + to_string(this->engine.getTotalLinesCleared()),
             Vector2f(250, 360), 24);
         this->addEntity(scoreText);
 
@@ -272,15 +223,13 @@ private:
         // Clear all entities
         this->clearEntities();
 
-        // Reset game state
-        this->isGameOver = false;
+        // Reset engine
+        this->engine.reset();
+
+        // Reset SFML state
         this->isPaused = false;
         this->fallTimer = Time::Zero;
         this->activePiece = nullptr;
-
-        // Reset hold state
-        this->heldPieceType = '\0';
-        this->canSwapHold = true;
 
         // Recreate everything
         this->onCreate();
