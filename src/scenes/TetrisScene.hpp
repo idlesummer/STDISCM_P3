@@ -293,8 +293,7 @@ private:
             this->iconScrollDisplay->start();
         }
 
-        // Hide game elements
-        if (this->board) this->board->setVisible(false);
+        // Hide game elements (keep board visible)
         if (this->activePiece) this->activePiece->setVisible(false);
         if (this->scoreDisplay) this->scoreDisplay->setVisible(false);
         if (this->nextPreview) this->nextPreview->setVisible(false);
@@ -312,8 +311,7 @@ private:
             this->iconScrollDisplay->stop();
         }
 
-        // Show game elements
-        if (this->board) this->board->setVisible(true);
+        // Show game elements (board stays visible)
         if (this->activePiece) this->activePiece->setVisible(true);
         if (this->scoreDisplay) this->scoreDisplay->setVisible(true);
         if (this->nextPreview) this->nextPreview->setVisible(true);
