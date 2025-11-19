@@ -176,6 +176,11 @@ private:
     void processPendingAssets() {
         // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
+        //
+        // Why not just call loadFromFile() on background threads?
+        // OpenGL doesn't allow it. GPU operations must happen on the thread that
+        // created the OpenGL context (the main thread). That's why we split loading
+        // into two phases: file I/O (background) and texture creation (main thread).
         auto lock = lock_guard<mutex>(this->pendingMutex);
 
         while (!this->pendingAssets.empty()) {
