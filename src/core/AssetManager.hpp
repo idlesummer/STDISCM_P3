@@ -116,18 +116,15 @@ public:
         // Collect all PNG files
         auto pngFiles = vector<string>();
         for (const auto& entry : filesystem::directory_iterator(iconsPath)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".png") {
+            if (entry.is_regular_file() && entry.path().extension() == ".png")
                 pngFiles.push_back(entry.path().filename().string());
-            }
-        }
 
         // Sort files to ensure consistent loading order
         sort(pngFiles.begin(), pngFiles.end());
 
         // Queue all found textures for loading
-        for (const auto& filename : pngFiles) {
+        for (const auto& filename : pngFiles)
             this->loadTexture(filename);
-        }
 
         cout << "[AssetManager] Queued " << pngFiles.size() << " textures for loading" << endl;
         return pngFiles.size();
