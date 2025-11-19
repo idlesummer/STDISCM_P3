@@ -1,5 +1,3 @@
-Here's the complete in-depth explanation in one copyable markdown block:
-
 ```markdown
 # **Deep Dive: Parallel Asset Loading Architecture**
 
