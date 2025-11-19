@@ -65,8 +65,9 @@ public:
         if (ghostY != gridY) {  // Only draw if ghost is below current position
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
 
-            // Remove borders for ghost piece
+            // Set ghost rendering properties (no borders)
             this->blockBackground.setOutlineThickness(0.0f);
+            this->blockBackground.setFillColor(ghostColor);
 
             for (auto y = 0; y < 4; y++) {
                 for (auto x = 0; x < 4; x++) {
@@ -77,14 +78,14 @@ public:
                         this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
                         this->boardPosition.y + (ghostY + y) * BLOCK_SIZE
                     );
-                    this->blockBackground.setFillColor(ghostColor);
                     window.draw(this->blockBackground);
                 }
             }
-
-            // Restore borders for actual pieces
-            this->blockBackground.setOutlineThickness(1.0f);
         }
+
+        // Set actual piece rendering properties (with borders)
+        this->blockBackground.setOutlineThickness(1.0f);
+        this->blockBackground.setOutlineColor(Color(0, 0, 0));
 
         // Draw actual tetromino piece with progressive texture loading
         for (auto y = 0; y < 4; y++) {
