@@ -162,27 +162,17 @@ public:
      * Get loading statistics
      */
     auto getLoadedTextureCount() const -> size_t { return this->textureCache.size(); }
-    auto getPendingAssetCount() const -> size_t {
-        auto lock = lock_guard<mutex>(const_cast<mutex&>(this->pendingMutex));
-        return this->pendingAssets.size();
-    }
 
     /**
      * Get total texture count (how many textures were queued for loading)
      */
     auto getTotalTextureCount() const -> size_t { return this->totalTextureCount; }
-    auto getTotalAssetCount() const -> size_t { return this->totalTextureCount; }
-
-    /**
-     * Get loaded asset count
-     */
-    auto getLoadedAssetCount() const -> size_t { return this->textureCache.size(); }
 
     /**
      * Check if all assets have finished loading
      */
     auto isLoadingComplete() const -> bool {
-        return this->getLoadedAssetCount() == this->getTotalAssetCount();
+        return this->getLoadedTextureCount() == this->getTotalTextureCount();
     }
 
     /**
@@ -190,16 +180,9 @@ public:
      * Returns 1.0 if no assets were queued
      */
     auto getLoadingProgress() const -> float {
-        auto total = this->getTotalAssetCount();
+        auto total = this->getTotalTextureCount();
         if (total == 0) return 1.0f;
-        return static_cast<float>(this->getLoadedAssetCount()) / static_cast<float>(total);
-    }
-
-    /**
-     * Get loading progress as a percentage (0 to 100)
-     */
-    auto getLoadingProgressPercent() const -> int {
-        return static_cast<int>(this->getLoadingProgress() * 100.0f);
+        return static_cast<float>(this->getLoadedTextureCount()) / static_cast<float>(total);
     }
 
 private:
