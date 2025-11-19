@@ -87,18 +87,8 @@ public:
             auto fullPath = "assets/images/icons/" + filename;
 
             // Read file into memory (runs on background thread)
-            auto file = ifstream(fullPath, ios::binary | ios::ate);
-            if (!file.is_open()) {
-                cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
-                return;
-            }
-
-            auto size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            auto buffer = vector<char>(size);
-            if (!file.read(buffer.data(), size)) {
-                cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
+            auto buffer = readFileIntoMemory(fullPath);
+            if (buffer.empty()) {
                 return;
             }
 
@@ -108,7 +98,7 @@ public:
                 this->pendingAssets.push({filename, move(buffer)});
             }
 
-            cout << "[AssetManager] Loaded texture data: " << filename << " (" << size << " bytes)" << endl;
+            cout << "[AssetManager] Loaded texture data: " << filename << " (" << buffer.size() << " bytes)" << endl;
         });
     }
 
@@ -167,6 +157,30 @@ public:
     }
 
 private:
+    /**
+     * Read a file into memory buffer
+     * @param fullPath Absolute or relative path to file
+     * @return Vector containing file bytes, or empty vector if failed
+     */
+    static auto readFileIntoMemory(const string& fullPath) -> vector<char> {
+        auto file = ifstream(fullPath, ios::binary | ios::ate);
+        if (!file.is_open()) {
+            cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
+            return {};
+        }
+
+        auto size = file.tellg();
+        file.seekg(0, ios::beg);
+
+        auto buffer = vector<char>(size);
+        if (!file.read(buffer.data(), size)) {
+            cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
+            return {};
+        }
+
+        return buffer;
+    }
+
     void processPendingAssets() {
         // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
