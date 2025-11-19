@@ -47,7 +47,7 @@ public:
 
         while (this->window.isOpen()) {
             // Process pending assets loaded in background (non-blocking)
-            AssetManager::getInstance().update();
+            AssetManager::getInstance().update();   // Loads asset from memory into cache
 
             auto elapsed = clock.restart();
             for (lag += elapsed; lag >= TICK; lag -= TICK) {
