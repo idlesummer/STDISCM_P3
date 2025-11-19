@@ -292,6 +292,11 @@ private:
         if (this->iconScrollDisplay) {
             this->iconScrollDisplay->start();
         }
+
+        // Hide active tetromino piece
+        if (this->activePiece) {
+            this->activePiece->setVisible(false);
+        }
     }
 
     void hideIconDisplay() {
@@ -300,6 +305,11 @@ private:
         // Stop the icon scroll display
         if (this->iconScrollDisplay) {
             this->iconScrollDisplay->stop();
+        }
+
+        // Show active tetromino piece again
+        if (this->activePiece) {
+            this->activePiece->setVisible(true);
         }
     }
 };
