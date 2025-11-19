@@ -88,10 +88,10 @@ public:
         this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
         this->addEntity(this->iconScrollDisplay);
 
-        // Setup game over overlay (semi-transparent dark screen)
+        // Setup game over overlay (very dark screen)
         this->gameOverOverlay.setSize(Vector2f(800.f, 700.f));
         this->gameOverOverlay.setPosition(0.f, 0.f);
-        this->gameOverOverlay.setFillColor(Color(0, 0, 0, 180));
+        this->gameOverOverlay.setFillColor(Color(0, 0, 0, 240));
 
         // Sync UI with engine state
         this->syncVisualState();
