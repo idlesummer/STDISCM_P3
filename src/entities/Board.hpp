@@ -1,5 +1,6 @@
 #pragma once
 #include "../core/Entity.hpp"
+#include "../core/AssetManager.hpp"
 #include "../utils/TetrominoShapes.hpp"
 #include "../game/tetris/TetrisBoard.hpp"
 #include <SFML/Graphics.hpp>
@@ -15,15 +16,15 @@ private:
     RectangleShape blockShape;
     RectangleShape borderShape;
     Vector2f boardPosition;
-    const Texture* blockTexture; // Optional texture for blocks
+    size_t textureIndex; // Track which texture to use for next cell
 
 public:
-    Board(TetrisBoard* board, const Texture* texture = nullptr)
+    Board(TetrisBoard* board)
         : tetrisBoard(board),
-          blockTexture(texture),
           blockShape(),
           borderShape(),
-          boardPosition() {
+          boardPosition(),
+          textureIndex(0) {
     }
 
     void onCreate() override {
@@ -32,12 +33,6 @@ public:
 
         // Setup block shape template
         this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-
-        // Apply optional texture
-        if (this->blockTexture) {
-            this->blockShape.setTexture(this->blockTexture);
-        }
-
         this->blockShape.setOutlineThickness(1.0f);
         this->blockShape.setOutlineColor(Color(50, 50, 50));
 
@@ -73,18 +68,44 @@ public:
 
         window.draw(gridLines);
 
-        // Draw placed blocks
+        // Draw placed blocks with progressive texture loading
         if (this->tetrisBoard) {
+            auto& assetManager = AssetManager::getInstance();
+            const auto& textureNames = assetManager.getTextureNames();
             const auto& grid = this->tetrisBoard->getGrid();
+
+            size_t cellIndex = 0;
             for (auto y = 0; y < BOARD_HEIGHT; y++) {
                 for (auto x = 0; x < BOARD_WIDTH; x++) {
                     if (grid[y][x] == 0)
                         continue;
+
                     auto posX = this->boardPosition.x + x * BLOCK_SIZE;
                     auto posY = this->boardPosition.y + y * BLOCK_SIZE;
                     this->blockShape.setPosition(posX, posY);
-                    this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+
+                    // Try to get texture for this cell
+                    if (!textureNames.empty()) {
+                        auto textureName = textureNames[cellIndex % textureNames.size()];
+                        auto texture = assetManager.getTexture(textureName);
+
+                        if (texture) {
+                            // Texture is loaded - use it with white fill (no tint)
+                            this->blockShape.setTexture(texture.get());
+                            this->blockShape.setFillColor(Color::White);
+                        } else {
+                            // Texture not loaded yet - use solid color fallback
+                            this->blockShape.setTexture(nullptr);
+                            this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+                        }
+                    } else {
+                        // No textures queued - use solid color
+                        this->blockShape.setTexture(nullptr);
+                        this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+                    }
+
                     window.draw(this->blockShape);
+                    cellIndex++;
                 }
             }
         }

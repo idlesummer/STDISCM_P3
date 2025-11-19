@@ -1,5 +1,6 @@
 #pragma once
 #include "../core/Entity.hpp"
+#include "../core/AssetManager.hpp"
 #include "../utils/TetrominoShapes.hpp"
 #include "../game/tetris/TetrisPiece.hpp"
 #include "Board.hpp"
@@ -19,13 +20,11 @@ private:
     RectangleShape blockShape;
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
-    const Texture* blockTexture;     // Optional texture for blocks
 
 public:
-    Tetromino(const TetrisPiece* piece, Board* board, const Texture* texture = nullptr)
+    Tetromino(const TetrisPiece* piece, Board* board)
         : tetrisPiece(piece),
           board(board),
-          blockTexture(texture),
           color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
           boardPosition() {
@@ -36,12 +35,6 @@ public:
 
         // Setup block rendering
         this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-
-        // Apply optional texture
-        if (this->blockTexture) {
-            this->blockShape.setTexture(this->blockTexture);
-        }
-
         this->blockShape.setFillColor(this->color);
         this->blockShape.setOutlineThickness(1.0f);
         this->blockShape.setOutlineColor(Color(50, 50, 50));
@@ -51,6 +44,8 @@ public:
         if (!this->tetrisPiece)
             return;
 
+        auto& assetManager = AssetManager::getInstance();
+        const auto& textureNames = assetManager.getTextureNames();
         const auto& shape = this->tetrisPiece->getShape();
         int gridX = this->tetrisPiece->getX();
         int gridY = this->tetrisPiece->getY();
@@ -58,9 +53,7 @@ public:
         // Draw ghost piece (shadow) first - without texture
         int ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
-            // Remove texture for ghost piece
             this->blockShape.setTexture(nullptr);
-
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
             this->blockShape.setFillColor(ghostColor);
             this->blockShape.setOutlineColor(Color(80, 80, 80, 100));
@@ -78,15 +71,12 @@ public:
                 }
             }
 
-            // Restore texture and colors for actual piece
-            if (this->blockTexture) {
-                this->blockShape.setTexture(this->blockTexture);
-            }
-            this->blockShape.setFillColor(this->color);
+            // Restore colors for actual piece
             this->blockShape.setOutlineColor(Color(50, 50, 50));
         }
 
-        // Draw actual tetromino piece
+        // Draw actual tetromino piece with progressive texture loading
+        size_t cellIndex = 0;
         for (auto y = 0; y < 4; y++) {
             for (auto x = 0; x < 4; x++) {
                 if (shape[y][x] == 0)
@@ -96,7 +86,29 @@ public:
                     this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
                     this->boardPosition.y + (gridY + y) * BLOCK_SIZE
                 );
+
+                // Try to get texture for this cell
+                if (!textureNames.empty()) {
+                    auto textureName = textureNames[cellIndex % textureNames.size()];
+                    auto texture = assetManager.getTexture(textureName);
+
+                    if (texture) {
+                        // Texture is loaded - use it with white fill (no tint)
+                        this->blockShape.setTexture(texture.get());
+                        this->blockShape.setFillColor(Color::White);
+                    } else {
+                        // Texture not loaded yet - use solid color fallback
+                        this->blockShape.setTexture(nullptr);
+                        this->blockShape.setFillColor(this->color);
+                    }
+                } else {
+                    // No textures queued - use solid color
+                    this->blockShape.setTexture(nullptr);
+                    this->blockShape.setFillColor(this->color);
+                }
+
                 window.draw(this->blockShape);
+                cellIndex++;
             }
         }
     }
