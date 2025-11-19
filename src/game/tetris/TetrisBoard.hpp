@@ -83,15 +83,11 @@ public:
         auto cleared = 0;
 
         for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0;) {
-            // Skip incomplete rows
-            if (!this->isRowComplete(y))
+            if (!this->isRowComplete(y))    // Skip incomplete rows
                 y--; continue;
 
-            // Handle complete row
-            this->clearRow(y);
+            this->clearRow(y);              // Handle complete row
             cleared++;
-
-            // Don't decrement y - check this position again
         }
 
         return cleared;
@@ -129,7 +125,7 @@ public:
 
 private:
     // Check if a row is completely filled
-    bool isRowComplete(int y) const {
+    auto isRowComplete(int y) const -> bool {
         for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++) {
             if (!this->isOccupied(x, y))
                 return false;
