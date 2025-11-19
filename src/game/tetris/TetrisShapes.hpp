@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <optional>
+#include <random>
+#include <string_view>
 
 using namespace std;
 
@@ -155,3 +157,50 @@ auto getTetromino(char type) -> TetrominoData {
         default: return {'\0', nullopt, TetrisShape{}};
     }
 }
+
+// Static class for tetromino registry and factory methods
+class Tetromino {
+public:
+    // Registry of all tetromino types
+    static constexpr array<char, 7> ALL_TYPES = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
+    static constexpr int TYPE_COUNT = 7;
+
+    // Factory method: Get tetromino data for a piece type
+    static auto getData(char type) -> TetrominoData {
+        return getTetromino(type);
+    }
+
+    // Get human-readable name for a piece type
+    static auto getName(char type) -> string_view {
+        switch (type) {
+            case 'I': return "I-Piece (Line)";
+            case 'O': return "O-Piece (Square)";
+            case 'T': return "T-Piece";
+            case 'S': return "S-Piece";
+            case 'Z': return "Z-Piece";
+            case 'J': return "J-Piece";
+            case 'L': return "L-Piece";
+            default: return "Unknown";
+        }
+    }
+
+    // Get random tetromino type (RNG passed in for testability)
+    template<typename RNG>
+    static auto random(RNG& rng) -> char {
+        uniform_int_distribution<int> dist(0, TYPE_COUNT - 1);
+        return ALL_TYPES[dist(rng)];
+    }
+
+    // Check if a type is valid
+    static auto isValid(char type) -> bool {
+        for (auto t : ALL_TYPES) {
+            if (t == type) return true;
+        }
+        return false;
+    }
+
+    // Deleted constructors (static class only)
+    Tetromino() = delete;
+    Tetromino(const Tetromino&) = delete;
+    Tetromino& operator=(const Tetromino&) = delete;
+};
