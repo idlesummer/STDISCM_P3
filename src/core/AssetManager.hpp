@@ -127,7 +127,6 @@ public:
      * MUST be called each frame from main thread to finalize SFML resources
      */
     void update() {
-        // Process any assets that finished loading in background
         this->processPendingAssets();
     }
 
