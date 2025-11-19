@@ -45,37 +45,36 @@ public:
 
     // Movement methods - return true if successful
     auto moveLeft() -> bool {
-        if (!this->currentPiece || this->gameOver)
-            return false;
-        return this->currentPiece->moveLeft();
+        return (currentPiece && !gameOver)
+            ? currentPiece->moveLeft()
+            : false;
     }
 
     auto moveRight() -> bool {
-        if (!this->currentPiece || this->gameOver)
-            return false;
-        return this->currentPiece->moveRight();
+        return (currentPiece && !gameOver)
+            ? currentPiece->moveRight()
+            : false;
     }
 
     auto rotate() -> bool {
-        if (!this->currentPiece || this->gameOver)
-            return false;
-        return this->currentPiece->rotate();
+        return (currentPiece && !gameOver)
+            ? currentPiece->rotate()
+            : false;
     }
 
     auto softDrop() -> bool {
-        if (!this->currentPiece || this->gameOver)
-            return false;
-        return this->currentPiece->moveDown();
+        return (currentPiece && !gameOver)
+            ? currentPiece->moveDown()
+            : false;
     }
 
     auto hardDrop() -> int {
-        if (!this->currentPiece || this->gameOver)
-            return 0;
-        return this->currentPiece->hardDrop();
+        return (currentPiece && !gameOver)
+            ? currentPiece->hardDrop()
+            : 0;
     }
 
     // Hold system - swap current piece with held piece
-    // Returns true if hold was successful
     auto hold() -> bool {
         if (!this->currentPiece || this->gameOver || !this->canSwapHold)
             return false;
@@ -83,12 +82,13 @@ public:
         auto currentType = this->currentPiece->getType();
         this->currentPiece = nullopt;
 
+        // First time holding - store current, spawn next
         if (this->heldPieceType == '\0') {
-            // First time holding - store current, spawn next
             this->heldPieceType = currentType;
             this->spawnNextPiece();
-        } else {
-            // Swap current with held piece
+        } 
+        // Swap current with held piece
+        else {
             char temp = this->heldPieceType;
             this->heldPieceType = currentType;
             this->spawnPiece(temp);
