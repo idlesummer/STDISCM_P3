@@ -46,17 +46,17 @@ public:
         auto now = steady_clock::now();
         auto elapsed = duration_cast<duration<float>>(now - this->lastUpdate).count();
 
-        // Update FPS every 0.5 seconds
-        if (elapsed >= 0.5f) {
-            this->fps = this->frameCount / elapsed;
+        // Only update FPS every 0.5 seconds
+        if (elapsed < 0.5f)
+            return;
 
-            ostringstream ss;
-            ss << "FPS: " << fixed << setprecision(0) << this->fps;
-            this->text.setString(ss.str());
+        auto ss = ostringstream();
+        this->fps = this->frameCount / elapsed;
+        ss << "FPS: " << fixed << setprecision(0) << this->fps;
+        this->text.setString(ss.str());
 
-            this->lastUpdate = now;
-            this->frameCount = 0;
-        }
+        this->lastUpdate = now;
+        this->frameCount = 0;
     }
 
     void onDraw(RenderWindow& window) override {
