@@ -147,6 +147,7 @@ const auto L_PIECE = TetrominoData{
 // Get tetromino data for a piece type
 auto getTetromino(char type) -> TetrominoData {
     switch (type) {
+        default: return {'\0', nullopt, TetrisShape{}};
         case 'I': return I_PIECE;
         case 'O': return O_PIECE;
         case 'T': return T_PIECE;
@@ -154,7 +155,6 @@ auto getTetromino(char type) -> TetrominoData {
         case 'Z': return Z_PIECE;
         case 'J': return J_PIECE;
         case 'L': return L_PIECE;
-        default: return {'\0', nullopt, TetrisShape{}};
     }
 }
 
@@ -173,6 +173,7 @@ public:
     // Get human-readable name for a piece type
     static auto getName(char type) -> string_view {
         switch (type) {
+            default:  return "Unknown";
             case 'I': return "I-Piece (Line)";
             case 'O': return "O-Piece (Square)";
             case 'T': return "T-Piece";
@@ -180,7 +181,6 @@ public:
             case 'Z': return "Z-Piece";
             case 'J': return "J-Piece";
             case 'L': return "L-Piece";
-            default: return "Unknown";
         }
     }
 
