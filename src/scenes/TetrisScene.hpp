@@ -150,33 +150,31 @@ public:
 
         // Update fall timer
         this->fallTimer += dt;
+        if (this->fallTimer < this->fallInterval)
+            return;
 
-        if (this->fallTimer >= this->fallInterval) {
-            this->fallTimer = Time::Zero;
+        this->fallTimer = Time::Zero;
 
-            // Try to move piece down
-            if (!this->activePiece->moveDown()) {
-                // Piece can't move down - lock it
-                this->lockPiece();
-            }
-        }
+        // Try to move piece down
+        if (!this->activePiece->moveDown())
+            this->lockPiece();  // Piece can't move down - lock it
     }
 
+    // Draw all entities (board, pieces, UI)
     void onDraw(RenderWindow& window) override {
-        // Draw all entities (board, pieces, UI)
         this->drawEntities(window);
     }
 
 private:
-    char getRandomPieceType() {
-        const char pieces[] = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
+    auto getRandomPieceType() -> char {
+        char pieces[] = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
         int random = this->pieceDistribution(this->rng);
         return pieces[random];
     }
 
     void spawnNewPiece() {
         // Use the next piece
-        char typeToSpawn = this->nextPieceType;
+        auto typeToSpawn = this->nextPieceType;
 
         // Generate new next piece
         this->nextPieceType = this->getRandomPieceType();
@@ -187,9 +185,8 @@ private:
         this->addEntity(this->activePiece);
 
         // Check if piece can spawn (game over check)
-        if (!this->activePiece->canSpawn()) {
+        if (!this->activePiece->canSpawn())
             this->triggerGameOver();
-        }
     }
 
     void holdPiece() {
@@ -198,7 +195,7 @@ private:
             return;
 
         // Get current piece type
-        char currentType = this->activePiece->getType();
+        auto currentType = this->activePiece->getType();
 
         // Remove current piece from entities
         this->removeEntity(this->activePiece);
@@ -209,6 +206,7 @@ private:
             this->heldPieceType = currentType;
             this->holdPreview->setHeldPiece(this->heldPieceType);
             this->spawnNewPiece();
+
         } else {
             // Swap current with held piece
             char temp = this->heldPieceType;
@@ -220,9 +218,8 @@ private:
             this->addEntity(this->activePiece);
 
             // Check if piece can spawn (game over check)
-            if (!this->activePiece->canSpawn()) {
+            if (!this->activePiece->canSpawn())
                 this->triggerGameOver();
-            }
         }
 
         // Lock hold until piece is placed
@@ -245,9 +242,8 @@ private:
 
         // Clear completed lines
         int linesCleared = this->board->clearLines();
-        if (linesCleared > 0) {
+        if (linesCleared > 0)
             this->scoreDisplay->addLines(linesCleared);
-        }
 
         // Check for game over (top row occupied)
         if (this->board->isTopRowOccupied()) {
