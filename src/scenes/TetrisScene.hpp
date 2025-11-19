@@ -37,6 +37,7 @@ private:
     Time fallTimer;
     Time fallInterval;
     bool showingIcons;
+    RectangleShape gameOverOverlay;
 
 public:
     TetrisScene()
@@ -87,6 +88,11 @@ public:
         this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
         this->addEntity(this->iconScrollDisplay);
 
+        // Setup game over overlay (semi-transparent dark screen)
+        this->gameOverOverlay.setSize(Vector2f(800.f, 700.f));
+        this->gameOverOverlay.setPosition(0.f, 0.f);
+        this->gameOverOverlay.setFillColor(Color(0, 0, 0, 180));
+
         // Sync UI with engine state
         this->syncVisualState();
     }
@@ -100,9 +106,9 @@ public:
                 return;
             }
 
-            // If loading is complete, show icon display
+            // If loading is complete and game is not over, show icon display
             auto& assetManager = AssetManager::getInstance();
-            if (assetManager.isLoadingComplete()) {
+            if (assetManager.isLoadingComplete() && !this->engine.isGameOver()) {
                 this->showIconDisplay();
                 return;
             }
@@ -173,6 +179,12 @@ public:
 
     // Draw all entities (board, pieces, UI)
     void onDraw(RenderWindow& window) override {
+        // Draw semi-transparent overlay first when game is over (before entities)
+        // This dims the background while keeping text on top
+        if (this->engine.isGameOver()) {
+            window.draw(this->gameOverOverlay);
+        }
+
         this->drawEntities(window);
     }
 
