@@ -60,20 +60,17 @@ public:
             this->currentShape = rotatedShape;
             return true;
         }
-
-        // Try wall kicks (simple version - just try moving left or right)
+        // Try wall kicks (try moving left or right)
         if (this->board->isValidPosition(rotatedShape, this->gridX - 1, this->gridY)) {
             this->currentShape = rotatedShape;
             this->gridX--;
             return true;
         }
-
         if (this->board->isValidPosition(rotatedShape, this->gridX + 1, this->gridY)) {
             this->currentShape = rotatedShape;
             this->gridX++;
             return true;
         }
-
         return false;
     }
 
@@ -82,16 +79,15 @@ public:
         if (!this->board)
             return this->gridY;
 
-        int ghostY = this->gridY;
-        while (this->board->isValidPosition(this->currentShape, this->gridX, ghostY + 1)) {
+        auto ghostY = this->gridY;
+        while (this->board->isValidPosition(this->currentShape, this->gridX, ghostY + 1))
             ghostY++;
-        }
         return ghostY;
     }
 
     // Hard drop - move down until collision, return number of rows dropped
     auto hardDrop() {
-        int rowsDropped = 0;
+        auto rowsDropped = 0;
         while (this->moveDown())
             rowsDropped++;
         return rowsDropped;
