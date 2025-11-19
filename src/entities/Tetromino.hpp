@@ -102,19 +102,20 @@ public:
                 window.draw(this->blockBackground);
 
                 // Use piece texture index for all filled cells
-                if (this->pieceTextureIndex >= 0 && !textureNames.empty()) {
-                    auto textureName = textureNames[static_cast<size_t>(this->pieceTextureIndex) % textureNames.size()];
-                    auto texture = assetManager.getTexture(textureName);
+                if (this->pieceTextureIndex < 0 || textureNames.empty())
+                    continue;
 
-                    if (texture) {
-                        // Texture is loaded - draw semi-transparent layer on top
-                        this->blockShape.setPosition(posX, posY);
-                        this->blockShape.setTexture(texture.get());
-                        auto transparentColor = Color(255, 255, 255, 100);
-                        this->blockShape.setFillColor(transparentColor);
-                        window.draw(this->blockShape);
-                    }
-                }
+                auto textureName = textureNames[static_cast<size_t>(this->pieceTextureIndex) % textureNames.size()];
+                auto texture = assetManager.getTexture(textureName);
+                if (!texture)
+                    continue;
+
+                // Texture is loaded - draw semi-transparent layer on top
+                this->blockShape.setPosition(posX, posY);
+                this->blockShape.setTexture(texture.get());
+                auto transparentColor = Color(255, 255, 255, 100);
+                this->blockShape.setFillColor(transparentColor);
+                window.draw(this->blockShape);
             }
         }
     }
