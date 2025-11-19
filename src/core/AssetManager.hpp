@@ -171,22 +171,20 @@ private:
     void processPendingAssets() {
         // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
-
         auto lock = lock_guard<mutex>(this->pendingMutex);
 
         while (!this->pendingAssets.empty()) {
             auto& pending = this->pendingAssets.front();
+            auto texture = make_shared<Texture>();
 
             // Create SFML texture from loaded data (main thread only!)
-            auto texture = make_shared<Texture>();
-            if (texture->loadFromMemory(pending.fileData.data(), pending.fileData.size())) {
+            if (!texture->loadFromMemory(pending.fileData.data(), pending.fileData.size()))
+                cerr << "[AssetManager] Failed to create texture from data: " << pending.key << endl;
+            else {
                 this->textureCache[pending.key] = texture;
                 this->textureOrder.push_back(pending.key);
                 cout << "[AssetManager] Finalized texture: " << pending.key << endl;
-            } else {
-                cerr << "[AssetManager] Failed to create texture from data: " << pending.key << endl;
             }
-
             this->pendingAssets.pop();
         }
     }
