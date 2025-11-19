@@ -138,7 +138,7 @@ private:
             case 3: return Color::Magenta;   // T
             case 4: return Color::Green;     // S
             case 5: return Color::Red;       // Z
-            case 6: return Color::Blue;      // J
+            case 6: return Color(80, 150, 255); // J (Bright Blue)
             case 7: return Color(255, 220, 50); // L (Bright Orange)
             default: return Color::White;
         }

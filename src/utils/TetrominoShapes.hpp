@@ -28,7 +28,7 @@ auto getTetrominoColor(char type) {
         case 'T': return Color::Magenta;
         case 'S': return Color::Green;
         case 'Z': return Color::Red;
-        case 'J': return Color::Blue;
+        case 'J': return Color(80, 150, 255); // Bright Blue
         case 'L': return Color(255, 220, 50); // Bright Orange
         default: return Color::White;
     }
