@@ -7,6 +7,7 @@
 #include "../entities/NextPiecePreview.hpp"
 #include "../entities/HoldPiecePreview.hpp"
 #include "../entities/MenuText.hpp"
+#include "../entities/LoadingProgressBar.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -27,6 +28,7 @@ private:
     shared_ptr<MenuText> titleText;
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
+    shared_ptr<LoadingProgressBar> loadingProgressBar;
 
     // Optional block texture
     Texture blockTexture;
@@ -47,6 +49,7 @@ public:
           titleText(),
           gameOverText(),
           controlsText(),
+          loadingProgressBar(),
           blockTexture(),
           hasTexture(false),
           fallTimer(Time::Zero),
@@ -77,12 +80,14 @@ public:
         this->holdPreview = make_shared<HoldPiecePreview>(Vector2f(400, 320));
         this->titleText = make_shared<MenuText>("TETRIS", Vector2f(400, 10), 30);
         this->controlsText = make_shared<MenuText>(text, Vector2f(50, 660), 16);
+        this->loadingProgressBar = make_shared<LoadingProgressBar>(Vector2f(400, 500), 200.f, 30.f);
 
         this->addEntity(this->scoreDisplay);
         this->addEntity(this->nextPreview);
         this->addEntity(this->holdPreview);
         this->addEntity(this->titleText);
         this->addEntity(this->controlsText);
+        this->addEntity(this->loadingProgressBar);
 
         // Sync UI with engine state
         this->syncVisualState();
