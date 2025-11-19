@@ -21,8 +21,10 @@ private:
     RectangleShape blockBackground;  // Solid color background for vibrant colors
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
-    array<array<int, 4>, 4> cellTextureIndices; // Store texture index for each cell in the 4x4 shape
-    inline static size_t nextTextureIndex = 0;  // Global counter for assigning unique textures
+
+    // Store texture index for the 4x4 shape (same index for all cells of one piece)
+    array<array<int, 4>, 4> cellTextureIndices;
+    inline static size_t nextTextureIndex = 0; // Global counter for unique texture per piece
 
 public:
     Tetromino(const TetrisPiece* piece, Board* board)
@@ -32,7 +34,7 @@ public:
           blockShape(),
           boardPosition() {
 
-        // Assign unique texture indices to each cell
+        // Assign one unique texture for all cells of this piece
         this->assignTextureIndices();
     }
 
@@ -103,20 +105,19 @@ public:
 
                 // Use assigned texture index for this cell
                 auto textureIdx = this->cellTextureIndices[y][x];
-                if (textureIdx < 0 || textureNames.empty())
-                    return;
+                if (textureIdx >= 0 && !textureNames.empty()) {
+                    auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
+                    auto texture = assetManager.getTexture(textureName);
 
-                auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
-                auto texture = assetManager.getTexture(textureName);
-                if (texture)
-                    return;
-                
-                // Texture is loaded - draw semi-transparent layer on top
-                this->blockShape.setPosition(posX, posY);
-                this->blockShape.setTexture(texture.get());
-                auto transparentColor = Color(255, 255, 255, 100);
-                this->blockShape.setFillColor(transparentColor);
-                window.draw(this->blockShape);
+                    if (texture) {
+                        // Texture is loaded - draw semi-transparent layer on top
+                        this->blockShape.setPosition(posX, posY);
+                        this->blockShape.setTexture(texture.get());
+                        auto transparentColor = Color(255, 255, 255, 100);
+                        this->blockShape.setFillColor(transparentColor);
+                        window.draw(this->blockShape);
+                    }
+                }
             }
         }
     }
@@ -126,7 +127,7 @@ public:
         this->tetrisPiece = piece;
         if (piece) {
             this->color = getTetrominoColor(piece->getType());
-            this->assignTextureIndices(); // Reassign textures for new piece
+            this->assignTextureIndices(); // Assign new texture for new piece
         }
     }
 
@@ -138,10 +139,25 @@ public:
     }
 
 private:
-    // Assign unique texture indices to each cell of the tetromino
+    // Assign one texture index for the entire tetromino piece
+    // All cells of the same piece share the same texture
     void assignTextureIndices() {
+        if (!this->tetrisPiece)
+            return;
+
+        // Get one texture index for this entire piece
+        auto pieceTextureIndex = static_cast<int>(nextTextureIndex++);
+        const auto& shape = this->tetrisPiece->getShape();
+
+        // Initialize all cells to -1 (no texture)
         for (auto y = 0; y < 4; y++)
-            for (auto x = 0; x < 4; x++)    // Assign sequential texture indices for variety
-                this->cellTextureIndices[y][x] = static_cast<int>(nextTextureIndex++);
+            for (auto x = 0; x < 4; x++)
+                this->cellTextureIndices[y][x] = -1;
+
+        // Assign the same texture index to all filled cells of this piece
+        for (auto y = 0; y < 4; y++)
+            for (auto x = 0; x < 4; x++)
+                if (shape[y][x] != 0)
+                    this->cellTextureIndices[y][x] = pieceTextureIndex;
     }
 };
