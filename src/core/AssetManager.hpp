@@ -47,7 +47,7 @@ class AssetManager {
         vector<char> fileData;  // Raw file bytes loaded in background
     };
     queue<PendingAsset> pendingAssets;
-    mutex pendingMutex;         // Protects pendingAssets queue
+    mutable mutex pendingMutex;  // Protects pendingAssets queue
 
     AssetManager()
         : loadingPool(thread::hardware_concurrency()),
@@ -64,7 +64,6 @@ public:
         return instance;
     }
 
-    // Delete copy/move constructors (singleton)
     AssetManager(const AssetManager&) = delete;
     auto operator=(const AssetManager&) -> AssetManager& = delete;
     AssetManager(AssetManager&&) = delete;
@@ -73,13 +72,11 @@ public:
     /**
      * Request a texture to be loaded asynchronously in background
      * Safe to call multiple times with same filename (will only load once)
-     * @param filename Texture filename relative to assets/images/icons/
      */
     void loadTexture(const string& filename) {
         // Skip if already loaded or pending
-        if (this->isTextureLoaded(filename)) {
+        if (this->isTextureLoaded(filename))
             return;
-        }
 
         this->totalTextureCount++;
 
@@ -87,29 +84,18 @@ public:
         this->loadingPool.enqueue([this, filename]() {
             auto fullPath = "assets/images/icons/" + filename;
 
-            // Read file into memory (runs on background thread)
-            auto file = ifstream(fullPath, ios::binary | ios::ate);
-            if (!file.is_open()) {
-                cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
+            // Read file into memory
+            auto buffer = readFileIntoMemory(fullPath);
+            if (buffer.empty())
                 return;
-            }
-
-            auto size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            auto buffer = vector<char>(size);
-            if (!file.read(buffer.data(), size)) {
-                cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
-                return;
-            }
 
             // Add to pending queue (will be processed on main thread)
             {
                 auto lock = lock_guard<mutex>(this->pendingMutex);
                 this->pendingAssets.push({filename, move(buffer)});
             }
-
-            cout << "[AssetManager] Loaded texture data: " << filename << " (" << size << " bytes)" << endl;
+            cout << "[AssetManager] Loaded texture data: " 
+                 << filename << " (" << buffer.size() << " bytes)" << endl;
         });
     }
 
@@ -141,7 +127,7 @@ public:
     }
 
     auto getPendingAssetCount() const {
-        auto lock = lock_guard<mutex>(const_cast<mutex&>(this->pendingMutex));
+        auto lock = lock_guard<mutex>(this->pendingMutex);
         return this->pendingAssets.size();
     }
 
@@ -168,9 +154,32 @@ public:
     }
 
 private:
+    auto readFileIntoMemory(const string& fullPath) -> vector<char> {
+        auto file = ifstream(fullPath, ios::binary | ios::ate);
+        if (!file.is_open()) {
+            cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
+            return {};
+        }
+
+        auto size = file.tellg();
+        file.seekg(0, ios::beg);
+
+        auto buffer = vector<char>(size);
+        if (!file.read(buffer.data(), size)) {
+            cerr << "[AssetManager] Failed to read texture: " << fullPath << endl;
+            return {};
+        }
+        return buffer;
+    }
+
     void processPendingAssets() {
         // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
+        //
+        // Why not just call loadFromFile() on background threads?
+        // OpenGL doesn't allow it. GPU operations must happen on the thread that
+        // created the OpenGL context (the main thread). That's why we split loading
+        // into two phases: file I/O (background) and texture creation (main thread).
         auto lock = lock_guard<mutex>(this->pendingMutex);
 
         while (!this->pendingAssets.empty()) {
