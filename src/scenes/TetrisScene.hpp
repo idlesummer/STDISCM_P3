@@ -159,7 +159,7 @@ public:
     }
 
 private:
-    char getRandomPieceType() {
+    auto getRandomPieceType() {
         return Tetromino::random();
     }
 

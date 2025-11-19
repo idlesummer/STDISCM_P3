@@ -45,7 +45,7 @@ public:
         // Draw ghost piece (shadow) first
         int ghostY = this->tetrisPiece.calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
-            Color ghostColor(100, 100, 100, 100);  // Semi-transparent grey
+            auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
             this->blockShape.setFillColor(ghostColor);
             this->blockShape.setOutlineColor(Color(80, 80, 80, 100));
 
