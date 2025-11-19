@@ -8,7 +8,6 @@
 #include "../entities/MenuText.hpp"
 #include "../utils/TetrominoShapes.hpp"
 #include <SFML/Graphics.hpp>
-#include <random>
 #include <memory>
 
 using namespace std;
@@ -34,9 +33,6 @@ private:
     Time fallTimer;
     Time fallInterval;
 
-    // Random number generation
-    mt19937 rng;
-
     char nextPieceType;
 
     // Hold system
@@ -57,7 +53,6 @@ public:
           isPaused(false),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)),
-          rng(random_device{}()),
           nextPieceType('\0'),
           heldPieceType('\0'),
           canSwapHold(true) {
@@ -165,7 +160,7 @@ public:
 
 private:
     char getRandomPieceType() {
-        return Tetromino::random(this->rng);
+        return Tetromino::random();
     }
 
     void spawnNewPiece() {

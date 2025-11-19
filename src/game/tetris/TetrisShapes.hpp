@@ -184,7 +184,14 @@ public:
         }
     }
 
-    // Get random tetromino type (RNG passed in for testability)
+    // Get random tetromino type
+    static auto random() -> char {
+        static mt19937 rng{random_device{}()};
+        static uniform_int_distribution<int> dist(0, TYPE_COUNT - 1);
+        return ALL_TYPES[dist(rng)];
+    }
+
+    // Get random tetromino type (with custom RNG for testing)
     template<typename RNG>
     static auto random(RNG& rng) -> char {
         uniform_int_distribution<int> dist(0, TYPE_COUNT - 1);
