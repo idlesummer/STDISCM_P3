@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.hpp"
 #include "Entity.hpp"
+#include "AssetManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -19,6 +20,9 @@ public:
         : window(VideoMode(width, height), title), activeScene(nullptr) {
 
         this->window.setFramerateLimit(165);
+
+        // Start background loading of all game assets
+        AssetManager::getInstance().preloadAllAssets();
     }
 
     // Scene management (like React Router navigation)
@@ -42,6 +46,9 @@ public:
         auto lag = Time::Zero;
 
         while (this->window.isOpen()) {
+            // Process pending assets loaded in background (non-blocking)
+            AssetManager::getInstance().update();
+
             auto elapsed = clock.restart();
             for (lag += elapsed; lag >= TICK; lag -= TICK) {
                 this->handleEvents();               // 1. Process events and dispatch to current scene
