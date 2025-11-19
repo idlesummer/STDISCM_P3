@@ -42,16 +42,16 @@ public:
         this->cellShape.setOutlineThickness(1.0f);
         this->cellShape.setOutlineColor(Color(100, 100, 100));
         this->cellShape.setFillColor(Color::White);
-
-        // Get all loaded texture names
-        auto& assetManager = AssetManager::getInstance();
-        this->textureNames = assetManager.getTextureNames();
     }
 
     void start() {
         this->isActive = true;
         this->currentTextureIndex = 0;
         this->scrollTimer = Time::Zero;
+
+        // Get all loaded texture names (do this here, after loading is complete)
+        auto& assetManager = AssetManager::getInstance();
+        this->textureNames = assetManager.getTextureNames();
 
         // Clear grid
         for (auto& row : this->grid) {
