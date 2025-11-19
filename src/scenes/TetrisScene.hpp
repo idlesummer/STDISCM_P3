@@ -63,9 +63,9 @@ public:
         // Initialize game engine
         this->engine.start();
 
-        // Queue textures for background loading (testing AssetManager)
+        // Queue all textures for background loading
         auto& assetManager = AssetManager::getInstance();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             auto ss = stringstream();
             ss << "tile" << setfill('0') << setw(3) << i << ".png";
             assetManager.loadTexture(ss.str());
