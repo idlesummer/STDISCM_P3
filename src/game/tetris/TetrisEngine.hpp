@@ -11,7 +11,7 @@ using namespace std;
 class TetrisEngine {
 private:
     TetrisBoard board;
-    optional<TetrisPiece> currentPiece;
+    optional<TetrisPiece> activePiece;
     char nextPieceType;
     char heldPieceType;
     bool canSwapHold;
@@ -20,7 +20,7 @@ private:
 public:
     TetrisEngine()
         : board(),
-          currentPiece(nullopt),
+          activePiece(nullopt),
           nextPieceType('\0'),
           heldPieceType('\0'),
           canSwapHold(true),
@@ -36,7 +36,7 @@ public:
     // Reset game to initial state
     void reset() {
         this->board.reset();
-        this->currentPiece = nullopt;
+        this->activePiece = nullopt;
         this->nextPieceType = '\0';
         this->heldPieceType = '\0';
         this->canSwapHold = true;
@@ -45,42 +45,42 @@ public:
 
     // Movement methods - return true if successful
     auto moveLeft() -> bool {
-        return (currentPiece && !gameOver)
-            ? currentPiece->moveLeft()
+        return (activePiece && !gameOver)
+            ? activePiece->moveLeft()
             : false;
     }
 
     auto moveRight() -> bool {
-        return (currentPiece && !gameOver)
-            ? currentPiece->moveRight()
+        return (activePiece && !gameOver)
+            ? activePiece->moveRight()
             : false;
     }
 
     auto rotate() -> bool {
-        return (currentPiece && !gameOver)
-            ? currentPiece->rotate()
+        return (activePiece && !gameOver)
+            ? activePiece->rotate()
             : false;
     }
 
     auto softDrop() -> bool {
-        return (currentPiece && !gameOver)
-            ? currentPiece->moveDown()
+        return (activePiece && !gameOver)
+            ? activePiece->moveDown()
             : false;
     }
 
     auto hardDrop() -> int {
-        return (currentPiece && !gameOver)
-            ? currentPiece->hardDrop()
+        return (activePiece && !gameOver)
+            ? activePiece->hardDrop()
             : 0;
     }
 
     // Hold system - swap current piece with held piece
     auto hold() -> bool {
-        if (!this->currentPiece || this->gameOver || !this->canSwapHold)
+        if (!this->activePiece || this->gameOver || !this->canSwapHold)
             return false;
 
-        auto currentType = this->currentPiece->getType();
-        this->currentPiece = nullopt;
+        auto currentType = this->activePiece->getType();
+        this->activePiece = nullopt;
 
         if (this->heldPieceType == '\0') {      // First time holding
             this->heldPieceType = currentType;  // Store current
@@ -99,12 +99,12 @@ public:
     // Lock current piece and spawn next
     // Returns number of lines cleared (0 if no lines cleared)
     auto lockCurrentPiece() -> int {
-        if (!this->currentPiece)
+        if (!this->activePiece)
             return 0;
 
         // Place piece on board
-        this->currentPiece->placeOnBoard();
-        this->currentPiece = nullopt;
+        this->activePiece->placeOnBoard();
+        this->activePiece = nullopt;
 
         // Clear completed lines
         int linesCleared = this->board.clearLines();
@@ -121,8 +121,8 @@ public:
     }
 
     // State queries
-    auto getCurrentPiece() const -> const TetrisPiece* {
-        return this->currentPiece.has_value() ? &this->currentPiece.value() : nullptr;
+    auto getActivePiece() const -> const TetrisPiece* {
+        return this->activePiece.has_value() ? &this->activePiece.value() : nullptr;
     }
 
     auto getNextPieceType() const -> char {
@@ -134,7 +134,7 @@ public:
     }
 
     auto canHold() const -> bool {
-        return this->canSwapHold && this->currentPiece.has_value() && !this->gameOver;
+        return this->canSwapHold && this->activePiece.has_value() && !this->gameOver;
     }
 
     auto isGameOver() const -> bool {
@@ -155,12 +155,12 @@ public:
 
 private:
     void spawnPiece(char type) {
-        this->currentPiece = TetrisPiece(type, &this->board);
+        this->activePiece = TetrisPiece(type, &this->board);
 
         // Check if piece can spawn (game over check)
-        if (!this->currentPiece->canSpawn()) {
+        if (!this->activePiece->canSpawn()) {
             this->gameOver = true;
-            this->currentPiece = nullopt;
+            this->activePiece = nullopt;
         }
     }
 

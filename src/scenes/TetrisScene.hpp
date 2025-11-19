@@ -130,7 +130,7 @@ public:
         // Update all entities (animations, etc.)
         this->updateEntities(dt);
 
-        if (this->engine.isGameOver() || !this->engine.getCurrentPiece())
+        if (this->engine.isGameOver() || !this->engine.getActivePiece())
             return;
 
         // Update fall timer
@@ -161,17 +161,17 @@ private:
         this->holdPreview->setLocked(!this->engine.canHold());
 
         // Create/update active piece rendering entity
-        if (this->engine.getCurrentPiece()) {
+        if (this->engine.getActivePiece()) {
             if (!this->activePiece) {
                 // Create new rendering entity
                 this->activePiece = make_shared<Tetromino>(
-                    this->engine.getCurrentPiece(),
+                    this->engine.getActivePiece(),
                     this->board.get()
                 );
                 this->addEntity(this->activePiece);
             } else {
                 // Update existing entity
-                this->activePiece->setPiece(this->engine.getCurrentPiece());
+                this->activePiece->setPiece(this->engine.getActivePiece());
             }
         } else if (this->activePiece) {
             // Remove active piece entity
