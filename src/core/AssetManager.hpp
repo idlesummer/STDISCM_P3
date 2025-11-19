@@ -64,7 +64,6 @@ public:
         return instance;
     }
 
-    // Delete copy/move constructors (singleton)
     AssetManager(const AssetManager&) = delete;
     auto operator=(const AssetManager&) -> AssetManager& = delete;
     AssetManager(AssetManager&&) = delete;
@@ -73,7 +72,6 @@ public:
     /**
      * Request a texture to be loaded asynchronously in background
      * Safe to call multiple times with same filename (will only load once)
-     * @param filename Texture filename relative to assets/images/icons/
      */
     void loadTexture(const string& filename) {
         // Skip if already loaded or pending
@@ -86,19 +84,18 @@ public:
         this->loadingPool.enqueue([this, filename]() {
             auto fullPath = "assets/images/icons/" + filename;
 
-            // Read file into memory (runs on background thread)
+            // Read file into memory
             auto buffer = readFileIntoMemory(fullPath);
-            if (buffer.empty()) {
+            if (buffer.empty())
                 return;
-            }
 
             // Add to pending queue (will be processed on main thread)
             {
                 auto lock = lock_guard<mutex>(this->pendingMutex);
                 this->pendingAssets.push({filename, move(buffer)});
             }
-
-            cout << "[AssetManager] Loaded texture data: " << filename << " (" << buffer.size() << " bytes)" << endl;
+            cout << "[AssetManager] Loaded texture data: " 
+                 << filename << " (" << buffer.size() << " bytes)" << endl;
         });
     }
 
@@ -157,12 +154,7 @@ public:
     }
 
 private:
-    /**
-     * Read a file into memory buffer
-     * @param fullPath Absolute or relative path to file
-     * @return Vector containing file bytes, or empty vector if failed
-     */
-    static auto readFileIntoMemory(const string& fullPath) -> vector<char> {
+    auto readFileIntoMemory(const string& fullPath) -> vector<char> {
         auto file = ifstream(fullPath, ios::binary | ios::ate);
         if (!file.is_open()) {
             cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
