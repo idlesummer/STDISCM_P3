@@ -115,7 +115,7 @@ public:
 
         // Collect all PNG files
         auto pngFiles = vector<string>();
-        for (const auto& entry : filesystem::directory_iterator(iconsPath)) {
+        for (const auto& entry : filesystem::directory_iterator(iconsPath))
             if (entry.is_regular_file() && entry.path().extension() == ".png")
                 pngFiles.push_back(entry.path().filename().string());
 
