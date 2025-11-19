@@ -109,7 +109,7 @@ public:
                             // Texture is loaded - draw semi-transparent layer on top
                             this->blockShape.setPosition(posX, posY);
                             this->blockShape.setTexture(texture.get());
-                            auto transparentColor = Color(255, 255, 255, 180);
+                            auto transparentColor = Color(255, 255, 255, 230);
                             this->blockShape.setFillColor(transparentColor);
                             window.draw(this->blockShape);
                         }
