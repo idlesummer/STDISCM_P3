@@ -81,14 +81,11 @@ public:
     // Check and clear completed lines, return number of lines cleared
     auto clearLines() {
         auto cleared = 0;
-        auto y = TETRIS_BOARD_HEIGHT - 1;
 
-        while (y >= 0) {
+        for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0;) {
             // Skip incomplete rows
-            if (!this->isRowComplete(y)) {
-                y--;
-                continue;
-            }
+            if (!this->isRowComplete(y))
+                y--; continue;
 
             // Handle complete row
             this->clearRow(y);
