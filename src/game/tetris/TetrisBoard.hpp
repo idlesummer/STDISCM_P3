@@ -61,7 +61,7 @@ public:
             case 'Z': colorIndex = 5; break;
             case 'J': colorIndex = 6; break;
             case 'L': colorIndex = 7; break;
-            default: colorIndex = 0; break;
+            default:  colorIndex = 0; break;
         }
 
         for (auto y = 0; y < 4; y++) {
