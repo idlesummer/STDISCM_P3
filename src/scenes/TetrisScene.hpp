@@ -181,6 +181,26 @@ private:
     }
 
     void lockPiece() {
+        // Transfer texture indices from active piece to board before locking
+        if (this->activePiece && this->engine.getActivePiece()) {
+            const auto* piece = this->engine.getActivePiece();
+            const auto& shape = piece->getShape();
+            int gridX = piece->getX();
+            int gridY = piece->getY();
+
+            // Transfer texture index for each filled cell
+            for (auto y = 0; y < 4; y++) {
+                for (auto x = 0; x < 4; x++) {
+                    if (shape[y][x] != 0) {
+                        int boardX = gridX + x;
+                        int boardY = gridY + y;
+                        int textureIdx = this->activePiece->getTextureIndexForCell(x, y);
+                        this->board->setTextureForCell(boardX, boardY, textureIdx);
+                    }
+                }
+            }
+        }
+
         auto linesCleared = this->engine.lockCurrentPiece();
 
         // Update score if lines were cleared

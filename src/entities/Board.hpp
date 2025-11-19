@@ -16,15 +16,20 @@ private:
     RectangleShape blockShape;
     RectangleShape borderShape;
     Vector2f boardPosition;
-    size_t textureIndex; // Track which texture to use for next cell
+
+    // Store texture index for each cell (-1 = no texture assigned)
+    array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> textureIndices;
 
 public:
     Board(TetrisBoard* board)
         : tetrisBoard(board),
           blockShape(),
           borderShape(),
-          boardPosition(),
-          textureIndex(0) {
+          boardPosition() {
+        // Initialize all texture indices to -1 (unassigned)
+        for (auto& row : this->textureIndices) {
+            row.fill(-1);
+        }
     }
 
     void onCreate() override {
@@ -68,13 +73,12 @@ public:
 
         window.draw(gridLines);
 
-        // Draw placed blocks with progressive texture loading
+        // Draw placed blocks with persistent textures
         if (this->tetrisBoard) {
             auto& assetManager = AssetManager::getInstance();
             const auto& textureNames = assetManager.getTextureNames();
             const auto& grid = this->tetrisBoard->getGrid();
 
-            size_t cellIndex = 0;
             for (auto y = 0; y < BOARD_HEIGHT; y++) {
                 for (auto x = 0; x < BOARD_WIDTH; x++) {
                     if (grid[y][x] == 0)
@@ -84,34 +88,43 @@ public:
                     auto posY = this->boardPosition.y + y * BLOCK_SIZE;
                     this->blockShape.setPosition(posX, posY);
 
-                    // Try to get texture for this cell
-                    if (!textureNames.empty()) {
-                        auto textureName = textureNames[cellIndex % textureNames.size()];
+                    auto cellColor = this->getColorFromIndex(grid[y][x]);
+
+                    // Use stored texture index for this cell
+                    if (this->textureIndices[y][x] >= 0 && !textureNames.empty()) {
+                        auto textureIdx = static_cast<size_t>(this->textureIndices[y][x]);
+                        auto textureName = textureNames[textureIdx % textureNames.size()];
                         auto texture = assetManager.getTexture(textureName);
 
                         if (texture) {
-                            // Texture is loaded - use it with white fill (no tint)
+                            // Texture is loaded - use it with color tint (grayscale + color)
                             this->blockShape.setTexture(texture.get());
-                            this->blockShape.setFillColor(Color::White);
+                            this->blockShape.setFillColor(cellColor);
                         } else {
                             // Texture not loaded yet - use solid color fallback
                             this->blockShape.setTexture(nullptr);
-                            this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+                            this->blockShape.setFillColor(cellColor);
                         }
                     } else {
-                        // No textures queued - use solid color
+                        // No texture assigned - use solid color
                         this->blockShape.setTexture(nullptr);
-                        this->blockShape.setFillColor(this->getColorFromIndex(grid[y][x]));
+                        this->blockShape.setFillColor(cellColor);
                     }
 
                     window.draw(this->blockShape);
-                    cellIndex++;
                 }
             }
         }
     }
 
     auto getBoardPosition() const { return this->boardPosition; }
+
+    // Set texture index for a specific cell (called when piece locks)
+    void setTextureForCell(int x, int y, int textureIndex) {
+        if (x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT) {
+            this->textureIndices[y][x] = textureIndex;
+        }
+    }
 
     // Access to underlying game logic (if needed)
     TetrisBoard* getTetrisBoard() { return this->tetrisBoard; }

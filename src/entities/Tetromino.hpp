@@ -21,6 +21,10 @@ private:
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
 
+    // Store texture index for each cell in the 4x4 shape
+    array<array<int, 4>, 4> cellTextureIndices;
+    static size_t nextTextureIndex; // Global counter for assigning unique textures
+
 public:
     Tetromino(const TetrisPiece* piece, Board* board)
         : tetrisPiece(piece),
@@ -28,6 +32,8 @@ public:
           color(piece ? getTetrominoColor(piece->getType()) : Color::White),
           blockShape(),
           boardPosition() {
+        // Assign unique texture indices to each cell
+        this->assignTextureIndices();
     }
 
     void onCreate() override {
@@ -87,28 +93,28 @@ public:
                     this->boardPosition.y + (gridY + y) * BLOCK_SIZE
                 );
 
-                // Try to get texture for this cell
-                if (!textureNames.empty()) {
-                    auto textureName = textureNames[cellIndex % textureNames.size()];
+                // Use assigned texture index for this cell
+                auto textureIdx = this->cellTextureIndices[y][x];
+                if (textureIdx >= 0 && !textureNames.empty()) {
+                    auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
                     auto texture = assetManager.getTexture(textureName);
 
                     if (texture) {
-                        // Texture is loaded - use it with white fill (no tint)
+                        // Texture is loaded - use it with color tint (grayscale + color)
                         this->blockShape.setTexture(texture.get());
-                        this->blockShape.setFillColor(Color::White);
+                        this->blockShape.setFillColor(this->color);
                     } else {
                         // Texture not loaded yet - use solid color fallback
                         this->blockShape.setTexture(nullptr);
                         this->blockShape.setFillColor(this->color);
                     }
                 } else {
-                    // No textures queued - use solid color
+                    // No texture assigned - use solid color
                     this->blockShape.setTexture(nullptr);
                     this->blockShape.setFillColor(this->color);
                 }
 
                 window.draw(this->blockShape);
-                cellIndex++;
             }
         }
     }
@@ -116,7 +122,31 @@ public:
     // Update the piece being rendered (for when engine spawns new piece)
     void setPiece(const TetrisPiece* piece) {
         this->tetrisPiece = piece;
-        if (piece)
+        if (piece) {
             this->color = getTetrominoColor(piece->getType());
+            this->assignTextureIndices(); // Reassign textures for new piece
+        }
+    }
+
+    // Get texture index for a specific cell (for transferring to board on lock)
+    auto getTextureIndexForCell(int x, int y) const -> int {
+        if (x >= 0 && x < 4 && y >= 0 && y < 4) {
+            return this->cellTextureIndices[y][x];
+        }
+        return -1;
+    }
+
+private:
+    // Assign unique texture indices to each cell of the tetromino
+    void assignTextureIndices() {
+        for (auto y = 0; y < 4; y++) {
+            for (auto x = 0; x < 4; x++) {
+                // Assign sequential texture indices for variety
+                this->cellTextureIndices[y][x] = static_cast<int>(nextTextureIndex++);
+            }
+        }
     }
 };
+
+// Initialize static member
+size_t Tetromino::nextTextureIndex = 0;
