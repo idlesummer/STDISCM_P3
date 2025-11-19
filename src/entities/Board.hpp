@@ -37,9 +37,9 @@ public:
         this->boardPosition = Vector2f(50.0f, 50.0f);
 
         // Setup block shape template
-        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
-        this->blockShape.setOutlineThickness(1.0f);
-        this->blockShape.setOutlineColor(Color(50, 50, 50));
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 2.0f, BLOCK_SIZE - 2.0f));
+        this->blockShape.setOutlineThickness(2.0f);
+        this->blockShape.setOutlineColor(Color(0, 0, 0));
 
         // Setup border
         this->borderShape.setSize(Vector2f(BOARD_WIDTH * BLOCK_SIZE, BOARD_HEIGHT * BLOCK_SIZE));
@@ -97,9 +97,10 @@ public:
                         auto texture = assetManager.getTexture(textureName);
 
                         if (texture) {
-                            // Texture is loaded - use it with color tint (grayscale + color)
+                            // Texture is loaded - use it with semi-transparent color tint
                             this->blockShape.setTexture(texture.get());
-                            this->blockShape.setFillColor(cellColor);
+                            auto transparentColor = Color(cellColor.r, cellColor.g, cellColor.b, 180);
+                            this->blockShape.setFillColor(transparentColor);
                         } else {
                             // Texture not loaded yet - use solid color fallback
                             this->blockShape.setTexture(nullptr);

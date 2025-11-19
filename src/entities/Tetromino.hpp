@@ -40,10 +40,10 @@ public:
         this->boardPosition = this->board->getBoardPosition();
 
         // Setup block rendering
-        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 1.0f, BLOCK_SIZE - 1.0f));
+        this->blockShape.setSize(Vector2f(BLOCK_SIZE - 2.0f, BLOCK_SIZE - 2.0f));
         this->blockShape.setFillColor(this->color);
-        this->blockShape.setOutlineThickness(1.0f);
-        this->blockShape.setOutlineColor(Color(50, 50, 50));
+        this->blockShape.setOutlineThickness(2.0f);
+        this->blockShape.setOutlineColor(Color(0, 0, 0));
     }
 
     void onDraw(RenderWindow& window) override {
@@ -100,9 +100,10 @@ public:
                     auto texture = assetManager.getTexture(textureName);
 
                     if (texture) {
-                        // Texture is loaded - use it with color tint (grayscale + color)
+                        // Texture is loaded - use it with semi-transparent color tint
                         this->blockShape.setTexture(texture.get());
-                        this->blockShape.setFillColor(this->color);
+                        auto transparentColor = Color(this->color.r, this->color.g, this->color.b, 180);
+                        this->blockShape.setFillColor(transparentColor);
                     } else {
                         // Texture not loaded yet - use solid color fallback
                         this->blockShape.setTexture(nullptr);
