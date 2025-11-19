@@ -12,12 +12,14 @@ class Entity {
 protected:
     string entityName;
     bool active;
+    bool visible;
     Vector2f position;
 
 public:
     Entity(const string& name = "Entity", Vector2f initialPosition = Vector2f(0, 0))
         : entityName(name),
           active(true),
+          visible(true),
           position(initialPosition) {}
 
     virtual ~Entity() = default;
@@ -32,6 +34,10 @@ public:
     // Entity management
     auto getName() const { return this->entityName; }
     auto isActive() const { return this->active; }
+
+    // Visibility management
+    auto isVisible() const { return this->visible; }
+    void setVisible(bool isVisible) { this->visible = isVisible; }
 
     // Position management
     void setPosition(Vector2f newPosition) { this->position = newPosition; }

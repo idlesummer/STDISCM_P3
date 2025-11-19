@@ -52,7 +52,7 @@ public:
 
         // Setup instruction text
         this->instructionText.setFont(this->font);
-        this->instructionText.setString("Press Enter to Show Icons");
+        this->instructionText.setString("Press Enter to Toggle Icons");
         this->instructionText.setCharacterSize(14);
         this->instructionText.setFillColor(Color(200, 200, 200));
         this->instructionText.setPosition(this->position.x, this->position.y + this->barHeight + 10);

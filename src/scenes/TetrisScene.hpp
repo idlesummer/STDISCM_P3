@@ -9,6 +9,7 @@
 #include "../entities/HoldPiecePreview.hpp"
 #include "../entities/MenuText.hpp"
 #include "../entities/LoadingProgressBar.hpp"
+#include "../entities/IconScrollDisplay.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -30,10 +31,12 @@ private:
     shared_ptr<MenuText> gameOverText;
     shared_ptr<MenuText> controlsText;
     shared_ptr<LoadingProgressBar> loadingProgressBar;
+    shared_ptr<IconScrollDisplay> iconScrollDisplay;
 
     // SFML-specific state (not game logic)
     Time fallTimer;
     Time fallInterval;
+    bool showingIcons;
 
 public:
     TetrisScene()
@@ -47,8 +50,10 @@ public:
           gameOverText(),
           controlsText(),
           loadingProgressBar(),
+          iconScrollDisplay(),
           fallTimer(Time::Zero),
-          fallInterval(seconds(1.0f)) {
+          fallInterval(seconds(1.0f)),
+          showingIcons(false) {
     }
 
     void onCreate() override {
@@ -78,16 +83,40 @@ public:
         this->addEntity(this->controlsText);
         this->addEntity(this->loadingProgressBar);
 
+        // Create icon scroll display (aligned with board)
+        this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
+        this->addEntity(this->iconScrollDisplay);
+
         // Sync UI with engine state
         this->syncVisualState();
     }
 
     void onInput(Event& event) override {
-        if (this->engine.isGameOver()) {
-            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
+        // Handle Enter key press
+        if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
+            // If showing icons, hide them and return to game
+            if (this->showingIcons) {
+                this->hideIconDisplay();
+                return;
+            }
+
+            // If loading is complete, show icon display
+            auto& assetManager = AssetManager::getInstance();
+            if (assetManager.isLoadingComplete()) {
+                this->showIconDisplay();
+                return;
+            }
+
+            // Otherwise handle game over restart
+            if (this->engine.isGameOver()) {
                 this->restartGame();
-            return;
+                return;
+            }
         }
+
+        // Don't process game input if showing icons or game over
+        if (this->showingIcons || this->engine.isGameOver())
+            return;
 
         if (event.type == Event::KeyPressed) {
             switch (event.key.code) {
@@ -101,7 +130,7 @@ public:
 
                 case Keyboard::Down:
                     if (this->engine.softDrop())        // Reset fall timer on manual drop
-                        this->fallTimer = Time::Zero; 
+                        this->fallTimer = Time::Zero;
                     break;
 
                 case Keyboard::Up:
@@ -126,7 +155,8 @@ public:
         // Update all entities (animations, etc.)
         this->updateEntities(dt);
 
-        if (this->engine.isGameOver() || !this->engine.getActivePiece())
+        // Don't update game logic if showing icons or game over
+        if (this->showingIcons || this->engine.isGameOver() || !this->engine.getActivePiece())
             return;
 
         // Update fall timer
@@ -249,8 +279,27 @@ private:
         // Reset SFML state
         this->fallTimer = Time::Zero;
         this->activePiece = nullptr;
+        this->showingIcons = false;
 
         // Recreate everything
         this->onCreate();
+    }
+
+    void showIconDisplay() {
+        this->showingIcons = true;
+
+        // Start the icon scroll display
+        if (this->iconScrollDisplay) {
+            this->iconScrollDisplay->start();
+        }
+    }
+
+    void hideIconDisplay() {
+        this->showingIcons = false;
+
+        // Stop the icon scroll display
+        if (this->iconScrollDisplay) {
+            this->iconScrollDisplay->stop();
+        }
     }
 };
