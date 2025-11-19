@@ -37,7 +37,6 @@ private:
     Time fallTimer;
     Time fallInterval;
     bool showingIcons;
-    RectangleShape gameOverOverlay;
 
 public:
     TetrisScene()
@@ -87,11 +86,6 @@ public:
         // Create icon scroll display (aligned with board)
         this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
         this->addEntity(this->iconScrollDisplay);
-
-        // Setup game over overlay (semi-transparent dark screen)
-        this->gameOverOverlay.setSize(Vector2f(800.f, 700.f));
-        this->gameOverOverlay.setPosition(0.f, 0.f);
-        this->gameOverOverlay.setFillColor(Color(0, 0, 0, 180));
 
         // Sync UI with engine state
         this->syncVisualState();
@@ -179,12 +173,6 @@ public:
 
     // Draw all entities (board, pieces, UI)
     void onDraw(RenderWindow& window) override {
-        // Draw semi-transparent overlay first when game is over (before entities)
-        // This dims the background while keeping text on top
-        if (this->engine.isGameOver()) {
-            window.draw(this->gameOverOverlay);
-        }
-
         this->drawEntities(window);
     }
 
@@ -265,6 +253,16 @@ private:
             this->removeEntity(this->activePiece);
             this->activePiece = nullptr;
         }
+
+        // Hide all game entities
+        if (this->board) this->board->setVisible(false);
+        if (this->scoreDisplay) this->scoreDisplay->setVisible(false);
+        if (this->nextPreview) this->nextPreview->setVisible(false);
+        if (this->holdPreview) this->holdPreview->setVisible(false);
+        if (this->titleText) this->titleText->setVisible(false);
+        if (this->controlsText) this->controlsText->setVisible(false);
+        if (this->loadingProgressBar) this->loadingProgressBar->setVisible(false);
+        if (this->iconScrollDisplay) this->iconScrollDisplay->setVisible(false);
 
         // Show game over text
         this->gameOverText = make_shared<MenuText>("GAME OVER", Vector2f(250, 300), 40);
