@@ -316,9 +316,9 @@ private:
             this->activePiece->setVisible(false);
         }
 
-        // Hide board (placed tetrominos)
+        // Hide placed blocks (but keep board grid visible)
         if (this->board) {
-            this->board->setVisible(false);
+            this->board->setShowBlocks(false);
         }
     }
 
@@ -335,9 +335,9 @@ private:
             this->activePiece->setVisible(true);
         }
 
-        // Show board (placed tetrominos) again
+        // Show placed blocks again
         if (this->board) {
-            this->board->setVisible(true);
+            this->board->setShowBlocks(true);
         }
     }
 };

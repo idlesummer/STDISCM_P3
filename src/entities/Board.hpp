@@ -17,6 +17,7 @@ private:
     RectangleShape blockBackground;  // Solid color background for vibrant colors
     RectangleShape borderShape;
     Vector2f boardPosition;
+    bool showBlocks;  // Control visibility of placed blocks
 
     // Store texture index for each cell (-1 = no texture assigned)
     array<array<int, BOARD_WIDTH>, BOARD_HEIGHT> textureIndices;
@@ -26,7 +27,8 @@ public:
         : tetrisBoard(board),
           blockShape(),
           borderShape(),
-          boardPosition() {
+          boardPosition(),
+          showBlocks(true) {
         // Initialize all texture indices to -1 (unassigned)
         for (auto& row : this->textureIndices) {
             row.fill(-1);
@@ -78,8 +80,8 @@ public:
 
         window.draw(gridLines);
 
-        // Draw placed blocks with persistent textures
-        if (this->tetrisBoard) {
+        // Draw placed blocks with persistent textures (only if showBlocks is true)
+        if (this->showBlocks && this->tetrisBoard) {
             auto& assetManager = AssetManager::getInstance();
             const auto& textureNames = assetManager.getTextureNames();
             const auto& grid = this->tetrisBoard->getGrid();
@@ -120,6 +122,10 @@ public:
     }
 
     auto getBoardPosition() const { return this->boardPosition; }
+
+    // Control visibility of placed blocks
+    void setShowBlocks(bool show) { this->showBlocks = show; }
+    bool isShowingBlocks() const { return this->showBlocks; }
 
     // Set texture index for a specific cell (called when piece locks)
     void setTextureForCell(int x, int y, int textureIndex) {
