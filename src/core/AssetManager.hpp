@@ -15,10 +15,10 @@ using namespace std;
 using namespace sf;
 
 /**
- * AssetManager - Singleton asset loading and caching system (header-only)
+ * AssetManager - Singleton texture/icon loading and caching system (header-only)
  *
  * Features:
- * - Background asset loading using ThreadPool (doesn't block main game loop)
+ * - Background texture loading using ThreadPool (doesn't block main game loop)
  * - O(1) lookup performance with insertion order preservation
  * - Thread-safe two-phase loading (file I/O in background, SFML creation on main thread)
  * - Automatic resource caching and sharing to prevent duplicate loads
@@ -32,23 +32,19 @@ class AssetManager {
     // Thread pool for background file loading
     ThreadPool loadingPool;
 
-    // Fast O(1) lookup caches
+    // Fast O(1) lookup cache
     unordered_map<string, shared_ptr<Texture>> textureCache;
-    unordered_map<string, shared_ptr<Font>> fontCache;
 
     // Insertion order preservation (for iteration)
     vector<string> textureOrder;
-    vector<string> fontOrder;
 
-    // Total asset counts (for progress tracking)
+    // Total asset count (for progress tracking)
     size_t totalTextureCount;
-    size_t totalFontCount;
 
     // Staging area for background-loaded file data
     struct PendingAsset {
         string key;           // Asset identifier (filename)
         vector<char> fileData; // Raw file bytes loaded in background
-        enum Type { TEXTURE, FONT } type;
     };
     queue<PendingAsset> pendingAssets;
     mutex pendingMutex;  // Protects pendingAssets queue
@@ -56,11 +52,8 @@ class AssetManager {
     AssetManager()
         : loadingPool(thread::hardware_concurrency()),
           textureCache(),
-          fontCache(),
           textureOrder(),
-          fontOrder(),
           totalTextureCount(0),
-          totalFontCount(0),
           pendingAssets(),
           pendingMutex() {
     }
@@ -79,20 +72,17 @@ public:
     auto operator=(AssetManager&&) -> AssetManager& = delete;
 
     /**
-     * Start loading all known assets in background
+     * Start loading all known textures/icons in background
      * Call this once during game initialization
      */
     void preloadAllAssets() {
-        // Preload all known assets used by the game
-        // Assets are discovered from current codebase usage
+        // Preload all known textures used by the game
+        // Textures are discovered from current codebase usage
 
-        // Textures
+        // Tetris block textures
         this->loadTextureAsync("tile000.png");
 
-        // Fonts (only load once, shared by all entities)
-        this->loadFontAsync("sansation.ttf");
-
-        cout << "[AssetManager] Started background loading of assets..." << endl;
+        cout << "[AssetManager] Started background loading of textures..." << endl;
     }
 
     /**
@@ -106,7 +96,7 @@ public:
 
     /**
      * Get a texture by name (returns nullptr if not loaded yet)
-     * @param name Filename relative to assets/images/ directory
+     * @param name Filename relative to assets/images/icons/ directory
      * @return Shared pointer to texture, or nullptr if not ready
      */
     auto getTexture(const string& name) -> shared_ptr<Texture> {
@@ -117,55 +107,60 @@ public:
     }
 
     /**
-     * Get a font by name (returns nullptr if not loaded yet)
-     * @param name Filename relative to assets/fonts/ directory
-     * @return Shared pointer to font, or nullptr if not ready
+     * Check if a texture is loaded and ready
      */
-    auto getFont(const string& name) -> shared_ptr<Font> {
-        auto it = this->fontCache.find(name);
-        return it != this->fontCache.end()
-            ? it->second
-            : nullptr;
-    }
-
     auto isTextureLoaded(const string& name) const -> bool {
         return this->textureCache.find(name) != this->textureCache.end();
     }
 
-    auto isFontLoaded(const string& name) const -> bool {
-        return this->fontCache.find(name) != this->fontCache.end();
+    /**
+     * Get all texture names in insertion order
+     * Useful for iterating through loaded textures
+     */
+    auto getTextureNames() const -> const vector<string>& {
+        return this->textureOrder;
     }
 
-    auto getTextureNames() const -> const vector<string>& { 
-        return this->textureOrder; 
-    }
-
-    auto getFontNames() const -> const vector<string>& { 
-        return this->fontOrder; 
-    }
-
+    /**
+     * Get loading statistics
+     */
     auto getLoadedTextureCount() const -> size_t { return this->textureCache.size(); }
-    auto getLoadedFontCount() const -> size_t { return this->fontCache.size(); }
     auto getPendingAssetCount() const -> size_t {
         auto lock = lock_guard<mutex>(const_cast<mutex&>(this->pendingMutex));
         return this->pendingAssets.size();
     }
 
+    /**
+     * Get total texture count (how many textures were queued for loading)
+     */
     auto getTotalTextureCount() const -> size_t { return this->totalTextureCount; }
-    auto getTotalFontCount() const -> size_t { return this->totalFontCount; }
-    auto getTotalAssetCount() const -> size_t { return this->totalTextureCount + this->totalFontCount; }
-    auto getLoadedAssetCount() const -> size_t { return this->textureCache.size() + this->fontCache.size(); }
+    auto getTotalAssetCount() const -> size_t { return this->totalTextureCount; }
 
+    /**
+     * Get loaded asset count
+     */
+    auto getLoadedAssetCount() const -> size_t { return this->textureCache.size(); }
+
+    /**
+     * Check if all assets have finished loading
+     */
     auto isLoadingComplete() const -> bool {
         return this->getLoadedAssetCount() == this->getTotalAssetCount();
     }
 
+    /**
+     * Get loading progress as a percentage (0.0 to 1.0)
+     * Returns 1.0 if no assets were queued
+     */
     auto getLoadingProgress() const -> float {
         auto total = this->getTotalAssetCount();
         if (total == 0) return 1.0f;
         return static_cast<float>(this->getLoadedAssetCount()) / static_cast<float>(total);
     }
 
+    /**
+     * Get loading progress as a percentage (0 to 100)
+     */
     auto getLoadingProgressPercent() const -> int {
         return static_cast<int>(this->getLoadingProgress() * 100.0f);
     }
@@ -197,48 +192,15 @@ private:
             // Add to pending queue (will be processed on main thread)
             {
                 auto lock = lock_guard<mutex>(this->pendingMutex);
-                this->pendingAssets.push({filename, move(buffer), PendingAsset::TEXTURE});
+                this->pendingAssets.push({filename, move(buffer)});
             }
 
             cout << "[AssetManager] Loaded texture data: " << filename << " (" << size << " bytes)" << endl;
         });
     }
 
-    void loadFontAsync(const string& filename) {
-        this->totalFontCount++;  // Track total assets queued
-
-        // Enqueue background task to load font file data
-        this->loadingPool.enqueue([this, filename]() {
-            auto fullPath = "assets/fonts/" + filename;
-
-            // Read file into memory (runs on background thread)
-            auto file = ifstream(fullPath, ios::binary | ios::ate);
-            if (!file.is_open()) {
-                cerr << "[AssetManager] Failed to open font: " << fullPath << endl;
-                return;
-            }
-
-            auto size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            auto buffer = vector<char>(size);
-            if (!file.read(buffer.data(), size)) {
-                cerr << "[AssetManager] Failed to read font: " << fullPath << endl;
-                return;
-            }
-
-            // Add to pending queue (will be processed on main thread)
-            {
-                auto lock = lock_guard<mutex>(this->pendingMutex);
-                this->pendingAssets.push({filename, move(buffer), PendingAsset::FONT});
-            }
-
-            cout << "[AssetManager] Loaded font data: " << filename << " (" << size << " bytes)" << endl;
-        });
-    }
-
     void processPendingAssets() {
-        // Process all pending assets loaded in background threads
+        // Process all pending textures loaded in background threads
         // This MUST run on the main thread (SFML OpenGL context requirement)
 
         auto lock = lock_guard<mutex>(this->pendingMutex);
@@ -246,26 +208,14 @@ private:
         while (!this->pendingAssets.empty()) {
             auto& pending = this->pendingAssets.front();
 
-            if (pending.type == PendingAsset::TEXTURE) {
-                // Create SFML texture from loaded data (main thread only!)
-                auto texture = make_shared<Texture>();
-                if (texture->loadFromMemory(pending.fileData.data(), pending.fileData.size())) {
-                    this->textureCache[pending.key] = texture;
-                    this->textureOrder.push_back(pending.key);
-                    cout << "[AssetManager] Finalized texture: " << pending.key << endl;
-                } else {
-                    cerr << "[AssetManager] Failed to create texture from data: " << pending.key << endl;
-                }
-            } else if (pending.type == PendingAsset::FONT) {
-                // Create SFML font from loaded data (main thread only!)
-                auto font = make_shared<Font>();
-                if (font->loadFromMemory(pending.fileData.data(), pending.fileData.size())) {
-                    this->fontCache[pending.key] = font;
-                    this->fontOrder.push_back(pending.key);
-                    cout << "[AssetManager] Finalized font: " << pending.key << endl;
-                } else {
-                    cerr << "[AssetManager] Failed to create font from data: " << pending.key << endl;
-                }
+            // Create SFML texture from loaded data (main thread only!)
+            auto texture = make_shared<Texture>();
+            if (texture->loadFromMemory(pending.fileData.data(), pending.fileData.size())) {
+                this->textureCache[pending.key] = texture;
+                this->textureOrder.push_back(pending.key);
+                cout << "[AssetManager] Finalized texture: " << pending.key << endl;
+            } else {
+                cerr << "[AssetManager] Failed to create texture from data: " << pending.key << endl;
             }
 
             this->pendingAssets.pop();
