@@ -55,9 +55,12 @@ public:
         int gridX = this->tetrisPiece->getX();
         int gridY = this->tetrisPiece->getY();
 
-        // Draw ghost piece (shadow) first
+        // Draw ghost piece (shadow) first - without texture
         int ghostY = this->tetrisPiece->calculateGhostY();
         if (ghostY != gridY) {  // Only draw if ghost is below current position
+            // Remove texture for ghost piece
+            this->blockShape.setTexture(nullptr);
+
             auto ghostColor = Color(100, 100, 100, 100);  // Semi-transparent grey
             this->blockShape.setFillColor(ghostColor);
             this->blockShape.setOutlineColor(Color(80, 80, 80, 100));
@@ -75,7 +78,10 @@ public:
                 }
             }
 
-            // Restore original colors for actual piece
+            // Restore texture and colors for actual piece
+            if (this->blockTexture) {
+                this->blockShape.setTexture(this->blockTexture);
+            }
             this->blockShape.setFillColor(this->color);
             this->blockShape.setOutlineColor(Color(50, 50, 50));
         }
