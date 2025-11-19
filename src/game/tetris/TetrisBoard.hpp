@@ -83,16 +83,13 @@ public:
         auto cleared = 0;
 
         for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0;) {
-            if (!this->isRowComplete(y)) {
-                y--;  // Move to next row up
-            } else {
-                // Row is complete - clear it
-                this->clearRow(y);
-                cleared++;
-                // Don't decrement y - check same position again with shifted content
+            if (!this->isRowComplete(y))
+                y--;                    // Move to next row up
+            else {
+                this->clearRow(y);      // Row is complete - clear it
+                cleared++;              // Check same position again with shifted content
             }
         }
-
         return cleared;
     }
 
