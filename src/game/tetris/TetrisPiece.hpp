@@ -8,7 +8,7 @@
 class TetrisPiece {
 private:
     char type;
-    TetrisShape currentShape;
+    TetrisShape shape;
     int gridX;
     int gridY;
     TetrisBoard* board; // Non-owning pointer to the game board
@@ -19,12 +19,12 @@ public:
           board(board),
           gridX(startX),
           gridY(startY),
-          currentShape(TetrominoType::getData(type).shape) {
+          shape(TetrominoType::getData(type).shape) {
     }
 
     // Movement methods - return true if successful, false if blocked
     auto moveLeft() {
-        if (this->board && this->board->isValidPosition(this->currentShape, this->gridX - 1, this->gridY)) {
+        if (this->board && this->board->isValidPosition(this->shape, this->gridX - 1, this->gridY)) {
             this->gridX--;
             return true;
         }
@@ -32,7 +32,7 @@ public:
     }
 
     auto moveRight() {
-        if (this->board && this->board->isValidPosition(this->currentShape, this->gridX + 1, this->gridY)) {
+        if (this->board && this->board->isValidPosition(this->shape, this->gridX + 1, this->gridY)) {
             this->gridX++;
             return true;
         }
@@ -40,7 +40,7 @@ public:
     }
 
     auto moveDown() {
-        if (this->board && this->board->isValidPosition(this->currentShape, this->gridX, this->gridY + 1)) {
+        if (this->board && this->board->isValidPosition(this->shape, this->gridX, this->gridY + 1)) {
             this->gridY++;
             return true;
         }
@@ -50,26 +50,26 @@ public:
     // Rotate clockwise with wall kick support
     auto rotate() {
         auto pieceData = TetrominoType::getData(this->type);
-        auto rotatedShape = TetrominoData{this->type, pieceData.pivot, this->currentShape}.rotate();
+        auto rotatedShape = TetrominoData{this->type, pieceData.pivot, this->shape}.rotate();
 
         if (!this->board)
             return false;
 
         // Try basic rotation
         if (this->board->isValidPosition(rotatedShape, this->gridX, this->gridY)) {
-            this->currentShape = rotatedShape;
+            this->shape = rotatedShape;
             return true;
         }
 
         // Try wall kicks (simple version - just try moving left or right)
         if (this->board->isValidPosition(rotatedShape, this->gridX - 1, this->gridY)) {
-            this->currentShape = rotatedShape;
+            this->shape = rotatedShape;
             this->gridX--;
             return true;
         }
 
         if (this->board->isValidPosition(rotatedShape, this->gridX + 1, this->gridY)) {
-            this->currentShape = rotatedShape;
+            this->shape = rotatedShape;
             this->gridX++;
             return true;
         }
@@ -83,7 +83,7 @@ public:
             return this->gridY;
 
         int ghostY = this->gridY;
-        while (this->board->isValidPosition(this->currentShape, this->gridX, ghostY + 1)) {
+        while (this->board->isValidPosition(this->shape, this->gridX, ghostY + 1)) {
             ghostY++;
         }
         return ghostY;
@@ -100,14 +100,14 @@ public:
     // Place this piece on the board
     void placeOnBoard() {
         if (this->board)
-            this->board->placePiece(this->currentShape, this->gridX, this->gridY, this->type);
+            this->board->placePiece(this->shape, this->gridX, this->gridY, this->type);
     }
 
     // Check if piece can be placed at current position (spawn check)
     auto canSpawn() const {
         if (!this->board)
             return false;
-        return this->board->isValidPosition(this->currentShape, this->gridX, this->gridY);
+        return this->board->isValidPosition(this->shape, this->gridX, this->gridY);
     }
 
     // Getters
@@ -116,7 +116,7 @@ public:
     }
 
     const auto& getShape() const {
-        return this->currentShape;
+        return this->shape;
     }
 
     auto getX() const {
