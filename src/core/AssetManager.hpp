@@ -58,7 +58,6 @@ class AssetManager {
           pendingMutex() {
     }
 
-
 public:
     static auto getInstance() -> AssetManager& {
         static auto instance = AssetManager();
