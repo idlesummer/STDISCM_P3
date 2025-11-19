@@ -315,6 +315,11 @@ private:
         if (this->activePiece) {
             this->activePiece->setVisible(false);
         }
+
+        // Hide board (placed tetrominos)
+        if (this->board) {
+            this->board->setVisible(false);
+        }
     }
 
     void hideIconDisplay() {
@@ -328,6 +333,11 @@ private:
         // Show active tetromino piece again
         if (this->activePiece) {
             this->activePiece->setVisible(true);
+        }
+
+        // Show board (placed tetrominos) again
+        if (this->board) {
+            this->board->setVisible(true);
         }
     }
 };
