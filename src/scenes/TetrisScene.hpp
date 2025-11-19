@@ -1,5 +1,6 @@
 #pragma once
 #include "../core/Scene.hpp"
+#include "../core/AssetManager.hpp"
 #include "../game/tetris/TetrisEngine.hpp"
 #include "../entities/Board.hpp"
 #include "../entities/Tetromino.hpp"
@@ -10,6 +11,8 @@
 #include "../entities/LoadingProgressBar.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 using namespace sf;
@@ -59,6 +62,14 @@ public:
     void onCreate() override {
         // Initialize game engine
         this->engine.start();
+
+        // Queue textures for background loading (testing AssetManager)
+        auto& assetManager = AssetManager::getInstance();
+        for (int i = 0; i < 100; i++) {
+            auto ss = stringstream();
+            ss << "tile" << setfill('0') << setw(3) << i << ".png";
+            assetManager.loadTexture(ss.str());
+        }
 
         // Try to load optional block texture
         this->hasTexture = this->blockTexture.loadFromFile("assets/images/icons/tile000.png");
