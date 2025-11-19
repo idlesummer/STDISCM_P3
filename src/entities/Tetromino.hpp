@@ -21,10 +21,8 @@ private:
     RectangleShape blockBackground;  // Solid color background for vibrant colors
     Board* board;                    // Reference to the game board for rendering position
     Vector2f boardPosition;
-
-    // Store texture index for each cell in the 4x4 shape
-    array<array<int, 4>, 4> cellTextureIndices;
-    inline static size_t nextTextureIndex = 0; // Global counter for assigning unique textures
+    array<array<int, 4>, 4> cellTextureIndices; // Store texture index for each cell in the 4x4 shape
+    inline static size_t nextTextureIndex = 0;  // Global counter for assigning unique textures
 
 public:
     Tetromino(const TetrisPiece* piece, Board* board)
@@ -105,19 +103,20 @@ public:
 
                 // Use assigned texture index for this cell
                 auto textureIdx = this->cellTextureIndices[y][x];
-                if (textureIdx >= 0 && !textureNames.empty()) {
-                    auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
-                    auto texture = assetManager.getTexture(textureName);
+                if (textureIdx < 0 || textureNames.empty())
+                    return;
 
-                    if (texture) {
-                        // Texture is loaded - draw semi-transparent layer on top
-                        this->blockShape.setPosition(posX, posY);
-                        this->blockShape.setTexture(texture.get());
-                        auto transparentColor = Color(255, 255, 255, 100);
-                        this->blockShape.setFillColor(transparentColor);
-                        window.draw(this->blockShape);
-                    }
-                }
+                auto textureName = textureNames[static_cast<size_t>(textureIdx) % textureNames.size()];
+                auto texture = assetManager.getTexture(textureName);
+                if (texture)
+                    return;
+                
+                // Texture is loaded - draw semi-transparent layer on top
+                this->blockShape.setPosition(posX, posY);
+                this->blockShape.setTexture(texture.get());
+                auto transparentColor = Color(255, 255, 255, 100);
+                this->blockShape.setFillColor(transparentColor);
+                window.draw(this->blockShape);
             }
         }
     }
@@ -133,10 +132,9 @@ public:
 
     // Get texture index for a specific cell (for transferring to board on lock)
     auto getTextureIndexForCell(int x, int y) const -> int {
-        if (x >= 0 && x < 4 && y >= 0 && y < 4) {
-            return this->cellTextureIndices[y][x];
-        }
-        return -1;
+        return (x >= 0 && x < 4 && y >= 0 && y < 4)
+            ? this->cellTextureIndices[y][x]
+            : -1;
     }
 
 private:
