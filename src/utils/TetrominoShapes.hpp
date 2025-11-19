@@ -36,7 +36,7 @@ auto getTetrominoColor(char type) {
 
 // Wrapper function for backward compatibility
 auto getBaseShape(char type) {
-    return getTetromino(type).shape;
+    return TetrominoType::getData(type).shape;
 }
 
 } // namespace Tetris

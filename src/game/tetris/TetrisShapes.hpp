@@ -144,20 +144,6 @@ const auto L_PIECE = TetrominoData{
     }}
 };
 
-// Get tetromino data for a piece type
-auto getTetromino(char type) -> TetrominoData {
-    switch (type) {
-        default: return {'\0', nullopt, TetrisShape{}};
-        case 'I': return I_PIECE;
-        case 'O': return O_PIECE;
-        case 'T': return T_PIECE;
-        case 'S': return S_PIECE;
-        case 'Z': return Z_PIECE;
-        case 'J': return J_PIECE;
-        case 'L': return L_PIECE;
-    }
-}
-
 // Static class for tetromino type registry and factory methods
 class TetrominoType {
 public:
@@ -167,7 +153,16 @@ public:
 
     // Factory method: Get tetromino data for a piece type
     static auto getData(char type) -> TetrominoData {
-        return getTetromino(type);
+        switch (type) {
+            case 'I': return I_PIECE;
+            case 'O': return O_PIECE;
+            case 'T': return T_PIECE;
+            case 'S': return S_PIECE;
+            case 'Z': return Z_PIECE;
+            case 'J': return J_PIECE;
+            case 'L': return L_PIECE;
+            default: return {'\0', nullopt, TetrisShape{}};
+        }
     }
 
     // Get human-readable name for a piece type

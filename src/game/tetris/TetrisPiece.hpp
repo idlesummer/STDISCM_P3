@@ -19,7 +19,7 @@ public:
           board(board),
           gridX(startX),
           gridY(startY),
-          currentShape(getTetromino(type).shape) {
+          currentShape(TetrominoType::getData(type).shape) {
     }
 
     // Movement methods - return true if successful, false if blocked
@@ -49,7 +49,7 @@ public:
 
     // Rotate clockwise with wall kick support
     auto rotate() {
-        auto pieceData = getTetromino(this->type);
+        auto pieceData = TetrominoType::getData(this->type);
         TetrisShape rotated = TetrominoData{this->type, pieceData.pivot, this->currentShape}.rotate();
 
         if (!this->board)
