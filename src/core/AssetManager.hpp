@@ -9,6 +9,8 @@
 #include <mutex>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
+#include <algorithm>
 #include "../utils/ThreadPool.hpp"
 
 using namespace std;
@@ -97,6 +99,35 @@ public:
             cout << "[AssetManager] Loaded texture data: " 
                  << filename << " (" << buffer.size() << " bytes)" << endl;
         });
+    }
+
+    /**
+     * Scan assets directory and queue all PNG textures for loading
+     * @return Number of textures queued for loading
+     */
+    auto loadAllTextures() -> size_t {
+        auto iconsPath = filesystem::path("assets/images/icons");
+
+        if (!filesystem::exists(iconsPath) || !filesystem::is_directory(iconsPath)) {
+            cerr << "[AssetManager] Warning: assets/images/icons directory not found" << endl;
+            return 0;
+        }
+
+        // Collect all PNG files
+        auto pngFiles = vector<string>();
+        for (const auto& entry : filesystem::directory_iterator(iconsPath))
+            if (entry.is_regular_file() && entry.path().extension() == ".png")
+                pngFiles.push_back(entry.path().filename().string());
+
+        // Sort files to ensure consistent loading order
+        sort(pngFiles.begin(), pngFiles.end());
+
+        // Queue all found textures for loading
+        for (const auto& filename : pngFiles)
+            this->loadTexture(filename);
+
+        cout << "[AssetManager] Queued " << pngFiles.size() << " textures for loading" << endl;
+        return pngFiles.size();
     }
 
     /**
