@@ -147,11 +147,9 @@ const auto L_PIECE = TetrominoData{
 // Static class for tetromino type registry and factory methods
 class TetrominoType {
 public:
-    // Registry of all tetromino types
     static constexpr auto ALL_TYPES = array<char, 7>{'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
     static constexpr auto TYPE_COUNT = 7;
 
-    // Factory method: Get tetromino data for a piece type
     static auto getData(char type) -> TetrominoData {
         switch (type) {
             case 'I': return I_PIECE;
@@ -179,26 +177,15 @@ public:
         }
     }
 
-    // Get random tetromino type
     static auto random() -> char {
-        static mt19937 rng{random_device{}()};
-        static uniform_int_distribution<int> dist(0, TYPE_COUNT - 1);
-        return ALL_TYPES[dist(rng)];
-    }
-
-    // Get random tetromino type (with custom RNG for testing)
-    template<typename RNG>
-    static auto random(RNG& rng) -> char {
-        uniform_int_distribution<int> dist(0, TYPE_COUNT - 1);
+        static auto rng = mt19937{random_device{}()};
+        static auto dist = uniform_int_distribution<int>(0, TYPE_COUNT - 1);
         return ALL_TYPES[dist(rng)];
     }
 
     // Check if a type is valid
     static auto isValid(char type) -> bool {
-        for (auto t : ALL_TYPES) {
-            if (t == type) return true;
-        }
-        return false;
+        return ranges::find(ALL_TYPES, type) != ranges::end(ALL_TYPES);
     }
 
     // Deleted constructors (static class only)
