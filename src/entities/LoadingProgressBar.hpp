@@ -14,6 +14,7 @@ private:
     Font font;
     Text percentageText;
     Text titleText;
+    Text instructionText;
     RectangleShape barBackground;
     RectangleShape barForeground;
 
@@ -26,6 +27,7 @@ public:
           font(),
           percentageText(),
           titleText(),
+          instructionText(),
           barBackground(),
           barForeground(),
           barWidth(width),
@@ -47,6 +49,13 @@ public:
         this->percentageText.setFont(this->font);
         this->percentageText.setCharacterSize(16);
         this->percentageText.setFillColor(Color::White);
+
+        // Setup instruction text
+        this->instructionText.setFont(this->font);
+        this->instructionText.setString("Press Enter to Show Icons");
+        this->instructionText.setCharacterSize(14);
+        this->instructionText.setFillColor(Color(200, 200, 200));
+        this->instructionText.setPosition(this->position.x, this->position.y + this->barHeight + 10);
 
         // Setup bar background (gray border/background)
         this->barBackground.setSize(Vector2f(this->barWidth, this->barHeight));
@@ -72,6 +81,12 @@ public:
         window.draw(this->barBackground);
         window.draw(this->barForeground);
         window.draw(this->percentageText);
+
+        // Show instruction text only when loading is complete
+        auto& assetManager = AssetManager::getInstance();
+        if (assetManager.isLoadingComplete()) {
+            window.draw(this->instructionText);
+        }
     }
 
 private:
