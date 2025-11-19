@@ -162,8 +162,8 @@ auto getTetromino(char type) -> TetrominoData {
 class TetrominoType {
 public:
     // Registry of all tetromino types
-    static constexpr array<char, 7> ALL_TYPES = {'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
-    static constexpr int TYPE_COUNT = 7;
+    static constexpr auto ALL_TYPES = array<char, 7>{'I', 'O', 'T', 'S', 'Z', 'J', 'L'};
+    static constexpr auto TYPE_COUNT = 7;
 
     // Factory method: Get tetromino data for a piece type
     static auto getData(char type) -> TetrominoData {
