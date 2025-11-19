@@ -77,9 +77,8 @@ public:
      */
     void loadTexture(const string& filename) {
         // Skip if already loaded or pending
-        if (this->isTextureLoaded(filename)) {
+        if (this->isTextureLoaded(filename))
             return;
-        }
 
         this->totalTextureCount++;
 
