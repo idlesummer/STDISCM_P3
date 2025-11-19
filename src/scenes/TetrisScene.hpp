@@ -13,6 +13,8 @@
 #include <memory>
 #include <sstream>
 #include <iomanip>
+#include <filesystem>
+#include <algorithm>
 
 using namespace std;
 using namespace sf;
@@ -63,12 +65,30 @@ public:
         // Initialize game engine
         this->engine.start();
 
-        // Queue all textures for background loading
+        // Queue all existing textures for background loading
         auto& assetManager = AssetManager::getInstance();
-        for (int i = 0; i < 1000; i++) {
-            auto ss = stringstream();
-            ss << "tile" << setfill('0') << setw(3) << i << ".png";
-            assetManager.loadTexture(ss.str());
+        auto iconsPath = filesystem::path("assets/images/icons");
+
+        if (filesystem::exists(iconsPath) && filesystem::is_directory(iconsPath)) {
+            // Collect all PNG files
+            auto pngFiles = vector<string>();
+            for (const auto& entry : filesystem::directory_iterator(iconsPath)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".png") {
+                    pngFiles.push_back(entry.path().filename().string());
+                }
+            }
+
+            // Sort files to ensure consistent loading order
+            sort(pngFiles.begin(), pngFiles.end());
+
+            // Queue all found textures for loading
+            for (const auto& filename : pngFiles) {
+                assetManager.loadTexture(filename);
+            }
+
+            cout << "[TetrisScene] Queued " << pngFiles.size() << " textures for loading" << endl;
+        } else {
+            cout << "[TetrisScene] Warning: assets/images/icons directory not found" << endl;
         }
 
         // Try to load optional block texture
