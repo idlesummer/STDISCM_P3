@@ -29,7 +29,6 @@ private:
     shared_ptr<MenuText> controlsText;
 
     // SFML-specific state (not game logic)
-    bool isPaused;
     Time fallTimer;
     Time fallInterval;
 
@@ -44,7 +43,6 @@ public:
           titleText(),
           gameOverText(),
           controlsText(),
-          isPaused(false),
           fallTimer(Time::Zero),
           fallInterval(seconds(1.0f)) {
     }
@@ -85,7 +83,6 @@ public:
         if (event.type == Event::KeyPressed) {
             switch (event.key.code) {
                 default: break;
-                case Keyboard::Escape: break;
 
                 case Keyboard::Left:
                     this->engine.moveLeft(); break;
@@ -221,7 +218,6 @@ private:
         this->engine.reset();
 
         // Reset SFML state
-        this->isPaused = false;
         this->fallTimer = Time::Zero;
         this->activePiece = nullptr;
 
