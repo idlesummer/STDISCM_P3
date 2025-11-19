@@ -71,13 +71,11 @@ public:
 
             for (auto y = 0; y < 4; y++) {
                 for (auto x = 0; x < 4; x++) {
-                    if (shape[y][x] == 0)
-                        continue;
+                    if (shape[y][x] == 0) continue;
 
-                    this->blockBackground.setPosition(
-                        this->boardPosition.x + (gridX + x) * BLOCK_SIZE,
-                        this->boardPosition.y + (ghostY + y) * BLOCK_SIZE
-                    );
+                    auto px = this->boardPosition.x + (gridX + x) * BLOCK_SIZE;
+                    auto py = this->boardPosition.y + (ghostY + y) * BLOCK_SIZE;
+                    this->blockBackground.setPosition(px, py);
                     window.draw(this->blockBackground);
                 }
             }
@@ -138,5 +136,4 @@ public:
         const auto& shape = this->tetrisPiece->getShape();
         return (shape[y][x] != 0) ? this->pieceTextureIndex : -1;
     }
-
 };
