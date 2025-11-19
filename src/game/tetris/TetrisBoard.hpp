@@ -81,17 +81,20 @@ public:
     // Check and clear completed lines, return number of lines cleared
     auto clearLines() {
         auto cleared = 0;
+        auto y = TETRIS_BOARD_HEIGHT - 1;
 
-        for (auto y = TETRIS_BOARD_HEIGHT - 1; y >= 0; y--) {
-            if (!this->isRowComplete(y))
+        while (y >= 0) {
+            // Skip incomplete rows
+            if (!this->isRowComplete(y)) {
+                y--;
                 continue;
+            }
 
-            cleared++;
-            this->totalLinesCleared++;
+            // Handle complete row
             this->clearRow(y);
+            cleared++;
 
-            // Check same row again since we shifted
-            y++;
+            // Don't decrement y - check this position again
         }
 
         return cleared;
@@ -139,6 +142,8 @@ private:
 
     // Clear a row by shifting all rows above it down
     void clearRow(int y) {
+        this->totalLinesCleared++;
+
         // Shift all rows above down
         for (auto shiftY = y; shiftY > 0; shiftY--)
             for (auto x = 0; x < TETRIS_BOARD_WIDTH; x++)
