@@ -38,25 +38,16 @@ using namespace sf;
  *   }
  */
 class AssetManager {
-    // Thread pool for background file loading
     ThreadPool loadingPool;
-
-    // Fast O(1) lookup cache
     unordered_map<string, shared_ptr<Texture>> textureCache;
-
-    // Insertion order preservation (for iteration)
     vector<string> textureOrder;
-
-    // Total asset count (for progress tracking)
     size_t totalTextureCount;
-
-    // Staging area for background-loaded file data
     struct PendingAsset {
-        string key;           // Asset identifier (filename)
-        vector<char> fileData; // Raw file bytes loaded in background
+        string key;             // Asset identifier (filename)
+        vector<char> fileData;  // Raw file bytes loaded in background
     };
     queue<PendingAsset> pendingAssets;
-    mutex pendingMutex;  // Protects pendingAssets queue
+    mutex pendingMutex;         // Protects pendingAssets queue
 
     AssetManager()
         : loadingPool(thread::hardware_concurrency()),
@@ -130,11 +121,6 @@ public:
         this->processPendingAssets();
     }
 
-    /**
-     * Get a texture by name (returns nullptr if not loaded yet)
-     * @param name Filename relative to assets/images/icons/ directory
-     * @return Shared pointer to texture, or nullptr if not ready
-     */
     auto getTexture(const string& name) -> shared_ptr<Texture> {
         auto it = this->textureCache.find(name);
         return it != this->textureCache.end()
@@ -142,63 +128,43 @@ public:
             : nullptr;
     }
 
-    /**
-     * Check if a texture is loaded and ready
-     */
     auto isTextureLoaded(const string& name) const -> bool {
         return this->textureCache.find(name) != this->textureCache.end();
     }
 
-    /**
-     * Get all texture names in insertion order
-     * Useful for iterating through loaded textures
-     */
     auto getTextureNames() const -> const vector<string>& {
         return this->textureOrder;
     }
 
-    /**
-     * Get loading statistics
-     */
-    auto getLoadedTextureCount() const -> size_t { return this->textureCache.size(); }
-    auto getPendingAssetCount() const -> size_t {
+    auto getLoadedTextureCount() const { 
+        return this->textureCache.size(); 
+    }
+
+    auto getPendingAssetCount() const {
         auto lock = lock_guard<mutex>(const_cast<mutex&>(this->pendingMutex));
         return this->pendingAssets.size();
     }
 
-    /**
-     * Get total texture count (how many textures were queued for loading)
-     */
-    auto getTotalTextureCount() const -> size_t { return this->totalTextureCount; }
-    auto getTotalAssetCount() const -> size_t { return this->totalTextureCount; }
+    auto getTotalTextureCount() const { 
+        return this->totalTextureCount; 
+    }
 
-    /**
-     * Get loaded asset count
-     */
-    auto getLoadedAssetCount() const -> size_t { return this->textureCache.size(); }
+    auto getTotalAssetCount() const { 
+        return this->totalTextureCount; 
+    }
 
-    /**
-     * Check if all assets have finished loading
-     */
+    auto getLoadedAssetCount() const { 
+        return this->textureCache.size(); 
+    }
+
     auto isLoadingComplete() const -> bool {
         return this->getLoadedAssetCount() == this->getTotalAssetCount();
     }
 
-    /**
-     * Get loading progress as a percentage (0.0 to 1.0)
-     * Returns 1.0 if no assets were queued
-     */
     auto getLoadingProgress() const -> float {
         auto total = this->getTotalAssetCount();
         if (total == 0) return 1.0f;
         return static_cast<float>(this->getLoadedAssetCount()) / static_cast<float>(total);
-    }
-
-    /**
-     * Get loading progress as a percentage (0 to 100)
-     */
-    auto getLoadingProgressPercent() const -> int {
-        return static_cast<int>(this->getLoadingProgress() * 100.0f);
     }
 
 private:
