@@ -17,6 +17,7 @@ private:
 public:
     Game(int width, int height, const string& title)
         : window(VideoMode(width, height), title), activeScene(nullptr) {
+
         this->window.setFramerateLimit(165);
     }
 
