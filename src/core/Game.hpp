@@ -51,7 +51,9 @@ public:
         this->handleExit();                         // 4. Cleanup on exit
     }
 
-    auto getCurrentScene() const { return this->currentScene; }
+    auto getCurrentScene() const { 
+        return this->currentScene; 
+    }
 
 private:
     void handleInputs(Time TICK) {
