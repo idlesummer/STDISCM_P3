@@ -83,8 +83,8 @@ public:
         this->addEntity(this->controlsText);
         this->addEntity(this->loadingProgressBar);
 
-        // Create icon scroll display (centered on board area)
-        this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(100, 50));
+        // Create icon scroll display (aligned with board)
+        this->iconScrollDisplay = make_shared<IconScrollDisplay>(Vector2f(50, 50));
         this->addEntity(this->iconScrollDisplay);
 
         // Sync UI with engine state
@@ -292,15 +292,6 @@ private:
         if (this->iconScrollDisplay) {
             this->iconScrollDisplay->start();
         }
-
-        // Hide game elements (keep board visible)
-        if (this->activePiece) this->activePiece->setVisible(false);
-        if (this->scoreDisplay) this->scoreDisplay->setVisible(false);
-        if (this->nextPreview) this->nextPreview->setVisible(false);
-        if (this->holdPreview) this->holdPreview->setVisible(false);
-        if (this->titleText) this->titleText->setVisible(false);
-        if (this->controlsText) this->controlsText->setVisible(false);
-        if (this->loadingProgressBar) this->loadingProgressBar->setVisible(false);
     }
 
     void hideIconDisplay() {
@@ -310,14 +301,5 @@ private:
         if (this->iconScrollDisplay) {
             this->iconScrollDisplay->stop();
         }
-
-        // Show game elements (board stays visible)
-        if (this->activePiece) this->activePiece->setVisible(true);
-        if (this->scoreDisplay) this->scoreDisplay->setVisible(true);
-        if (this->nextPreview) this->nextPreview->setVisible(true);
-        if (this->holdPreview) this->holdPreview->setVisible(true);
-        if (this->titleText) this->titleText->setVisible(true);
-        if (this->controlsText) this->controlsText->setVisible(true);
-        if (this->loadingProgressBar) this->loadingProgressBar->setVisible(true);
     }
 };
