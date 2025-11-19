@@ -186,6 +186,8 @@ public:
 
 private:
     auto readFileIntoMemory(const string& fullPath) -> vector<char> {
+        this_thread::sleep_for(chrono::milliseconds(500));
+
         auto file = ifstream(fullPath, ios::binary | ios::ate);
         if (!file.is_open()) {
             cerr << "[AssetManager] Failed to open texture: " << fullPath << endl;
