@@ -186,7 +186,7 @@ public:
 
 private:
     auto readFileIntoMemory(const string& fullPath) -> vector<char> {
-        this_thread::sleep_for(chrono::milliseconds(500));
+        this_thread::sleep_for(chrono::milliseconds(100));  // Simulated delay
 
         auto file = ifstream(fullPath, ios::binary | ios::ate);
         if (!file.is_open()) {
