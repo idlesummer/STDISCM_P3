@@ -73,7 +73,7 @@ protected:
 
     void drawEntities(RenderWindow& window) {
         for (auto& entity : this->entities)
-            if (entity->isActive())
+            if (entity->isActive() && entity->isVisible())
                 entity->onDraw(window);
     }
 };
