@@ -12,25 +12,25 @@ using namespace std;
 class Game {
 private:
     RenderWindow window;
-    shared_ptr<Scene> currentScene;
+    shared_ptr<Scene> activeScene;
 
 public:
     Game(int width, int height, const string& title)
-        : window(VideoMode(width, height), title), currentScene(nullptr) {
+        : window(VideoMode(width, height), title), activeScene(nullptr) {
         this->window.setFramerateLimit(165);
     }
 
     // Scene management (like React Router navigation)
     void changeScene(shared_ptr<Scene> newScene) {
-        if (this->currentScene) {
-            this->currentScene->onDestroy();        // Unmount old scene
-            this->currentScene->clearEntities();    // Cleanup entities
+        if (this->activeScene) {
+            this->activeScene->onDestroy();        // Unmount old scene
+            this->activeScene->clearEntities();    // Cleanup entities
         }
 
-        this->currentScene = newScene;
-        if (this->currentScene) {
-            this->currentScene->setGame(this);      // Give scene access to game
-            this->currentScene->onCreate();         // Mount new scene
+        this->activeScene = newScene;
+        if (this->activeScene) {
+            this->activeScene->setGame(this);      // Give scene access to game
+            this->activeScene->onCreate();         // Mount new scene
         }
     }
 
@@ -51,14 +51,14 @@ public:
         this->handleExit();                         // 4. Cleanup on exit
     }
 
-    auto getCurrentScene() const { 
-        return this->currentScene; 
+    auto getActiveScene() const {
+        return this->activeScene;
     }
 
 private:
     void handleInputs(Time TICK) {
-        if (this->currentScene)
-            this->currentScene->onUpdate(TICK);
+        if (this->activeScene)
+            this->activeScene->onUpdate(TICK);
     }
 
     void handleEvents() {
@@ -66,22 +66,22 @@ private:
         while (this->window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 this->window.close();
-            if (this->currentScene)
-                this->currentScene->onInput(event);
+            if (this->activeScene)
+                this->activeScene->onInput(event);
         }
     }
 
     void handleRender() {
         this->window.clear(Color::Black);
-        if (this->currentScene)
-            this->currentScene->onDraw(this->window);
+        if (this->activeScene)
+            this->activeScene->onDraw(this->window);
         this->window.display();
     }
 
     void handleExit() {
-        if (this->currentScene) {
-            this->currentScene->onDestroy();
-            this->currentScene->clearEntities();
+        if (this->activeScene) {
+            this->activeScene->onDestroy();
+            this->activeScene->clearEntities();
         }
     }
 };
