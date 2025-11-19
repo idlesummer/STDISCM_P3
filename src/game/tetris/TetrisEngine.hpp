@@ -82,20 +82,17 @@ public:
         auto currentType = this->currentPiece->getType();
         this->currentPiece = nullopt;
 
-        // First time holding - store current, spawn next
-        if (this->heldPieceType == '\0') {
-            this->heldPieceType = currentType;
-            this->spawnNextPiece();
-        } 
-        // Swap current with held piece
-        else {
+        if (this->heldPieceType == '\0') {      // First time holding
+            this->heldPieceType = currentType;  // Store current
+            this->spawnNextPiece();             // Spawn next
+        
+        } else {                                // Swap current with held piece
             char temp = this->heldPieceType;
             this->heldPieceType = currentType;
             this->spawnPiece(temp);
         }
 
-        // Lock hold until next piece
-        this->canSwapHold = false;
+        this->canSwapHold = false;              // Lock hold until next piece
         return true;
     }
 
@@ -117,13 +114,9 @@ public:
             this->gameOver = true;
             return linesCleared;
         }
-
-        // Reset hold ability
-        this->canSwapHold = true;
-
-        // Spawn next piece
-        this->spawnNextPiece();
-
+        
+        this->canSwapHold = true;   // Reset hold ability
+        this->spawnNextPiece();     // Spawn next piece
         return linesCleared;
     }
 
