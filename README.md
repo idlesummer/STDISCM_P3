@@ -470,7 +470,6 @@ Background Threads (8 workers running concurrently)
 
 ### **Result**
 ✅ Instant game start (no loading screen) <br />
-✅ Smooth 60 FPS maintained
-✅ Efficient CPU usage (all cores utilized)
+✅ Smooth 60 FPS maintained <br />
+✅ Efficient CPU usage (all cores utilized) <br />
 ✅ Better user experience
-
