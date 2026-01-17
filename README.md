@@ -1,4 +1,3 @@
-```markdown
 # **Deep Dive: Parallel Asset Loading Architecture**
 
 ## **The Problem We're Solving**
@@ -474,4 +473,4 @@ Background Threads (8 workers running concurrently)
 ✅ Smooth 60 FPS maintained
 ✅ Efficient CPU usage (all cores utilized)
 ✅ Better user experience
-```
+
